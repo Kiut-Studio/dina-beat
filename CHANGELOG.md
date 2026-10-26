@@ -1,5 +1,8 @@
 # Novedades
 
+## Versión 0.8.4 — octubre 2026: arreglo para instalar
+- 📲 Identificación de app más clara, para que Chrome no la confunda con otro juego del mismo sitio al instalarla.
+
 ## Versión 0.8.3 — octubre 2026: ícono propio
 - 📲 Ícono nuevo: Dina yendo a la torta, con notas musicales y gotitas del rociador, sobre fondo violeta (antes era el mismo que Torta Runner). Se instala como app aparte de Torta Runner y Dina Run.
 

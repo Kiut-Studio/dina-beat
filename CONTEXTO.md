@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 26/10/2026 · versión 0.8.3
+Última actualización: 26/10/2026 · versión 0.8.4
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `LeandroACasco/dina-beat`, publicado en `leandroacasco.github.io/dina-beat/`. La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -85,6 +85,8 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ícono propio: Dina caminando hacia la torta (dibujos de Sofía) dentro del anillo punteado del juego, con notas y gotitas hechas con código, sobre violeta. Leandro pidió que esté a la altura del de Dina Run (Dina comiendo la calabaza).
 - `manifest.json` con `id` propio (`./?app=dina-beat`). Torta Runner, Dina Run y Dina Beat están en el mismo sitio, cada uno en su carpeta; antes compartían el ícono de Torta Runner y parecían la misma app.
 - Dina Run se mudó a `leandroacasco.github.io/dina-run/` (repo `LeandroACasco/dina-run`). La conexión entre juegos (personajes y frutillas) no cambia porque sigue siendo el mismo sitio.
+
+- **Instalación (0.7.3 / 0.8.4):** el `id` del manifest es una ruta absoluta (`/dina-run/`, `/dina-beat/`). Antes era `./?app=…`: Leandro vio en Android "No se puede instalar esta app" con Dina Run. La sospecha es que el `id` viejo seguía ligado a la instalación de Sofi Runner (misma cadena `?app=sofi-runner`) o que Chrome lo resolvía distinto; con la ruta absoluta no hay ambigüedad. Íconos separados en `any` y `maskable`. En Chromium de escritorio el juego daba "instalable" igual. Si vuelve a pasar: desinstalar los íconos viejos (Sofi Runner) y probar con ⋮ → Agregar a pantalla principal. **No** borrar los datos del sitio en Chrome: borraría las frutillas de todos los juegos.
 
 ## Pendientes e ideas
 1. Que Sofía dibuje el silbato y el rociador (hoy son provisorios, hechos con código).
