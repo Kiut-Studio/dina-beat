@@ -1,5 +1,8 @@
 # Novedades
 
+## Versión 0.8.3 — octubre 2026: ícono propio
+- 📲 Ícono nuevo: Dina yendo a la torta, con notas musicales y gotitas del rociador, sobre fondo violeta (antes era el mismo que Torta Runner). Se instala como app aparte de Torta Runner y Dina Run.
+
 ## Versión 0.8.2 — octubre 2026
 - 📊 Contador de cuadros por segundo, que se prende y apaga en ⚙️ Ajustes.
 - README con capturas nuevas.

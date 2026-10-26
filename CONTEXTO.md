@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 26/10/2026 · versión 0.8.2
+Última actualización: 26/10/2026 · versión 0.8.3
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `LeandroACasco/dina-beat`, publicado en `leandroacasco.github.io/dina-beat/`. La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -81,11 +81,15 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - LICENSE aclara que las capturas de `docs/` también son © Sofía.
 - Ojo: en las capturas en alta resolución el calibrador da números de más (la PC de pruebas toca tarde por la carga); en `juego.py` da el valor correcto.
 
+## Versión 0.8.3
+- Ícono propio: Dina caminando hacia la torta (dibujos de Sofía) dentro del anillo punteado del juego, con notas y gotitas hechas con código, sobre violeta. Leandro pidió que esté a la altura del de Dina Run (Dina comiendo la calabaza).
+- `manifest.json` con `id` propio (`./?app=dina-beat`). Torta Runner, Dina Run y Dina Beat están en el mismo sitio, cada uno en su carpeta; antes compartían el ícono de Torta Runner y parecían la misma app.
+- Dina Run se mudó a `leandroacasco.github.io/dina-run/` (repo `LeandroACasco/dina-run`). La conexión entre juegos (personajes y frutillas) no cambia porque sigue siendo el mismo sitio.
+
 ## Pendientes e ideas
 1. Que Sofía dibuje el silbato y el rociador (hoy son provisorios, hechos con código).
 2. En Dina Run: botón para abrir Dina Beat y escuchar el evento `storage` (ver 0.4).
-3. Subir el repositorio `dina-beat` a GitHub y activar Pages (al 26/10 no aparece en GitHub).
-4. Inicio de sesión con Google para guardar el progreso en la nube (Dina Run y Dina Beat juntos; necesita una base de datos, por ejemplo Firebase). Hoy cada juego guarda solo en el dispositivo y navegador.
-5. Probarlo con amigos y ajustar dificultad de ¡Miau-loca!.
-6. Guardar el último archivo de música en el dispositivo (IndexedDB) para no tener que elegirlo de nuevo.
-7. Probar la detección de golpes con canciones reales de distintos estilos.
+3. Inicio de sesión con Google para guardar el progreso en la nube (Dina Run y Dina Beat juntos; necesita una base de datos, por ejemplo Firebase). Hoy cada juego guarda solo en el dispositivo y navegador.
+4. Probarlo con amigos y ajustar dificultad de ¡Miau-loca!.
+5. Guardar el último archivo de música en el dispositivo (IndexedDB) para no tener que elegirlo de nuevo.
+6. Probar la detección de golpes con canciones reales de distintos estilos.
