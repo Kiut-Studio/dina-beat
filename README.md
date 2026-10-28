@@ -14,15 +14,17 @@ Juego de ritmo con los dibujos de Sofía. Dina baja a comerse la torta al ritmo 
 - 3 etapas que se ponen más difíciles: **Tranqui** (96 pulsos por minuto), **Picante** (112) y **¡Miau-loca!** (128). Se abre la siguiente al pasar la anterior.
 - La torta tiene 8 porciones; cada 8 aciertos recuperás una.
 - Puntaje con combo, de 1 a 3 🍓 según la precisión, y récord por etapa.
+- ✨ Visualizador: un ecualizador que baila con la música, un anillo que se cierra sobre el círculo justo cuando hay que tocar, un metrónomo con los tiempos del compás, y Sofi, la torta y Dina que se mueven al pulso.
 - En el teléfono se toca la pantalla; en la PC, espacio o Enter. Esc o P pausa, y al volver hay una cuenta 3-2-1 al ritmo de la canción.
 
 ## 🎵 Tus canciones
 <p align="center">
   <img src="docs/canciones.webp" width="200" alt="Compositor de melodías">
+  <img src="docs/partes.webp" width="200" alt="Elegir qué tocar de un MIDI">
 </p>
 
 - Componé tu propia melodía (8 compases, velocidad y batería) y jugala.
-- O jugá con un archivo tuyo: música (mp3, m4a, wav, ogg), con detección automática de los golpes, o una partitura MIDI (.mid).
+- O jugá con un archivo tuyo: música (mp3, m4a, wav, ogg), con detección automática de los golpes y del pulso, o una partitura MIDI (.mid), donde elegís qué tocar: melodía, bajo, batería o cada instrumento.
 - El archivo se lee solo en tu dispositivo y no se sube a ningún lado. Cada jugador usa la música que tiene permiso para usar.
 - Dificultad Fácil, Normal y Difícil.
 

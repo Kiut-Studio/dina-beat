@@ -1,5 +1,21 @@
 # Novedades
 
+## Versión 0.11 — octubre 2026: visualizador
+- 🎛️ Ecualizador detrás de la escena que baila con lo que suena (etapas, tus canciones, MIDI y mp3).
+- ⭕ Anillo que se cierra sobre el círculo: coincide con el borde justo cuando hay que tocar.
+- 💓 Todo late con el pulso: Sofi y la torta rebotan, el fondo brilla y Dina se balancea, más fuerte en el primer tiempo del compás.
+- 🔵 Metrónomo arriba: una luz por cada tiempo del compás.
+- Se apaga en ⚙️ Ajustes → Ver al jugar → ✨ Visualizador (el anillo queda siempre).
+- ⏸ Más tiempo al volver de la pausa: la canción retrocede un par de pulsos, así después del 3-2-1 queda al menos 1,2 segundos antes de que llegue la próxima Dina.
+
+## Versión 0.10 — octubre 2026: MIDI por partes y mp3 al pulso
+- 🎼 Al abrir un MIDI elegís qué tocar: 🎤 Melodía, 🎸 Bajo, 🥁 Batería o 👏 Ritmo, y cada instrumento si el archivo trae varios. Lo que elegís suena más fuerte.
+- Las notas para espantar siguen la melodía de verdad (antes, en MIDI de piano, salía casi todo el bajo) y prefieren las que caen en el pulso.
+- Fácil, Normal y Difícil se ajustan al tempo de cada canción, con una diferencia clara entre una y otra. Difícil más justo: sin notas a un cuarto de pulso y como mucho 4 notas rápidas seguidas (Normal, 3).
+- En la música de archivo (mp3 y otros) el juego sigue el pulso a lo largo de toda la canción, aunque la banda acelere o frene un poco. Con una canción de prueba, las notas elegidas caen sobre notas reales de la canción el 94 % de las veces en Fácil (antes 75 %).
+- Al tocar "¡Bien!" te dice si fuiste ⏪ antes o tarde ⏩.
+- Si salías de una canción a la mitad y entrabas a ✏️ Componer, al tocar ▶ Escuchar sonaba el resto de esa canción encima de tu melodía. Ya no se mezclan.
+
 ## Versión 0.9 — octubre 2026: ¡Nos mudamos a Kiut Studio!
 - 🏠 Dina Beat ahora vive en **Kiut Studio**: https://kiut-studio.github.io/dina-beat/
 - 🐱 Si entrás por la dirección vieja, te trae solo con tus estrellas, tus canciones compuestas y las frutillas de Dina Run.

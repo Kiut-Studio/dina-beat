@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.9
+Última actualización: 28/10/2026 · versión 0.11
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v12; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v13; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -99,10 +99,52 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Las claves de guardado y el `id` de las apps (`/dina-run/`, `/dina-beat/`) no cambian. Al cambiar de dominio el teléfono las ve como apps nuevas: hay que instalarlas de nuevo desde la dirección nueva.
 - Desde ahora Claude sube las versiones directo a GitHub (app de Claude instalada).
 
+## Versión 0.10 — cómo se arman las notas de un MIDI o un mp3
+- **Error de canciones mezcladas:** al salir de una canción con pausa → 🏠 Menú, `stopSongBus()` cortaba el sonido pero los eventos que faltaban (`ev` desde `evI`) quedaban; cuando el compositor abría un canal nuevo para ▶ Escuchar, `sched()` los volvía a programar. Arreglo: `sched()` solo programa si `state==='play'`, y "Menú" desde la pausa vacía `ev`. Prueba en `juego.py`: "MIDI no suena en el compositor".
+
+**Problema encontrado** con un MIDI de Leandro (piano eléctrico, una sola pista y canal, 132 ppm, 1838 notas, las dos manos juntas): el juego tomaba toda la pista como "melodía", elegía la nota que aparecía primero en cada golpe y, como todas tenían la misma fuerza, quedaban las primeras en el tiempo. Resultado: de 532 notas en Normal, 391 eran del bajo y 410 no caían en un lugar firme del compás. Las notas del MIDI sí estaban bien en el tiempo (muchas corridas 1–8 ticks antes del pulso, menos de 10 ms).
+
+**MIDI ahora:**
+- `parseMidi` también lee el compás (`tsNum`, meta 0x58), nombres de pista (0x03/0x04), instrumento (program change) y, por nota, `tick` y `spb` (segundos por pulso en ese momento).
+- `midiParts` arma las partes: **🎤 Melodía** (`voiceLine` de arriba del grupo más melódico, sin las notas más de una octava por debajo de la mediana: `nearMelody`), **cada instrumento** si hay varios (hasta 6; nombre de pista o familia GM; repetidos numerados), **🎸 Bajo** (voz de abajo de todo, ≤ Si 59) y **🥁 Batería** (bombo > redoblante) o **👏 Ritmo** (todos los golpes) si no hay batería.
+- `voiceLine`: en cada golpe (notas a < 35 ms) toma la más aguda (o grave), salvo que otra más aguda (o grave) siga sonando desde antes: ese golpe es acompañamiento.
+- Peso de cada nota (`toCands`): posición en el compás (`metricW`, tolerancia 1/24 de pulso: primer tiempo 1, tercero 0,85, otro pulso 0,72, medio pulso 0,5, tresillo 0,4, semicorchea 0,3, otro 0,15) + duración (hasta 0,45) + fuerza (hasta 0,25) + cambio de altura (0,15).
+- `chartPart`: de más a menos peso, con separación mínima `max(floor, k × pulso)` y una cantidad objetivo de notas por pulso con tope por segundo (`CHART`: Fácil 0,5/pulso ≤ 1,25/s; Normal 0,85/pulso ≤ 2,1/s; Difícil todas). Si sobran, se descartan las de menos peso (búsqueda binaria sobre cuántas de las más pesadas entran).
+- `midiEv`: suena todo con la cajita y la parte elegida más fuerte (0,13 contra 0,06).
+- Con el MIDI de Leandro: Melodía Fácil 274 notas (1,1/s, 89 % en el pulso), Normal 467 (1,85/s), Difícil 539 (2,1/s). Gráfico de comprobación: los puntos siguen la línea de arriba.
+- Pantalla **🎼 ¿Qué querés tocar?** (`#parts`): al abrir un MIDI, al tocar el botón de repetir y al volver de los resultados. Dificultad ahí mismo; cada fila muestra cuántas notas son y ⭐ a ⭐⭐⭐ según cuántas por segundo.
+
+**Música de archivo (mp3, m4a, wav, ogg):**
+- `analyze()` (sin cambios): mezcla a mono, mide cada 10 ms la energía en graves (< 160 Hz) y agudos (> 1800 Hz); un golpe es una subida fuerte (máximo local en ±40 ms y por encima de 1,6× el promedio de medio segundo alrededor). El tempo sale de la autocorrelación de esas subidas (70–180 ppm, con preferencia cerca de 120).
+- Nuevo `audioCands`: busca la fase del pulso (la que más coincide con los golpes fuertes) y cada golpe pesa su fuerza + 0,6 si cae en el pulso (0,3 a medio pulso). Después se eligen con `chartPart`, igual que los MIDI. En test.wav la fase coincide exactamente con los golpes reales.
+- Limitación: si la canción cambia de tempo o está tocada en vivo, la grilla se corre; los golpes se siguen detectando, solo pierden el extra.
+
+**Juego:** al tocar "¡Bien!" aparece "⏪ antes" o "tarde ⏩" debajo.
+
+### mp3 y Difícil (también 0.10)
+**Prueba con la misma canción en mp3 y MIDI** (Leandro, "I can't stop the loneliness", 262,7 s; grabación con banda): `analyze()` da 133 ppm y el MIDI 132. Con una grilla fija, 1 ppm de diferencia corre la grilla más de un segundo en 4 minutos.
+- **`trackBeats(od,fps,bpm)`**: seguidor de pulso por programación dinámica (método de Ellis 2007). Recorre la curva de subidas de energía (`od`, 100 por segundo) y arma la serie de pulsos que cae sobre los golpes más fuertes, castigando las separaciones que se alejan del tempo (`tight=100`, saltos entre 0,7 y 1,4 pulsos). Sigue a una banda que acelera o frena. `analyze()` devuelve `beats` y `audioCands` da el extra de pulso (+0,6) o medio pulso (+0,3) según los dos pulsos vecinos (y usa ese intervalo como `spb` local). Tarda unos 160 ms para 4 minutos en la PC.
+- **Cómo se midió:** se alineó el MIDI con el mp3 por tramos de 20 s (desplazamiento ~8,1–9,0 s, el MIDI empieza después) y se contó cuántas notas elegidas en el mp3 caen a ±50 ms de una nota del MIDI. Resultado: Fácil 94 % (antes 75 %), Normal 92 % (antes 88 %), Difícil 87 % (antes 81 %, y con 649 notas en vez de 936). Elegir golpes detectados al azar da 47 %. Los scripts de esta medición no quedan en el repo (usan música con derechos).
+- **Difícil "una locura"** con el MIDI: además de rachas de medio pulso, tenía 59 separaciones de 3/4 de pulso (notas en semicorcheas, anticipaciones cortas). Ahora cada candidato guarda su peso de compás `m` y si es largo (`long`, ≥ 0,9 pulso): en Fácil y Normal no entran notas con `m` < 0,5 (cuarto de pulso u otras); en Difícil solo si son largas. `limitRuns()` corta las rachas de notas rápidas (< 0,6 pulso entre sí): Fácil 2, Normal 3, Difícil 4, sacando la de menos peso (nunca la primera). Difícil: `perBeat` 1,15 / 2,6 por segundo (antes sin tope) y `approach` 1,25 s (antes 1,15).
+- Con el MIDI, Melodía: Fácil 274, Normal 451, Difícil 493 (antes 539).
+
+## Versión 0.11 — visualizador
+- **Grilla de pulsos** de cada canción (`grid`: `[{t, bar}]`, + `bi` = tiempo dentro del compás al empezar): etapas y composiciones `regGrid`; MIDI `M.grid` según el mapa de tempos y `tsNum`; mp3 `audioGrid(an)` con los pulsos de `trackBeats` (el comienzo de compás es, de cada 4, el de golpes más fuertes). En juego queda en tiempo absoluto con los 4 pulsos de la cuenta adelante y se corre con `countIn`. `meter` = pulsos por compás (MIDI: el del archivo; el resto 4).
+- Primero se probaron **líneas de pulso** que bajaban con las notas; a Leandro no lo convencieron (28/10). Se reemplazaron por lo que eligió (los cuatro):
+  - **Ecualizador** (`eqUpdate`): un `AnalyserNode` (fft 1024) conectado a cada `songBus` (antes del volumen de música, así baila igual aunque la bajes), 9 bandas de 60 Hz a 8 kHz espaciadas en escala logarítmica, suben de golpe y bajan despacio. Barras del color de la etapa al 30 % con tapa blanca, en espejo a los costados del carril (graves al medio).
+  - **Anillo que se achica**: las dos próximas notas (a menos de 0,6 del recorrido) traen un anillo de radio 46 × (1 + 2,4 k) que coincide con el círculo al tocar. Siempre visible (ayuda a tocar).
+  - **Todo late**: fase dentro del pulso de la grilla (`beatNow`); destello blanco de pantalla (8 %), carril más claro, torta que salta desde el plato (+4,5 %), Sofi sube 7 px; ×1,6 en el primer tiempo del compás; Dina se balancea al pulso (izquierda/derecha según el tiempo). Si el teléfono pide menos movimiento (`prefers-reduced-motion`), la mitad.
+  - **Metrónomo**: `meter` luces debajo de la barra de progreso; la del tiempo actual, del color de la etapa y latiendo.
+- `save.set.viz` (1 por defecto), chip **✨ Visualizador** en Ajustes → Ver al jugar (apaga ecualizador, latido y metrónomo; el anillo queda).
+- Prueba en `juego.py`: el ecualizador se mueve y el metrónomo marca el tiempo.
+- **Pausa con más margen (también 0.11):** Leandro notó que al terminar el 3-2-1 Dina ya estaba en el círculo (la canción seguía justo en el pulso donde estaba la próxima nota). Ahora `countIn` busca en la grilla el próximo pulso `tb` y hace volver la canción desde `tr`, R pulsos antes (R = máx(2, ⌈1,2 s / pulso⌉)), así entre el final de la cuenta y la próxima nota hay al menos 1,2 s y se vuelve a escuchar ese pedacito. Las notas ya tocadas no reaparecen (están marcadas). La música de archivo se vuelve a arrancar desde `tr` (se borran arranques viejos para no duplicar). Prueba: "al terminar la cuenta, la próxima nota llega en 1,25 s" (Tranqui).
+
 ## Pendientes e ideas
+- **Para más adelante (Leandro, 26/10): multijugador con amigos.** Primero refinar el juego. Después: desafíos por enlace (la canción compuesta viaja en el enlace; para MIDI/mp3, una "huella" del archivo, que no se sube) y un modo de hasta 4 amigos que se vean a la vez, cada uno con su personaje y su puntaje toque a toque, al estilo Just Dance (empezar con "fantasmas" grabados, sin servidor). Más tarde, ranking en línea por canción con inicio de sesión de Google (junto con Dina Run).
 1. Que Sofía dibuje el silbato y el rociador (hoy son provisorios, hechos con código).
 2. En Dina Run: botón para abrir Dina Beat y escuchar el evento `storage` (ver 0.4).
 3. Inicio de sesión con Google para guardar el progreso en la nube (Dina Run y Dina Beat juntos; necesita una base de datos, por ejemplo Firebase). Hoy cada juego guarda solo en el dispositivo y navegador.
 4. Probarlo con amigos y ajustar dificultad de ¡Miau-loca!.
 5. Guardar el último archivo de música en el dispositivo (IndexedDB) para no tener que elegirlo de nuevo.
-6. Probar la detección de golpes con canciones reales de distintos estilos.
+6. Probar la detección de golpes con canciones reales de distintos estilos (hecho con una de city pop en mp3 y MIDI; faltan sin batería, con cambios de tempo, muy rápidas o muy lentas, y sincopadas).
+7. Más ganas de repetir: aviso al llegar a 10/25/50 de combo, fondo que se anime más cuanto mejor vas y calificación final (S, A, B…).
