@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.12
+Última actualización: 28/10/2026 · versión 0.13
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v14; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v15; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -146,6 +146,14 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - El emoji ⏸ se ve como "‖" en algunos teléfonos: no usarlo en textos.
 - Pruebas: `tamanos.py` revisa también `news` (y deja `pruebas/s_news.png`); `juego.py` revisa jugador nuevo / viejo / que no vuelva a salir / desde Ajustes.
 
+## Versión 0.13 — calificación, combos y archivos guardados
+- **Calificación** `gradeOf(acc)`: S ≥ 95 %, A ≥ 88 %, B ≥ 75 %, C ≥ 60 %, D (precisión = (perfectos + bien × 0,5) / notas). Solo si ganaste. Sello `#grade` en resultados; la mejor se guarda (`bestGrade`) en `save.grade[i]` (etapas), `c.grade` (compuestas) y en el registro del archivo. `#resFc` "✨ ¡Sin fallos!" si ganaste sin fallos.
+- **Avisos de combo** `comboMile`: 10, 25, 50, 75, 100 y después cada 50 → `comboParty` (texto, confeti de 28 puntos, arpegio `sCombo`).
+- **Racha** `heat` (0 a 1 = combo/40, sube despacio y baja rápido al fallar; la mitad si el teléfono pide menos movimiento): fondo y rayas del piso más rápidos (`bgX`, `stX`), brillo radial del color de la etapa alrededor del círculo y chispitas que suben (`sparks`, hasta 90). El 🔥 del HUD crece un poco.
+- **Archivos guardados** en IndexedDB `dinaBeat.files` (propia de Dina Beat): almacén `meta` ({id, name, kind, size, added, last, best, grade, part}) y `data` (bytes del archivo, clave = id). id = `arch:<bytes>:<nombre>` (el mismo archivo no se duplica). Se guarda después de leerlo bien (`openBuf`); si no hay lugar, se juega igual y avisa. Pide `navigator.storage.persist()`. En Tus canciones aparecen primero (🎧 música / 🎼 MIDI, más recientes arriba) con ▶ y 🗑 (confirma). Al jugar se vuelve a decodificar y analizar (no se guarda el análisis). La fila "repetir archivo" solo aparece si no se pudo guardar.
+- Arreglo: `.row[hidden]` no se ocultaba (la regla `display:flex` le ganaba); en Tus canciones se veía el botón de repetir vacío.
+- Pruebas en `juego.py`: archivos guardados que siguen al recargar, se juegan, guardan calificación y se borran; calificaciones y combos; racha durante el juego.
+
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
 
@@ -155,6 +163,6 @@ No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego 
 2. En Dina Run: botón para abrir Dina Beat y escuchar el evento `storage` (ver 0.4).
 3. Inicio de sesión con Google para guardar el progreso en la nube (Dina Run y Dina Beat juntos; necesita una base de datos, por ejemplo Firebase). Hoy cada juego guarda solo en el dispositivo y navegador.
 4. Probarlo con amigos y ajustar dificultad de ¡Miau-loca!.
-5. Guardar el último archivo de música en el dispositivo (IndexedDB) para no tener que elegirlo de nuevo.
+5. ~~Guardar los archivos de música en el dispositivo~~ (hecho en 0.13).
 6. Probar la detección de golpes con canciones reales de distintos estilos (hecho con una de city pop en mp3 y MIDI; faltan sin batería, con cambios de tempo, muy rápidas o muy lentas, y sincopadas).
-7. Más ganas de repetir: aviso al llegar a 10/25/50 de combo, fondo que se anime más cuanto mejor vas y calificación final (S, A, B…).
+7. ~~Más ganas de repetir: avisos de combo, fondo con la racha y calificación final~~ (hecho en 0.13).

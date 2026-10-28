@@ -85,6 +85,7 @@ a.btn{text-decoration:none;display:inline-block}
 .btn.verde{background:#2fb383;box-shadow:0 4px 0 #1d7d5a}
 button:focus-visible,input:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.row[hidden]{display:none}
 .how{font-size:15px;max-width:330px;margin:0;line-height:1.35}
 .cred{font-size:12px;opacity:.75;max-width:340px;margin:0}
 .ico{position:fixed;top:max(10px,env(safe-area-inset-top));border:0;background:#fff;border-radius:50%;width:42px;height:42px;font-size:20px;box-shadow:0 3px 0 var(--sombra);cursor:pointer;z-index:5}
@@ -147,6 +148,16 @@ label.btn{display:inline-block}
 .pages button{border:0;border-radius:10px;padding:5px 9px;font:700 13px Fredoka,sans-serif;background:var(--rosa2);color:var(--tinta);cursor:pointer;position:relative}
 .pages button[aria-pressed=true]{background:var(--rosa);color:#fff}
 .pages button.has::after{content:'';position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#2fb383}
+/* calificación final */
+.card.res{position:relative}
+.grade{position:absolute;top:10px;right:12px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 36px Fredoka,sans-serif;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18),0 0 0 3px #fff;transform:rotate(-8deg);animation:stamp .55s cubic-bezier(.2,1.6,.4,1) .35s both}
+.grade[hidden]{display:none}
+.gS{background:linear-gradient(135deg,#ffd84d,#ff8a3d);text-shadow:0 2px 0 #c96a1f}.gA{background:var(--rosa)}.gB{background:var(--vio)}.gC{background:#2fb383}.gD{background:#b9a3b0}
+@keyframes stamp{0%{transform:scale(2.4) rotate(-24deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+.fc{font-size:14px;font-weight:700;color:#e86a1a;margin-top:-6px}
+.song .gmini{background:var(--rosa);color:#fff}
+.gmini{display:inline-block;min-width:19px;border-radius:7px;background:#fff;color:var(--tinta);font-size:12px;font-weight:700;text-align:center;margin-left:3px;padding:0 3px}
+@media (prefers-reduced-motion:reduce){.grade{animation:none}}
 /* novedades */
 #news .card{width:min(420px,100%);max-height:100%;min-height:0}
 #newsList{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;padding-right:2px}
@@ -227,7 +238,7 @@ label.btn{display:inline-block}
     <input type="file" id="fileIn" class="vh">
     <p id="fileStatus"></p>
     <div class="row" id="replayRow" hidden><button class="btn sec sm" id="replayFile"></button></div>
-    <p class="nota">Sirve música (mp3, m4a, wav, ogg) o una partitura MIDI (.mid). El archivo se lee solo en este dispositivo y no se sube a ningún lado. Usá canciones que tengas permiso para usar.</p>
+    <p class="nota">Sirve música (mp3, m4a, wav, ogg) o una partitura MIDI (.mid). Queda guardada solo en este dispositivo para volver a jugarla, y no se sube a ningún lado. Usá canciones que tengas permiso para usar.</p>
     <div class="row"><button class="btn sec" id="mineBack">← Volver</button></div>
   </div>
 </section>
@@ -266,10 +277,12 @@ label.btn{display:inline-block}
 
 <section class="scr" id="res" hidden>
   <div class="card res">
+    <div class="grade" id="grade" hidden aria-label="Calificación"></div>
     <img class="resimg" id="resImg" src="assets/sofi.webp" alt="">
     <div class="globo" id="globo" hidden>miau… ¡la torta era mía!</div>
     <h2 id="resT">¡Torta a salvo!</h2>
     <div class="stars" id="stars">🍓🍓🍓</div>
+    <div class="fc" id="resFc" hidden>✨ ¡Sin fallos!</div>
     <div class="big" id="resScore">0</div>
     <div class="stats" id="stats"></div>
     <p class="nota" id="resRun" style="text-align:center" hidden></p>
@@ -287,7 +300,7 @@ addEventListener('resize',resize);resize();
 
 /* ---------- guardado (solo en este dispositivo) ---------- */
 const KEY='sofiSilbato.v1';
-let save={best:[0,0,0],stars:[0,0,0],open:1,muted:false,tool:'spray',set:{music:70,sfx:80,lat:0,meow:1,smooth:1,fps:0,viz:1},diff:1,songs:[]};
+let save={best:[0,0,0],stars:[0,0,0],grade:['','',''],open:1,muted:false,tool:'spray',set:{music:70,sfx:80,lat:0,meow:1,smooth:1,fps:0,viz:1},diff:1,songs:[]};
 const firstTime=(()=>{try{return localStorage.getItem(KEY)==null}catch(e){return false}})();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');Object.assign(save,s,{set:Object.assign(save.set,s.set||{})})}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}};
@@ -398,6 +411,7 @@ function sMeow(delay=.14){ // miau de Dina (hecho con código): "mi-a-u"
   out.connect(sfxBus);o.start(t);vib.start(t);o.stop(t+D+.02);vib.stop(t+D+.02);
 }
 function sBite(){if(!AC)return;const t=AC.currentTime;const o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(70,t+.25);g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+.32)}
+function sCombo(c){if(!AC)return;const t=AC.currentTime,up=c>=50?[784,988,1175,1568,1976]:[784,988,1175,1568];up.forEach((f,i)=>box(f,t+i*.055,.16,.09,sfxBus,'square'))}
 function sYay(){if(!AC)return;const t=AC.currentTime;[784,988,1175,1568].forEach((f,i)=>box(f,t+i*.08,.35,.12,sfxBus))}
 function toolSound(strong){save.tool==='spray'?sSpray(strong):sWhistle(strong)}
 
@@ -467,12 +481,12 @@ function thin(cand,gap){ // deja las notas más fuertes, separadas por al menos 
 /* ---------- estado ---------- */
 let state='menu',paused=false,cur=null,stage=0;
 let meter=4,grid=[],ev=[],evI=0,notes=[],songStart=0,songEnd=0,beat=.5,bufSrc=null;
-let score=0,combo=0,maxCombo=0,cnt={p:0,b:0,m:0},cake=CAKE_MAX,goodHits=0,fru=0;
+let score=0,combo=0,maxCombo=0,cnt={p:0,b:0,m:0},cake=CAKE_MAX,goodHits=0,fru=0,heat=0,sparks=[];
 let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[];
 
 function startSong(S){
   ac();cur=S;state='play';paused=false;counting=null;resuming=false;stopPreview();
-  score=0;combo=0;maxCombo=0;cnt={p:0,b:0,m:0};cake=CAKE_MAX;goodHits=0;fru=0;fx=[];flyers=[];pops=[];crumbs=[];drops=[];
+  score=0;combo=0;maxCombo=0;cnt={p:0,b:0,m:0};cake=CAKE_MAX;goodHits=0;fru=0;heat=0;sparks=[];fx=[];flyers=[];pops=[];crumbs=[];drops=[];
   if(!AC)fakeT0=performance.now();
   newSongBus();
   beat=S.beat;const base=now()+(AC?LAT():0)+.5;
@@ -518,6 +532,7 @@ function tap(){
     toolSound(true);if(best.type==='dina'||best.type==='pan')sMeow();
     best.st=1;const p=bd<=WIN_P;
     p?cnt.p++:cnt.b++;combo++;maxCombo=Math.max(maxCombo,combo);
+    if(comboMile(combo))comboParty(combo);
     const mult=1+Math.min(1,Math.floor(combo/10)*.1);
     score+=Math.round((p?100:50)*(best.type==='pan'?3:1)*mult);
     if(best.type==='fru')fru++;
@@ -533,6 +548,13 @@ function tap(){
     if(best&&bd<.3){combo=0;pop('¡Fuera de ritmo!','#9a7aa8')}
   }
   if(save.tool==='spray'){const sp=sofiPos(g);for(let k=0;k<14;k++){const a=Math.atan2(g.hy-sp.ny,g.cx-sp.nx)+(Math.random()-.5)*.35,v=9+Math.random()*6;drops.push({x:sp.nx,y:sp.ny,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1})}}
+}
+/* avisos de combo: 10, 25, 50, 75, 100 y después cada 50 */
+const comboMile=c=>[10,25,50,75,100].includes(c)||(c>100&&c%50===0);
+function comboParty(c){
+  pop('🔥 ¡'+c+' de combo!','#ff4f9a',48,30);sCombo(c);
+  const g=geo(),cols=['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d'];
+  for(let k=0;k<28;k++){const a=k/28*Math.PI*2,v=5+Math.random()*4;fx.push({x:g.cx,y:g.hy-60*g.u,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1.4,c:cols[k%cols.length]})}
 }
 function miss(n){
   n.st=2;cnt.m++;combo=0;
@@ -623,8 +645,14 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.12';
+const VERSION='0.13';
 const NEWS=[
+  {v:'0.13',fecha:'octubre 2026',titulo:'Calificación, combos y tus archivos guardados',items:[
+    ['🏅','Al terminar te ponemos nota: S, A, B, C o D según tu precisión. Tu mejor nota queda al lado de las 🍓. Y si no fallaste ninguna: ✨ ¡Sin fallos!'],
+    ['🔥','Aviso con confeti al llegar a 10, 25, 50 y 100 de combo.'],
+    ['✨','Cuanto más combo, más se anima el fondo: corre más rápido, brilla y suben chispitas.'],
+    ['💾','Las canciones que abrís (mp3 o MIDI) quedan guardadas en 🎵 Tus canciones para volver a jugarlas, con tu récord. Se guardan solo en tu teléfono.'],
+  ]},
   {v:'0.12',fecha:'octubre 2026',titulo:'Novedades',items:[
     ['📣','Cuando sale una versión nueva, el juego te cuenta qué cambió. Las ves cuando quieras en ⚙️ Ajustes → 📣 Novedades.'],
   ]},
@@ -747,9 +775,11 @@ function finish(win){
   ev.length=evI;stopSongBus();
   const tot=notes.length||1,acc=(cnt.p+cnt.b*.5)/tot;
   const stars=win?(acc>=.92?3:acc>=.75?2:1):0;
+  const grade=win?gradeOf(acc):'';
   let nb=false;
-  if(cur.stage!=null){const i=cur.stage;nb=score>save.best[i];if(nb)save.best[i]=score;save.stars[i]=Math.max(save.stars[i],stars);if(win&&save.open<i+2)save.open=Math.min(3,i+2)}
-  else if(cur.custom){const c=save.songs.find(x=>x.id===cur.custom);if(c){nb=score>(c.best||0);if(nb)c.best=score;c.stars=Math.max(c.stars||0,stars)}}
+  if(cur.stage!=null){const i=cur.stage;nb=score>save.best[i];if(nb)save.best[i]=score;save.stars[i]=Math.max(save.stars[i],stars);save.grade[i]=bestGrade(save.grade[i],grade);if(win&&save.open<i+2)save.open=Math.min(3,i+2)}
+  else if(cur.custom){const c=save.songs.find(x=>x.id===cur.custom);if(c){nb=score>(c.best||0);if(nb)c.best=score;c.stars=Math.max(c.stars||0,stars);c.grade=bestGrade(c.grade,grade)}}
+  else if(cur.fileId){nb=score>(lastFile&&lastFile.best||0);if(nb&&lastFile)lastFile.best=score;fileRec(cur.fileId,r=>{if(score>(r.best||0))r.best=score;r.grade=bestGrade(r.grade,grade)})}
   persist();
   const gave=runGive(fru);
   $('resRun').hidden=!gave;
@@ -760,10 +790,15 @@ function finish(win){
   $('stars').innerHTML=win?'🍓'.repeat(stars)+'<span style="opacity:.25;filter:grayscale(1)">🍓</span>'.repeat(3-stars):'🍰💨';
   $('resScore').innerHTML=score.toLocaleString('es-AR')+(nb&&score>0?'<span class="new">¡Récord!</span>':'');
   $('stats').innerHTML=`<div>✨ Perfectos<b>${cnt.p}</b></div><div>👍 Bien<b>${cnt.b}</b></div><div>😿 Fallos<b>${cnt.m}</b></div><div>🔥 Combo<b>${maxCombo}</b></div><div>🎯 Precisión<b>${Math.round(acc*100)}%</b></div><div>🍓 Frutillas<b>${fru}</b></div>`;
+  $('grade').hidden=!grade;$('grade').textContent=grade;$('grade').className='grade g'+grade;
+  $('resFc').hidden=!(win&&cnt.m===0&&notes.length>0);
   $('next').hidden=!(win&&cur.stage!=null&&cur.stage<2);
   if(win)sYay();
   setTimeout(()=>show('res',true),win?500:900);
 }
+/* calificación: S ≥ 95 % de precisión, A ≥ 88 %, B ≥ 75 %, C ≥ 60 %, si no D (solo si ganaste) */
+function gradeOf(acc){return acc>=.95?'S':acc>=.88?'A':acc>=.75?'B':acc>=.6?'C':'D'}
+function bestGrade(a,b){const o='SABCD';if(!a)return b||'';if(!b)return a;return o.indexOf(b)<o.indexOf(a)?b:a}
 $('next').onclick=()=>startStage(cur.stage+1);
 $('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else if(cur.custom)playComp(cur.custom);else startSong(cur.rebuild?cur.rebuild():cur)};
 $('home').onclick=()=>{if(cur&&cur.stage==null){state='menu';show('res',false);if(lastFile&&lastFile.kind==='midi'&&cur.rebuild)openParts();else openMine()}else toMenu()};
@@ -774,7 +809,7 @@ function renderMenu(){
   $('howTxt').innerHTML=`👆 Tocá la pantalla <b>justo</b> cuando Dina llega al círculo, al ritmo de la música, para espantarla con ${sp?'el rociador':'el silbato'}. ¡Si te atrasás, le da un mordisco a la torta!`;
   $('stages').innerHTML=STAGES.map((S,i)=>{
     const lock=i+1>save.open;
-    return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):S.sub)}</span></button>`}).join('')
+    return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):S.sub)}</span></button>`}).join('')
     +`<button class="st s4" id="mineB">🎵 Tus canciones<span>componé o abrí música</span></button>`;
   document.querySelectorAll('.st[data-i]').forEach(b=>b.onclick=()=>startStage(+b.dataset.i));
   $('mineB').onclick=openMine;
@@ -802,10 +837,13 @@ let delAsk=null;
 function openMine(){stopPreview();['menu','comp','res','parts'].forEach(id=>show(id,false));$('cfgB').hidden=true;renderMine();showFileReplay();show('mine',true)}
 function renderMine(){
   document.querySelectorAll('#diffSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.d===save.diff));
-  const L=save.songs;
-  $('songList').innerHTML=L.length?L.map(c=>`<div class="song"><span class="n">${esc(c.name)}<small>${c.bpm} pulsos · ${c.notes.filter(x=>x!=null).length} notas${c.best?' · 🏆 '+c.best.toLocaleString('es-AR'):''}</small></span>
+  const L=save.songs,fl=files.map(f=>`<div class="song"><span class="n">${f.kind==='midi'?'🎼':'🎧'} ${esc(f.name)}<small>${f.kind==='midi'?'MIDI':'Música'} · ${mb(f.size)}${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}${f.grade?'<b class="gmini">'+f.grade+'</b>':''}</small></span>
+    <button class="mini" data-fp="${esc(f.id)}" aria-label="Jugar">▶</button><button class="mini ${delAsk===f.id?'rojo':''}" data-fx="${esc(f.id)}" aria-label="Borrar">${delAsk===f.id?'¿Sí?':'🗑'}</button></div>`).join('');
+  $('songList').innerHTML=fl+(L.length?L.map(c=>`<div class="song"><span class="n">${esc(c.name)}<small>${c.bpm} pulsos · ${c.notes.filter(x=>x!=null).length} notas${c.best?' · 🏆 '+c.best.toLocaleString('es-AR'):''}${c.grade?'<b class="gmini">'+c.grade+'</b>':''}</small></span>
     <button class="mini" data-p="${c.id}" aria-label="Jugar">▶</button><button class="mini" data-e="${c.id}" aria-label="Editar">✏️</button><button class="mini ${delAsk===c.id?'rojo':''}" data-x="${c.id}" aria-label="Borrar">${delAsk===c.id?'¿Sí?':'🗑'}</button></div>`).join('')
-    :'<p class="empty">Todavía no compusiste ninguna. ¡Probá!</p>';
+    :(fl?'':'<p class="empty">Todavía no tenés canciones. ¡Componé una o abrí un archivo!</p>'));
+  $('songList').querySelectorAll('[data-fp]').forEach(b=>b.onclick=()=>{ac();playSaved(b.dataset.fp)});
+  $('songList').querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{const id=b.dataset.fx;if(delAsk===id){delAsk=null;fileDel(id)}else{delAsk=id;renderMine()}});
   $('songList').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>playComp(b.dataset.p));
   $('songList').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>openComp(b.dataset.e));
   $('songList').querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const id=b.dataset.x;if(delAsk===id){save.songs=save.songs.filter(c=>c.id!==id);persist();delAsk=null}else delAsk=id;renderMine()});
@@ -824,23 +862,83 @@ $('fileIn').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;ac();
   $('fileStatus').textContent='🎧 Escuchando la canción…';
   try{
-    const buf=await f.arrayBuffer();
-    const name=f.name.replace(/\.[^.]+$/,'').slice(0,30);
-    const isMidi=/\.midi?$/i.test(f.name)||new Uint8Array(buf,0,4).join()==='77,84,104,100';
-    if(isMidi){const m=parseMidi(buf);lastFile={kind:'midi',name,data:m,parts:midiParts(m),part:null}}
-    else{
-      if(!AC)throw new Error('sin audio');
-      const audio=await new Promise((res,rej)=>{const p=AC.decodeAudioData(buf.slice(0),res,rej);if(p&&p.then)p.then(res,rej)});
-      if(audio.duration<8)throw new Error('corta');
-      lastFile={kind:'audio',name,data:audio,an:analyze(audio)};
-    }
-    $('fileStatus').textContent='';if(lastFile.kind==='midi')openParts();else startSong(fileSong());
-  }catch(err){
-    console.warn(err);
-    $('fileStatus').textContent=err.message==='corta'?'😿 La canción es muy cortita (mínimo 8 segundos).':
-      err.message==='midi-vacio'?'😿 Ese MIDI no tiene notas para tocar.':'😿 No pude leer ese archivo. Probá con un mp3, m4a, wav u ogg, o un .mid.';
-  }
+    const buf=await f.arrayBuffer(),name=f.name.replace(/\.[^.]+$/,'').slice(0,30),id='arch:'+buf.byteLength+':'+name;
+    const old=files.find(x=>x.id===id);
+    await openBuf(buf,name,id,old);
+    // se guarda en el teléfono para volver a jugarla (no se sube a ningún lado)
+    const meta={id,name,kind:lastFile.kind,size:buf.byteLength,added:old?old.added:Date.now(),last:Date.now(),best:old?old.best||0:0,grade:old?old.grade||'':'',part:old?old.part||null:null};
+    const saved=await fileSave(meta,buf);
+    if(!saved){lastFile.id=null;$('fileStatus').textContent='😿 No hubo lugar para guardarla en el teléfono, pero la podés jugar igual.'}
+    else $('fileStatus').textContent='';
+    if(lastFile.kind==='midi')openParts();else startSong(fileSong());
+  }catch(err){fileErr(err)}
 };
+function fileErr(err){
+  console.warn(err);
+  $('fileStatus').textContent=err.message==='corta'?'😿 La canción es muy cortita (mínimo 8 segundos).':
+    err.message==='midi-vacio'?'😿 Ese MIDI no tiene notas para tocar.':err.message==='no-esta'?'😿 Esa canción ya no está guardada en este teléfono.':'😿 No pude leer ese archivo. Probá con un mp3, m4a, wav u ogg, o un .mid.';
+}
+/* lee los bytes de un archivo (recién elegido o guardado) y deja lastFile listo para jugar */
+async function openBuf(buf,name,id,meta){
+  const isMidi=/\.midi?$/i.test(name)||new Uint8Array(buf,0,4).join()==='77,84,104,100';
+  let F;
+  if(isMidi){const m=parseMidi(buf);F={kind:'midi',name,data:m,parts:midiParts(m),part:null};if(meta&&meta.part&&F.parts.some(x=>x.id===meta.part))F.part=meta.part}
+  else{
+    if(!AC)throw new Error('sin audio');
+    const audio=await new Promise((res,rej)=>{const p=AC.decodeAudioData(buf.slice(0),res,rej);if(p&&p.then)p.then(res,rej)});
+    if(audio.duration<8)throw new Error('corta');
+    F={kind:'audio',name,data:audio,an:analyze(audio)};
+  }
+  F.id=id;F.best=meta?meta.best||0:0;lastFile=F;
+}
+async function playSaved(id){
+  const m=files.find(x=>x.id===id);if(!m)return;
+  $('fileStatus').textContent='🎧 Escuchando la canción…';
+  try{
+    if(!(lastFile&&lastFile.id===id)){const buf=await fileBuf(id);if(!buf)throw new Error('no-esta');await openBuf(buf,m.name,id,m)}
+    $('fileStatus').textContent='';fileRec(id,r=>{r.last=Date.now()});
+    if(lastFile.kind==='midi')openParts();else startSong(fileSong());
+  }catch(err){fileErr(err)}
+}
+
+/* ---------- archivos guardados en el teléfono (IndexedDB) ----------
+   'meta': nombre, tipo, tamaño, récord y calificación (poquito, para la lista); 'data': los bytes del archivo.
+   Base propia de Dina Beat: no se mezcla con los otros juegos del sitio. Nada sale del dispositivo. */
+let files=[];
+const mb=n=>n>=1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,Math.round(n/1024))+' KB';
+let fdbP=null;
+function fdb(){return fdbP||(fdbP=new Promise((res,rej)=>{
+  if(!window.indexedDB)return rej(new Error('sin idb'));
+  const r=indexedDB.open('dinaBeat.files',1);
+  r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('meta',{keyPath:'id'});d.createObjectStore('data')};
+  r.onsuccess=()=>res(r.result);r.onerror=()=>{fdbP=null;rej(r.error)};
+}))}
+async function ftx(names,mode,fn){
+  const db=await fdb();
+  return new Promise((res,rej)=>{const t=db.transaction(names,mode),st={};names.forEach(n=>st[n]=t.objectStore(n));let out;
+    const r=fn(st);if(r)r.onsuccess=()=>{out=r.result};t.oncomplete=()=>res(out);t.onerror=t.onabort=()=>rej(t.error)});
+}
+async function loadFiles(){
+  try{files=(await ftx(['meta'],'readonly',st=>st.meta.getAll()))||[]}catch(e){files=[]}
+  files.sort((a,b)=>(b.last||0)-(a.last||0));if(!$('mine').hidden)renderMine();
+}
+async function fileSave(meta,buf){
+  try{await ftx(['meta','data'],'readwrite',st=>{st.meta.put(meta);st.data.put(buf,meta.id)});
+    try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){} // que el teléfono no la borre para hacer lugar
+    await loadFiles();return true}catch(e){console.warn(e);return false}
+}
+async function fileBuf(id){try{return await ftx(['data'],'readonly',st=>st.data.get(id))}catch(e){return null}}
+async function fileRec(id,fn){
+  if(!id)return;const m=files.find(x=>x.id===id);if(!m)return;fn(m);
+  try{await ftx(['meta'],'readwrite',st=>{st.meta.put(m)})}catch(e){}
+  files.sort((a,b)=>(b.last||0)-(a.last||0));if(!$('mine').hidden)renderMine();
+}
+async function fileDel(id){
+  try{await ftx(['meta','data'],'readwrite',st=>{st.meta.delete(id);st.data.delete(id)})}catch(e){}
+  if(lastFile&&lastFile.id===id)lastFile=null;
+  await loadFiles();renderMine();showFileReplay();
+}
+loadFiles();
 function fileSong(){
   const F=lastFile,D=DIFF[save.diff];let S;
   if(F.kind==='audio'){if(!F.cands)F.cands=audioCands(F.an,F.data.duration);
@@ -850,9 +948,10 @@ function fileSong(){
   else{const M=F.data,P=F.parts.find(x=>x.id===F.part)||F.parts[0];F.part=P.id;
     if(!P.ev)P.ev=midiEv(M,P.set,P.id==='ritmo');
     S={name:F.name,label:F.name+' · '+P.name,look:CUSTOM_LOOK,approach:D.approach,beat:60/M.bpm,ev:P.ev,times:chartPart(P,save.diff),len:M.len,grid:M.grid,meter:M.tsNum}}
-  S.rebuild=fileSong;return S;
+  S.rebuild=fileSong;S.fileId=F.id||null;return S;
 }
-function showFileReplay(){$('replayRow').hidden=!lastFile;if(lastFile)$('replayFile').textContent=(lastFile.kind==='midi'?'🎼 ':'▶ ')+lastFile.name+' · '+DIFF[save.diff].name}
+function showFileReplay(){$('replayRow').hidden=!lastFile||!!lastFile.id; // las guardadas ya están en la lista
+  if(lastFile)$('replayFile').textContent=(lastFile.kind==='midi'?'🎼 ':'▶ ')+lastFile.name+' · '+DIFF[save.diff].name}
 $('replayFile').onclick=()=>{if(!lastFile)return;if(lastFile.kind==='midi')openParts();else startSong(fileSong())};
 /* Elegir qué parte del MIDI tocar. Cada fila muestra cuántas notas son en la dificultad elegida y qué tan seguido vienen. */
 function openParts(){['mine','res'].forEach(id=>show(id,false));$('cfgB').hidden=true;renderParts();show('parts',true)}
@@ -862,7 +961,7 @@ function renderParts(){
   $('partsSong').textContent='🎵 '+F.name+' · '+Math.round(F.data.bpm)+' pulsos por minuto';
   $('partList').innerHTML=F.parts.map(P=>{const n=chartPart(P,save.diff).length,ps=n/Math.max(1,F.data.len),lv=ps<1.3?'⭐':ps<2.2?'⭐⭐':'⭐⭐⭐';
     return `<button class="part${F.part===P.id?' last':''}" data-p="${P.id}"><span class="em">${P.em}</span><span class="n">${esc(P.name)}<small>${esc(P.sub)} · ${n} notas</small></span><span class="lv">${lv}</span></button>`}).join('');
-  $('partList').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ac();F.part=b.dataset.p;startSong(fileSong())});
+  $('partList').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ac();F.part=b.dataset.p;fileRec(F.id,r=>{r.part=F.part});startSong(fileSong())});
 }
 document.querySelectorAll('#partDiff button').forEach(b=>b.onclick=()=>{save.diff=+b.dataset.d;persist();renderParts()});
 $('partsBack').onclick=()=>{show('parts',false);openMine()};
@@ -1122,7 +1221,7 @@ function sofiPos(g){
   const u=g.u,h=150*u,sx=g.cx-120*u,sy=g.cy+40*u-h;
   return save.tool==='spray'?{sx,sy,h,nx:sx+50*u,ny:sy+h*.42}:{sx,sy,h,nx:sx+28*u,ny:sy+h*.4};
 }
-let lastFrame=performance.now(),beatNow={ph:0,pk:0,bi:-1};
+let lastFrame=performance.now(),beatNow={ph:0,pk:0,bi:-1},bgX=0,stX=0;
 const calmMotion=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})(); // menos movimiento si el teléfono lo pide
 /* Fondo (cielo + nubes de Sofía) pintado una sola vez en una imagen aparte, 256 px más ancha que la pantalla
    (lo que mide un dibujo de nubes achicado), y en cada cuadro solo se desliza. Pintar las nubes sobre toda la
@@ -1162,11 +1261,15 @@ function draw(){
     for(const n of notes)if(!n.st&&t>n.t+WIN_B)miss(n);
     if(state==='play'&&now()>songEnd)finish(true);
   }
+  // racha: cuanto más combo, más rápido corre el fondo, más brilla y más chispitas (baja rápido al fallar)
+  {const tg=state==='play'&&!paused?Math.min(1,combo/40):state==='play'?heat:0;heat+=(tg-heat)*Math.min(1,(tg>heat?.03:.12)*dt)}
+  const hr=heat*(calmMotion?.5:1);
+  bgX=(bgX+dt*.278*(1+2.5*hr))%256;stX=(stX+dt*.83*(1+2*hr))%40;
   const bg=bgLayer(L);
-  if(bg)ctx.drawImage(bg,-((pf/60)%256),0,W+256,H); // cielo y nubes ya pintados: solo se desliza
+  if(bg)ctx.drawImage(bg,-bgX,0,W+256,H); // cielo y nubes ya pintados: solo se desliza
   else{const gr=ctx.createLinearGradient(0,0,0,H);gr.addColorStop(0,L.sky[0]);gr.addColorStop(1,L.sky[1]);ctx.fillStyle=gr;ctx.fillRect(0,0,W,H)}
   ctx.fillStyle=L.floor;ctx.fillRect(0,g.cy+40*u,W,H);
-  ctx.fillStyle='rgba(255,255,255,.25)';for(let x=-(pf/20%40);x<W;x+=40)ctx.fillRect(x,g.cy+40*u,20,6);
+  ctx.fillStyle='rgba(255,255,255,.25)';for(let x=-stX;x<W;x+=40)ctx.fillRect(x,g.cy+40*u,20,6);
   if(state==='menu'||!cur)return;
 
   // pulso actual según la grilla de la canción (sigue cambios de tempo y el pulso detectado en los mp3)
@@ -1185,6 +1288,13 @@ function draw(){
     ctx.globalAlpha=1;
     if(pk>.02){ctx.fillStyle=`rgba(255,255,255,${.08*pk})`;ctx.fillRect(0,0,W,H)} // destello en cada pulso
   }
+  if(hr>.03){ // brillo de racha alrededor del círculo y chispitas que suben del piso
+    const gl=ctx.createRadialGradient(g.cx,g.hy,30*u,g.cx,g.hy,190*u);gl.addColorStop(0,L.acc+'00');gl.addColorStop(.35,L.acc);gl.addColorStop(1,L.acc+'00');
+    ctx.globalAlpha=.32*hr;ctx.fillStyle=gl;ctx.fillRect(g.cx-190*u,g.hy-190*u,380*u,380*u);ctx.globalAlpha=1;
+    if(!paused&&sparks.length<90&&Math.random()<hr*.7*dt)sparks.push({x:Math.random()*W,y:g.cy+40*u,vy:-(1.2+Math.random()*2.4)*u,vx:(Math.random()-.5)*.6,r:(1.8+Math.random()*2.8)*u,l:1,c:Math.random()<.5?'#fff':L.acc});
+  }
+  for(const sp of sparks){if(!paused){sp.x+=sp.vx*dt;sp.y+=sp.vy*dt;sp.l-=.007*dt}ctx.globalAlpha=Math.max(0,sp.l)*.85;ctx.fillStyle=sp.c;ctx.beginPath();ctx.arc(sp.x,sp.y,sp.r,0,7);ctx.fill()}
+  sparks=sparks.filter(sp=>sp.l>0&&sp.y>-10);ctx.globalAlpha=1;
   ctx.fillStyle=`rgba(255,255,255,${.35+pk*.12})`;ctx.fillRect(g.cx-48*u,0,96*u,g.hy);
   ctx.save();ctx.translate(g.cx,g.hy);
   ctx.lineWidth=6*u;ctx.strokeStyle='rgba(255,255,255,.9)';ctx.setLineDash([10*u,7*u]);ctx.lineDashOffset=-pf/30;
@@ -1242,7 +1352,7 @@ function draw(){
     ctx.font=`700 ${Math.min(22*u,W/16)}px Fredoka`;ctx.strokeText(cur.label,g.cx,H*.2);ctx.fillStyle='#4a2a3f';ctx.fillText(cur.label,g.cx,H*.2)}
   const top=58;
   ctx.textAlign='right';ctx.font=`700 22px Fredoka`;ctx.fillStyle='#4a2a3f';ctx.fillText(score.toLocaleString('es-AR'),W-64,32);
-  if(combo>=3){ctx.font='700 15px Fredoka';ctx.fillStyle='#ff4f9a';ctx.fillText('🔥 '+combo,W-64,52)}
+  if(combo>=3){ctx.font=`700 ${15+Math.round(heat*5)}px Fredoka`;ctx.fillStyle='#ff4f9a';ctx.fillText('🔥 '+combo,W-64,52+heat*3)}
   ctx.textAlign='left';
   if(ok(IMG.torta)){ctx.font=`700 22px Fredoka`;const x0=80,sw=ctx.measureText(score.toLocaleString('es-AR')).width,sp=Math.max(11,Math.min(19,(W-64-sw-10-x0)/CAKE_MAX)),cs=sp-1;
     for(let i=0;i<CAKE_MAX;i++){ctx.globalAlpha=i<cake?1:.2;ctx.drawImage(IMG.torta,x0+i*sp,26-cs*.53,cs,cs*1.05)}}ctx.globalAlpha=1;
@@ -1288,7 +1398,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba')setTimeout(()=>{if(state==='me
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba')window.SS={get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba')window.SS={get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

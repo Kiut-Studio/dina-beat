@@ -1,5 +1,12 @@
 # Novedades
 
+## Versión 0.13 — octubre 2026: calificación, combos y archivos guardados
+- 🏅 Calificación al terminar (S, A, B, C o D según la precisión) con sello animado; la mejor queda en el menú y en Tus canciones. ✨ ¡Sin fallos! si no se escapó ninguna.
+- 🔥 Avisos con confeti y sonido al llegar a 10, 25, 50, 75 y 100 de combo (y después cada 50).
+- ✨ El fondo se anima con la racha: corre más rápido, brilla alrededor del círculo y suben chispitas; se calma al fallar.
+- 💾 Los mp3 y MIDI que abrís quedan guardados en el teléfono y aparecen en 🎵 Tus canciones, con récord, calificación y la última parte elegida del MIDI. Se borran con 🗑. No se suben a ningún lado.
+- Arreglado: en Tus canciones a veces se veía un botón vacío.
+
 ## Versión 0.12 — octubre 2026: novedades en el juego
 - 📣 Cuando sale una versión nueva, el juego muestra qué cambió (una sola vez). Se ven cuando quieras en ⚙️ Ajustes → 📣 Novedades. Si es tu primera vez jugando, no aparecen.
 
