@@ -158,6 +158,21 @@ async def main():
     await pg6.evaluate('()=>{for(const n of SS.notes)n.st=1;SS.cnt.p=SS.notes.length;SS.finish(true)}');await pg6.wait_for_timeout(1200)
     print('desafío de etapa:',e6,'· resultado:',await pg6.inner_text('#resVs'),'· botón:',await pg6.inner_text('#dare'))
     await pg6.screenshot(path=SP+'m_reto_fin.png');await pg6.close()
+    # 👻 fantasma: el desafío trae cómo tocó la otra persona; aparece al lado de la torta y suma con las mismas reglas
+    pg7=await b.new_page(viewport={'width':360,'height':640});pg7.on('pageerror',lambda e:errs.append(str(e)))
+    await pg7.goto('http://localhost:8766/#prueba');await pg7.wait_for_timeout(500)
+    l7=await pg7.evaluate('''async()=>{const S=SS.stageSong(0);let p=0;const t=S.times.map(x=>{const m=Math.round(x*1000),d=m-p;p=m;return d});
+      const h=S.times.map((x,i)=>i%5===4?999:i%3===0?110:20);
+      return SS.packReto({v:1,n:'Sofi',c:'deisy',s:5000,g:'B',a:80,d:1,ln:'',song:{k:'e',i:0},t,h})}''')
+    await pg7.evaluate('(l)=>SS.openRetoLink(l)',l7);await pg7.wait_for_timeout(300);await pg7.click('#retoGo')
+    await pg7.evaluate('()=>{window.bot=setInterval(()=>{const t=SS.now();for(const n of SS.notes){if(!n.st&&!n.sk&&Math.abs(n.t-t)<0.02){n.sk=1;SS.tap();break}}},5)}')
+    await pg7.wait_for_timeout(12000);await pg7.screenshot(path=SP+'m_fantasma.png')
+    g7=await pg7.evaluate('''()=>{const G=SS.ghost;if(!G)return null;let sc=0,c=0;for(let i=0;i<G.i;i++){const o=G.h[i];if(o===999){c=0;continue}c++;sc+=Math.round((Math.abs(o)<=75?100:50)*(SS.notes[i].type==="pan"?3:1)*(1+Math.min(1,Math.floor(c/10)*.1)))}return [G.i,G.score,sc,SS.score]}''')
+    await pg7.evaluate('()=>clearInterval(bot)')
+    # quien juega guarda cómo tocó cada nota para su propio desafío
+    h7=await pg7.evaluate('()=>{const R=SS.retoFromCur();return [R.h.length,R.t.length,R.h.slice(0,6)]}')
+    print('fantasma: notas que ya tocó, puntaje, puntaje recalculado, tu puntaje',g7,'· tu desafío lleva',h7)
+    await pg7.close()
     # Dina Run: personajes comprados allá y frutillas que pasan para allá
     pg2=await b.new_page(viewport={'width':360,'height':640});pg2.on('pageerror',lambda e:errs.append(str(e)))
     await pg2.add_init_script("if(!sessionStorage.x){sessionStorage.x=1;localStorage.setItem('sofiRunner.v1',JSON.stringify({total:1000,spent:400,owned:['sofi','deisy'],char:'deisy',outfit:'default',best:777}))}")

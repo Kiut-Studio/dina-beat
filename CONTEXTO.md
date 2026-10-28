@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.15
+Última actualización: 28/10/2026 · versión 0.16
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v18; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v19; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -97,7 +97,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Al principio de `index.html` de cada juego (antes de cargar el guardado) hay un bloque que recibe `#mudanza=`; es el mismo en los dos juegos y trata las cuatro claves: Dina Run gana si trae más frutillas juntadas (`total`); Dina Beat gana si trae más estrellas, y las canciones compuestas se juntan por `id`; `sofiRunner.music` y `tortaRunnerPlus.v1` solo se escriben si no hay. Muestra un aviso arriba unos segundos y borra el `#` de la dirección. Repetir no duplica.
 - Ojo: las páginas de mudanza se subieron antes que el receptor, así que quien entró por la dirección vieja entre el 26 y el 28/10 llegó sin su progreso. No se perdió nada: con volver a abrir el enlace viejo se lo trae.
 - Las claves de guardado y el `id` de las apps (`/dina-run/`, `/dina-beat/`) no cambian. Al cambiar de dominio el teléfono las ve como apps nuevas: hay que instalarlas de nuevo desde la dirección nueva.
-- Desde ahora Claude sube las versiones directo a GitHub (app de Claude instalada).
+- ~~Claude sube las versiones directo a GitHub~~ → desde el 28/10 (pedido de Leandro): **primero se publica una versión jugable de prueba (artifact) acá en el chat y se sube a una rama de prueba (`prueba`); recién cuando Leandro la aprueba se pasa a `main`** (que es lo que publica GitHub Pages).
 
 ## Versión 0.10 — cómo se arman las notas de un MIDI o un mp3
 - **Error de canciones mezcladas:** al salir de una canción con pausa → 🏠 Menú, `stopSongBus()` cortaba el sonido pero los eventos que faltaban (`ev` desde `evI`) quedaban; cuando el compositor abría un canal nuevo para ▶ Escuchar, `sched()` los volvía a programar. Arreglo: `sched()` solo programa si `state==='play'`, y "Menú" desde la pausa vacía `ev`. Prueba en `juego.py`: "MIDI no suena en el compositor".
@@ -177,6 +177,12 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Nombre del jugador en `save.name` (pantalla `#nameScr` la primera vez).
 - Pruebas: `juego.py` arma un desafío con test.wav en un "teléfono" y lo abre en otro sin la canción (rechaza test.mid, acepta test.wav, juega, queda la versión), desafío de etapa con comparación, y la tira (deslizar y envión). `tamanos.py` revisa también `res` (con comparación) y `reto`.
 - Compartir la música en sí: no se hace (regla del proyecto). Opciones habladas: MIDI dentro del enlace (son pocos KB) o SoundCloud (desde mayo de 2026 las claves de su API son autoservicio, pero solo con suscripción Artist Pro; sus reglas de reproducción no están claras). Pendiente de que Leandro decida.
+
+## Versión 0.16 — 👻 modo fantasma
+- `tap()` guarda en cada nota `off` (segundos antes/después). `retoFromCur` agrega `h`: por nota, milésimas (−200 a 200) o 999 si se escapó (solo si `notes` y `times` coinciden).
+- `startSong`: si `S.reto.h` tiene una por nota, arma `ghost` {h, i, score, combo, n, img}. En `draw()` cada nota del fantasma "se toca" en `t + h/1000` (o al cerrarse la ventana si fue 999) con `ghostStep`, que suma igual que el jugador (perfecto ±75 ms = 100, bien = 50, pancito ×3, +10 % cada 10 de combo hasta ×2).
+- Dibujo: personaje de quien desafía, espejado y transparente, a la derecha de la torta (`cx + 132·u`), con "👻 Nombre", su texto de acierto y un saltito al tocar. HUD: "👻 Nombre puntaje ▲ +dif / ▼ −dif" en x = 80, y = 58.
+- Prueba en `juego.py`: desafío de etapa con `h` armado (aciertos, tardes y fallos) → el puntaje del fantasma coincide con el recalculado; y el desafío propio lleva `h`.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).

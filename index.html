@@ -543,7 +543,7 @@ function thin(cand,gap){ // deja las notas más fuertes, separadas por al menos 
 let state='menu',paused=false,cur=null,stage=0;
 let meter=4,grid=[],ev=[],evI=0,notes=[],songStart=0,songEnd=0,beat=.5,bufSrc=null;
 let score=0,combo=0,maxCombo=0,cnt={p:0,b:0,m:0},cake=CAKE_MAX,goodHits=0,fru=0,heat=0,sparks=[];
-let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[];
+let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[],ghost=null;
 
 function startSong(S){
   ac();cur=S;state='play';paused=false;counting=null;resuming=false;stopPreview();
@@ -559,6 +559,8 @@ function startSong(S){
   const n=S.times.length;
   notes=S.times.map((t,i)=>({t:t+songStart,type:(i===Math.floor(n*.85)&&n>8)?'pan':(i%9===8?'fru':'dina'),st:0,wob:Math.random()*6}));
   songEnd=songStart+S.len+1.2;sched();
+  // 👻 fantasma: en un desafío que trae cómo tocó la otra persona (h: milésimas de cada nota, 999 = se le escapó)
+  const R=S.reto;ghost=R&&Array.isArray(R.h)&&R.h.length===notes.length?{h:R.h,i:0,score:0,combo:0,n:R.n,img:(CHARS.find(x=>x.id===R.c)||CHARS[0]).id,fl:0,txt:null}:null;
   grid=(S.grid||[]).map(x=>({t:x.t+songStart,bar:x.bar}));for(let k=1;k<=4;k++)grid.unshift({t:songStart-k*beat,bar:k===4}); // con los 4 de la cuenta
   meter=Math.max(2,Math.min(7,S.meter||4));{let bi=0;for(const x of grid){if(x.bar)bi=0;x.bi=bi++}} // tiempo dentro del compás, para el metrónomo
   ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr'].forEach(id=>show(id,false));
@@ -591,7 +593,7 @@ function tap(){
   const g=geo();
   if(best&&bd<=WIN_B){
     toolSound(true);if(best.type==='dina'||best.type==='pan')sMeow();
-    best.st=1;const p=bd<=WIN_P;
+    best.st=1;best.off=t-best.t;const p=bd<=WIN_P; // off: cuánto antes/después (para el fantasma de los desafíos)
     p?cnt.p++:cnt.b++;combo++;maxCombo=Math.max(maxCombo,combo);
     if(comboMile(combo))comboParty(combo);
     const mult=1+Math.min(1,Math.floor(combo/10)*.1);
@@ -616,6 +618,12 @@ function comboParty(c){
   pop('🔥 ¡'+c+' de combo!','#ff4f9a',48,30);sCombo(c);
   const g=geo(),cols=['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d'];
   for(let k=0;k<28;k++){const a=k/28*Math.PI*2,v=5+Math.random()*4;fx.push({x:g.cx,y:g.hy-60*g.u,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1.4,c:cols[k%cols.length]})}
+}
+/* el fantasma suma con las mismas reglas que vos: perfecto ±75 ms = 100, bien = 50, pancito ×3 y extra por combo */
+function ghostStep(n,o){
+  const G=ghost;if(o===999){G.combo=0;G.txt={s:'😿',l:1};return}
+  const p=Math.abs(o)<=75;G.combo++;G.score+=Math.round((p?100:50)*(n.type==='pan'?3:1)*(1+Math.min(1,Math.floor(G.combo/10)*.1)));
+  G.fl=1;G.txt={s:p?'¡Perfecto!':'¡Bien!',l:1};
 }
 function miss(n){
   n.st=2;cnt.m++;combo=0;
@@ -706,8 +714,13 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.15';
+const VERSION='0.16';
 const NEWS=[
+  {v:'0.16',fecha:'octubre 2026',titulo:'👻 Modo fantasma',items:[
+    ['👻','En los desafíos aparece el fantasma de quien te desafió al lado de la torta: toca en el mismo momento en que tocó esa persona, con su "¡Perfecto!" o "¡Bien!".'],
+    ['📊','Arriba ves su puntaje en vivo y si vas ganando ▲ o perdiendo ▼.'],
+    ['⚔️','Los desafíos nuevos guardan cómo tocaste cada nota, así tu amigo juega contra tu fantasma.'],
+  ]},
   {v:'0.15',fecha:'octubre 2026',titulo:'⚔️ Desafíos',items:[
     ['⚔️','Al terminar una canción tocá ⚔️ Desafiar: se arma un enlace con tu puntaje, tu nota y las notas que tocaste para mandarlo por WhatsApp.'],
     ['🏆','Quien lo abre toca exactamente las mismas notas y al final ven quién ganó. Después se puede ⚔️ Devolver el desafío.'],
@@ -1360,7 +1373,8 @@ function retoFromCur(){
   if(!song)return null;
   const ch=S.chart?chartsOf().find(x=>x.id===S.chart):null;
   return {v:1,n:save.name||'Alguien',c:charId(),s:score,g:S===cur&&$('grade').hidden?'':$('grade').textContent,a:Math.round((cnt.p+cnt.b*.5)/(notes.length||1)*100),
-    d:save.diff,ln:S.reto?S.reto.ln:ch?ch.name:'',song,t:encT(S.times)};
+    d:save.diff,ln:S.reto?S.reto.ln:ch?ch.name:'',song,t:encT(S.times),
+    h:notes.length===S.times.length?notes.map(n=>n.st===1?Math.max(-200,Math.min(200,Math.round((n.off||0)*1000))):999):undefined};
 }
 async function dare(){
   if(!save.name){$('nameIn').value='';show('res',false);show('nameScr',true);setTimeout(()=>$('nameIn').focus(),50);return}
@@ -1657,6 +1671,7 @@ function draw(){
   const g=geo(),u=g.u,t=judgeNow(),L=state==='menu'||!cur?STAGES[0]:cur.look;
   if(state==='play'&&!paused){
     for(const n of notes)if(!n.st&&t>n.t+WIN_B)miss(n);
+    if(ghost)while(ghost.i<notes.length){const n=notes[ghost.i],o=ghost.h[ghost.i];if(t<n.t+(o===999?WIN_B:o/1000))break;ghostStep(n,o);ghost.i++}
     if(state==='play'&&now()>songEnd)finish(true);
   }
   // racha: cuanto más combo, más rápido corre el fondo, más brilla y más chispitas (baja rápido al fallar)
@@ -1721,6 +1736,12 @@ function draw(){
     ctx.drawImage(PJ,sx-w/2,sy,w,h);
     if(save.tool==='spray')drawSpray(sx+34*u,sy+h*.55,u,blow);else drawWhistle(sx-2*u,sy+h*.44,u,blow);
   }
+  if(ghost){const G=ghost,im=IMG[G.img];G.fl=Math.max(0,G.fl-.05*dt);
+    if(ok(im)){const h=118*u,w=h*im.width/im.height,gx=g.cx+132*u,gy=g.cy+40*u-h-G.fl*8*u+Math.sin(beatPh*Math.PI*2)*1.5;
+      ctx.save();ctx.globalAlpha=.42+.35*G.fl;ctx.translate(gx,gy);ctx.scale(-1,1);ctx.drawImage(im,-w/2,0,w,h);ctx.restore(); // mirando hacia la torta
+      ctx.globalAlpha=.85;ctx.textAlign='center';ctx.font=`700 ${12*u+2}px Fredoka`;ctx.lineWidth=4;ctx.strokeStyle='#fff';ctx.strokeText('👻 '+G.n,gx,gy-6*u);ctx.fillStyle='#7a4fd0';ctx.fillText('👻 '+G.n,gx,gy-6*u);
+      if(G.txt&&G.txt.l>0){G.txt.l-=.03*dt;ctx.globalAlpha=Math.max(0,G.txt.l)*.85;ctx.font=`700 ${15*u+2}px Fredoka`;const ty=gy-24*u-(1-G.txt.l)*14;ctx.strokeText(G.txt.s,gx,ty);ctx.fillStyle='#7a4fd0';ctx.fillText(G.txt.s,gx,ty)}
+      ctx.globalAlpha=1}}
   for(const f of flyers){
     if(f.sit){f.a-=.012*dt}else{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=.45*dt;f.r+=f.vr*dt;if(f.y>H+100)f.a=0}
     const im=IMG[f.img==='dina'?'dina_corre':f.img==='fru'?'frutilla':f.img==='pan'?'pancito':f.img];if(!ok(im))continue;
@@ -1754,6 +1775,8 @@ function draw(){
   ctx.textAlign='left';
   if(ok(IMG.torta)){ctx.font=`700 22px Fredoka`;const x0=80,sw=ctx.measureText(score.toLocaleString('es-AR')).width,sp=Math.max(11,Math.min(19,(W-64-sw-10-x0)/CAKE_MAX)),cs=sp-1;
     for(let i=0;i<CAKE_MAX;i++){ctx.globalAlpha=i<cake?1:.2;ctx.drawImage(IMG.torta,x0+i*sp,26-cs*.53,cs,cs*1.05)}}ctx.globalAlpha=1;
+  if(ghost){const d=score-ghost.score;ctx.textAlign='left';ctx.font='700 14px Fredoka';ctx.fillStyle='#7a4fd0';const tx='👻 '+ghost.n+' '+ghost.score.toLocaleString('es-AR');ctx.fillText(tx,80,58);
+    if(d){ctx.fillStyle=d>0?'#1d8c64':'#e0405e';ctx.fillText((d>0?' ▲ +':' ▼ −')+Math.abs(d).toLocaleString('es-AR'),80+ctx.measureText(tx).width,58)}}
   const prog=Math.max(0,Math.min(1,(now()-songStart)/(songEnd-1.2-songStart)));
   ctx.fillStyle='rgba(255,255,255,.6)';ctx.beginPath();ctx.roundRect(16,top+18,W-32,8,4);ctx.fill();
   ctx.fillStyle=L.acc;ctx.beginPath();ctx.roundRect(16,top+18,(W-32)*prog,8,4);ctx.fill();
@@ -1798,7 +1821,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba')window.SS={toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba')window.SS={get ghost(){return ghost},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

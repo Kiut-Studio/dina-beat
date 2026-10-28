@@ -1,5 +1,10 @@
 # Novedades
 
+## Versión 0.16 — octubre 2026: 👻 modo fantasma
+- 👻 En un desafío aparece el fantasma de quien te desafió (su personaje, transparente, al lado de la torta): toca justo cuando esa persona tocó, con su "¡Perfecto!", "¡Bien!" o 😿.
+- 📊 Su puntaje se ve arriba en vivo, con ▲ si vas ganando o ▼ si vas perdiendo. Suma con las mismas reglas que vos.
+- ⚔️ Los desafíos nuevos llevan cómo tocaste cada nota (unas letras más en el enlace). Los enlaces de antes siguen andando, sin fantasma.
+
 ## Versión 0.15 — octubre 2026: ⚔️ desafíos
 - ⚔️ Botón Desafiar al terminar una canción: arma un enlace (WhatsApp o copiar) con tu nombre, personaje, puntaje, nota y las notas que tocaste. La primera vez pregunta cómo te llamás.
 - Quien abre el enlace ve "¡Sofi te desafía!", toca exactamente las mismas notas y al final ve la comparación (¡Le ganaste! / Te faltaron…) y puede ⚔️ Devolver el desafío.
