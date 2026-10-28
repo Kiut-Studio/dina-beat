@@ -1,5 +1,10 @@
 # Novedades
 
+## Versión 0.9 — octubre 2026: ¡Nos mudamos a Kiut Studio!
+- 🏠 Dina Beat ahora vive en **Kiut Studio**: https://kiut-studio.github.io/dina-beat/
+- 🐱 Si entrás por la dirección vieja, te trae solo con tus estrellas, tus canciones compuestas y las frutillas de Dina Run.
+- 🏃 El botón Dina Run lleva a la dirección nueva.
+
 ## Versión 0.8.4 — octubre 2026: arreglo para instalar
 - 📲 Identificación de app más clara, para que Chrome no la confunda con otro juego del mismo sitio al instalarla.
 

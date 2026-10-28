@@ -1,6 +1,6 @@
 # Dina Beat
 
-🎮 **Jugar:** https://leandroacasco.github.io/dina-beat/
+🎮 **Jugar:** https://kiut-studio.github.io/dina-beat/
 
 Juego de ritmo con los dibujos de Sofía. Dina baja a comerse la torta al ritmo de la música: tocá la pantalla **justo** cuando llega al círculo para espantarla con el rociador (¡Psst!) o el silbato (¡Piii!). Si te atrasás, le da un mordisco.
 
@@ -37,7 +37,7 @@ Juego de ritmo con los dibujos de Sofía. Dina baja a comerse la torta al ritmo 
 - **Fluidez:** se ve suave en pantallas de 90, 100, 120 Hz o más. Se puede limitar a 60 cuadros para ahorrar batería, y prender un 📊 contador de cuadros por segundo.
 
 ## Junto con Dina Run
-Dina Beat es hermano de [Dina Run](https://github.com/LeandroACasco/dina-run). Como los dos juegos están en el mismo sitio (`leandroacasco.github.io`):
+Dina Beat es hermano de [Dina Run](https://github.com/Kiut-Studio/dina-run). Como los dos juegos están en el mismo sitio (`kiut-studio.github.io`):
 - Podés tocar con los personajes que compraste en Dina Run (Deisy, Leandro, Nora, Cinthia; Sofi siempre).
 - Las frutillas que juntás en Dina Beat se suman a tu bolsa de Dina Run.
 

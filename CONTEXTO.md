@@ -1,9 +1,9 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 26/10/2026 · versión 0.8.4
+Última actualización: 28/10/2026 · versión 0.9
 
 ## Qué es
-**Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `LeandroACasco/dina-beat`, publicado en `leandroacasco.github.io/dina-beat/`. La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
+**Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
 
 Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada de *Break Whistle* (juego de ritmo de 3 etapas donde se toca un silbato a tiempo). Proyecto aparte para no complicar Dina Run; más adelante se puede enlazar desde su menú.
 
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-v1` (antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v12; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -33,7 +33,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Los dos juegos están en el mismo sitio (`leandroacasco.github.io`), así que comparten `localStorage`. Dina Beat **lee** `sofiRunner.v1` (o `tortaRunnerPlus.v1` si solo existe esa) y **solo escribe** su campo `total`.
 - **Personajes:** `CHARS` (Sofi, Deisy, Leandro, Nora, Cinthia). Se puede jugar con Sofi y con los que estén en `owned` de Dina Run. En el menú se miran todos con ‹ ›; los que no tenés se ven grises con "🔒 en Dina Run". El elegido se guarda en `save.char` de Dina Beat; si no hay, se usa el `char` de Dina Run. Si en Dina Run Sofi tiene el hoodie (`outfit` = `hoodie`), se usa `sofi_hoodie`. Los personajes no tienen habilidades acá: solo cambia el dibujo. Los dibujos se copiaron de `assets/` de Dina Run.
 - **Frutillas:** al terminar una partida (ganada o perdida), las frutillas juntadas (+1 frutilla, +5 pancito) se suman al `total` de Dina Run con `runGive()`, que lee el guardado justo antes de escribir. Si nunca jugaste Dina Run, se crea con `{total, cosm:['default','none']}` (el `cosm` evita que Dina Run regale los outfits viejos de la 0.2 por tener frutillas).
-- **Botón 🏃 Dina Run** en el menú, enlaza a `../sofi-runner/` y muestra la bolsa (`total` − `spent`). Si el repo pasa a llamarse `dina-run`, cambiar el `href` de `#runLink`.
+- **Botón 🏃 Dina Run** en el menú, enlaza a `../dina-run/` (desde la 0.9) y muestra la bolsa (`total` − `spent`).
 - Dina Beat se actualiza si Dina Run cambia en otra pestaña (evento `storage`) o al volver con "atrás" (`pageshow`).
 - **Para hacer en Dina Run** (no se toca desde acá): escuchar el evento `storage` de `sofiRunner.v1` y recargar `total`, `spent` y `owned`; si Dina Run queda abierto en otra pestaña con datos viejos y guarda, pisaría las frutillas que llegaron de Dina Beat. También el botón para abrir Dina Beat (`../dina-beat/`).
 - Pruebas: `juego.py` ahora también carga un guardado falso de Dina Run y revisa personaje, bolsa, candado y que las frutillas lleguen sin borrar otros datos.
@@ -87,6 +87,15 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Dina Run se mudó a `leandroacasco.github.io/dina-run/` (repo `LeandroACasco/dina-run`). La conexión entre juegos (personajes y frutillas) no cambia porque sigue siendo el mismo sitio.
 
 - **Instalación (0.7.3 / 0.8.4):** el `id` del manifest es una ruta absoluta (`/dina-run/`, `/dina-beat/`). Antes era `./?app=…`: Leandro vio en Android "No se puede instalar esta app" con Dina Run. La sospecha es que el `id` viejo seguía ligado a la instalación de Sofi Runner (misma cadena `?app=sofi-runner`) o que Chrome lo resolvía distinto; con la ruta absoluta no hay ambigüedad. Íconos separados en `any` y `maskable`. En Chromium de escritorio el juego daba "instalable" igual. Si vuelve a pasar: desinstalar los íconos viejos (Sofi Runner) y probar con ⋮ → Agregar a pantalla principal. **No** borrar los datos del sitio en Chrome: borraría las frutillas de todos los juegos.
+
+## Kiut Studio y la mudanza (versión 0.9)
+- Los juegos de Sofía y Leandro ahora son de la organización de GitHub **Kiut Studio** (`Kiut-Studio`; "kiut" es como ellos dicen *cute*; Sofía aprobó el nombre). Hub: `kiut-studio.github.io` (repo `Kiut-Studio/kiut-studio.github.io`). Torta Runner queda en la cuenta de Leandro (`leandroacasco.github.io/torta-runner/`) y aparece en el hub como edición especial.
+- Repos: `Kiut-Studio/dina-run` y `Kiut-Studio/dina-beat`, publicados en `kiut-studio.github.io/dina-run/` y `/dina-beat/`. Como están en el mismo sitio, siguen compartiendo guardado (personajes y frutillas).
+- **Mudanza del progreso:** el guardado vive por dirección, así que en la dirección vieja (`leandroacasco.github.io/dina-run/` y `/dina-beat/`) quedan repos chicos de mudanza en la cuenta de Leandro (`LeandroACasco/dina-run` y `dina-beat`): leen `sofiRunner.v1`, `sofiRunner.music`, `sofiSilbato.v1` y `tortaRunnerPlus.v1` y redirigen a la dirección nueva con `#mudanza=` (JSON en base64url; no pasa por ningún servidor). No borran nada de la dirección vieja. Su `sw.js` borra la copia sin conexión vieja y se da de baja.
+- Al principio de `index.html` de cada juego (antes de cargar el guardado) hay un bloque que recibe `#mudanza=`; es el mismo en los dos juegos y trata las cuatro claves: Dina Run gana si trae más frutillas juntadas (`total`); Dina Beat gana si trae más estrellas, y las canciones compuestas se juntan por `id`; `sofiRunner.music` y `tortaRunnerPlus.v1` solo se escriben si no hay. Muestra un aviso arriba unos segundos y borra el `#` de la dirección. Repetir no duplica.
+- Ojo: las páginas de mudanza se subieron antes que el receptor, así que quien entró por la dirección vieja entre el 26 y el 28/10 llegó sin su progreso. No se perdió nada: con volver a abrir el enlace viejo se lo trae.
+- Las claves de guardado y el `id` de las apps (`/dina-run/`, `/dina-beat/`) no cambian. Al cambiar de dominio el teléfono las ve como apps nuevas: hay que instalarlas de nuevo desde la dirección nueva.
+- Desde ahora Claude sube las versiones directo a GitHub (app de Claude instalada).
 
 ## Pendientes e ideas
 1. Que Sofía dibuje el silbato y el rociador (hoy son provisorios, hechos con código).
