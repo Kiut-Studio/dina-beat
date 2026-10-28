@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.13.1
+Última actualización: 28/10/2026 · versión 0.14
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v16; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v17; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -158,6 +158,14 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - `analyze()`: después de la búsqueda de a 0,5 ppm se afina en ±1,5 ppm de a 0,02 sumando la autocorrelación a 1, 2, 4 y 8 pulsos. Con una canción de Leandro (ILLIT, "NOT CUTE ANYMORE", 147 s) daba 98,5 y el pulso real (medido con bombo + clap) es ≈ 98,9; con 98,5 el pulso se corría.
 - Análisis de esa canción (no queda en el repo): bombo y clap parejos cada 0,3 s; el juego toma uno sí y uno no (el pulso, ~99 ppm) y en Normal el 97 % de las notas caen en el pulso y sobre golpes fuertes. Lo que se oye es la voz, que va sincopada: por eso "parece seguir otra batida". En el puente (~72 s) la canción se corre medio golpe y el "1" del compás (`audioGrid`, elegido una vez para toda la canción) queda cambiado en esa parte.
 - Idea en prueba: selector para mp3 como en MIDI (🥁 Batería / 🎤 Voz, separando la voz con filtrado armónico/percusivo). Se le mandaron a Leandro dos clips con clics para comparar.
+
+## Versión 0.14 — 🎙️ Estudio
+- Idea (28/10): los juegos grandes (Fortnite Festival, Guitar Hero, Beat Saber, osu!) arman las notas a mano; los que aceptan música propia (Audiosurf, Beat Hazard) lo hacen automático y se siente "ahí nomás". Dina Beat mezcla: automática como punto de partida y versiones hechas a mano. Es la base de los ⚔️ desafíos (lo próximo).
+- **"¿Qué querés tocar?"** (`#parts`, `pick={kind:'file'|'comp',id}`) ahora es para todas las canciones de Tus canciones: archivo de música → 🤖 Automática (`data-p="auto"`); MIDI → sus partes; compuesta → ✏️ Tus notas (`data-p="comp"`); y debajo **✋ Tus versiones** (▶ / 🎙️ editar / 🗑). Al volver de resultados (🏠) se vuelve acá. Abrir un archivo también lleva acá (antes un mp3 arrancaba directo).
+- **Versiones** `{id, name, t:[segundos desde el comienzo], made, best, grade}`: en archivos dentro del registro `meta.charts` de IndexedDB (`editCharts` → `fileRec`); en compuestas en `save.songs[i].charts`. `chartSong(ch)` arma la canción automática (`baseSong`) y le cambia `times` (la velocidad de bajada es la de la dificultad elegida); el puntaje va a la versión (`cur.chart`). Si se cambian las notas de una versión, su récord vuelve a cero.
+- **Estudio** (`#studio`, estado `ST`): `stStart(rec)` reproduce desde `ST.pos` con su propio canal (buffer del mp3 y eventos del MIDI/compuesta) y un clic (1568 Hz) en cada nota. Grabar: suena desde 2 s antes; cada toque guarda `now() − t0 − ajuste de ritmo`; al parar se reemplazan las notas viejas entre el punto de grabación y donde paraste. Tira (`#stTl`, `stDraw` desde `draw()`): 6 s visibles, forma del mp3 (`bufEnv`, cada 20 ms) o notas del MIDI, pulsos de la grilla, segundos. Arrastrar mueve la vista (o la nota elegida), tocar un lugar vacío mueve el cursor. `snapTimes`: al medio pulso más cercano de la grilla. Deshacer hasta 40 pasos. Mínimo 4 notas. "Volver" con cambios pide confirmar.
+- Ojo: el CSS global `canvas{position:fixed}` también afecta a la tira; `#stTl` lo pisa con `position:relative`.
+- Pruebas: `juego.py` graba tocando con los golpes reales de test.wav (14 de 14, error ≤ 8 ms), acomoda, guarda, juega la versión, vuelve a "qué tocar" y sigue después de recargar. `tamanos.py` revisa `parts` y `studio` en los 5 tamaños (deja `pruebas/s_estudio.png`).
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).

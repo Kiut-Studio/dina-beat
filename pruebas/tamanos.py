@@ -16,5 +16,15 @@ async def main():
       if (w,h)==(360,640):  # captura de las novedades
         await pg.evaluate("()=>{document.getElementById('calBack').click();document.getElementById('newsB').click()}");await pg.wait_for_timeout(100)
         await pg.screenshot(path='pruebas/s_news.png')
+      # pantallas de una canción: "¿Qué querés tocar?" y 🎙️ Estudio (con una canción de ejemplo del compositor)
+      await pg.goto('http://localhost:8766/#prueba');await pg.reload();await pg.wait_for_timeout(300)
+      await pg.evaluate("()=>{for(const id of ['calBack','cfgOk'])document.getElementById(id).click()}")
+      await pg.click('#mineB');await pg.click('#newSong');await pg.click('#compEx');await pg.click('#compBack');await pg.wait_for_timeout(100)
+      await pg.click('#songList [data-p]');await pg.wait_for_timeout(100)
+      for scr,act in [('parts',None),('studio','#studioB')]:
+        if act: await pg.click(act);await pg.wait_for_timeout(150)
+        r=await pg.evaluate(f"""()=>{{const s=document.getElementById('{scr}');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}}""")
+        if any(r): print(w,h,scr,'desliza/ancho/oculta',r)
+      if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_estudio.png')
     print('ok',errs);await b.close()
 asyncio.run(main())

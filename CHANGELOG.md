@@ -1,5 +1,10 @@
 # Novedades
 
+## Versión 0.14 — octubre 2026: 🎙️ Estudio
+- 🎙️ Estudio para armar tus propias notas en cualquier canción tuya (mp3, MIDI o compuesta): suena la canción y tocás el botón grande donde querés que aparezca Dina. Suenan 2 segundos antes para agarrar el ritmo, y grabar de nuevo un pedazo reemplaza solo ese pedazo.
+- Tira de la canción con su forma, los pulsos y tus notas: deslizá para moverte, tocá una nota para elegirla y arrastrala, ＋ Nota, 🗑, 🧲 Acomodar (pega las notas a medio pulso), ↩️ Deshacer, ▶ Escuchar con un clic en cada nota y 🤖 Automática para arrancar desde las notas del juego.
+- 🎼 Al elegir una canción de Tus canciones se ve qué querés tocar: las notas automáticas (o las partes del MIDI, o las de tu composición) y tus versiones hechas a mano, con récord y calificación propios.
+
 ## Versión 0.13.1 — octubre 2026
 - 🎧 Tempo de los mp3 más preciso: antes se buscaba de a medio pulso por minuto y en algunas canciones el pulso se iba corriendo (por ejemplo, 98,5 en vez de 98,9).
 
