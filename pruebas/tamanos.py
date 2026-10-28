@@ -26,5 +26,15 @@ async def main():
         r=await pg.evaluate(f"""()=>{{const s=document.getElementById('{scr}');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}}""")
         if any(r): print(w,h,scr,'desliza/ancho/oculta',r)
       if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_estudio.png')
+      # resultados (con comparación de desafío) y pantalla de desafío recibido
+      await pg.evaluate("()=>{SS.save.name='Sofi';const R={v:1,n:'Sofi',c:'sofi',s:12400,g:'S',a:97,d:1,ln:'',song:{k:'e',i:0},t:[]};SS.startSong(Object.assign(SS.stageSong(0),{reto:R}));for(const n of SS.notes)n.st=1;SS.cnt.p=SS.notes.length;SS.finish(true)}");await pg.wait_for_timeout(1300)
+      for scr in ['res']:
+        r=await pg.evaluate(f"""()=>{{const s=document.getElementById('{scr}');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}}""")
+        if any(r): print(w,h,scr,'desliza/ancho/oculta',r)
+      if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_res.png')
+      await pg.evaluate("async()=>{const R=SS.retoFromCur();R.song={k:'f',name:'Una canción larga de prueba',kind:'audio',fp:'x',size:1,dur:200};document.getElementById('res').hidden=true;await SS.openRetoLink(await SS.packReto(R))}");await pg.wait_for_timeout(200)
+      r=await pg.evaluate("()=>{const s=document.getElementById('reto');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}")
+      if any(r): print(w,h,'reto','desliza/ancho/oculta',r)
+      if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_reto.png')
     print('ok',errs);await b.close()
 asyncio.run(main())

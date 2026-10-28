@@ -1,5 +1,12 @@
 # Novedades
 
+## Versión 0.15 — octubre 2026: ⚔️ desafíos
+- ⚔️ Botón Desafiar al terminar una canción: arma un enlace (WhatsApp o copiar) con tu nombre, personaje, puntaje, nota y las notas que tocaste. La primera vez pregunta cómo te llamás.
+- Quien abre el enlace ve "¡Sofi te desafía!", toca exactamente las mismas notas y al final ve la comparación (¡Le ganaste! / Te faltaron…) y puede ⚔️ Devolver el desafío.
+- La música no viaja en el enlace: las etapas y las canciones compuestas van enteras (son solo notas); para un mp3 o MIDI va una huella y tu amigo elige la misma canción de su teléfono (el juego revisa que sea la misma o muy parecida). Las notas del desafío le quedan como versión para practicar.
+- 🎞️ Estudio: la tira se desliza como en un editor de video (el cursor queda al medio, deslizás para avanzar o retroceder, con un pedacito de sonido y envión), con dos dedos acercás o alejás; en la PC, rueda y Ctrl + rueda.
+- Resultados más compactos en pantallas bajas.
+
 ## Versión 0.14 — octubre 2026: 🎙️ Estudio
 - 🎙️ Estudio para armar tus propias notas en cualquier canción tuya (mp3, MIDI o compuesta): suena la canción y tocás el botón grande donde querés que aparezca Dina. Suenan 2 segundos antes para agarrar el ritmo, y grabar de nuevo un pedazo reemplaza solo ese pedazo.
 - Tira de la canción con su forma, los pulsos y tus notas: deslizá para moverte, tocá una nota para elegirla y arrastrala, ＋ Nota, 🗑, 🧲 Acomodar (pega las notas a medio pulso), ↩️ Deshacer, ▶ Escuchar con un clic en cada nota y 🤖 Automática para arrancar desde las notas del juego.

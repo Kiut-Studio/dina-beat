@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.14
+Última actualización: 28/10/2026 · versión 0.15
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v17; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v18; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -166,6 +166,17 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - **Estudio** (`#studio`, estado `ST`): `stStart(rec)` reproduce desde `ST.pos` con su propio canal (buffer del mp3 y eventos del MIDI/compuesta) y un clic (1568 Hz) en cada nota. Grabar: suena desde 2 s antes; cada toque guarda `now() − t0 − ajuste de ritmo`; al parar se reemplazan las notas viejas entre el punto de grabación y donde paraste. Tira (`#stTl`, `stDraw` desde `draw()`): 6 s visibles, forma del mp3 (`bufEnv`, cada 20 ms) o notas del MIDI, pulsos de la grilla, segundos. Arrastrar mueve la vista (o la nota elegida), tocar un lugar vacío mueve el cursor. `snapTimes`: al medio pulso más cercano de la grilla. Deshacer hasta 40 pasos. Mínimo 4 notas. "Volver" con cambios pide confirmar.
 - Ojo: el CSS global `canvas{position:fixed}` también afecta a la tira; `#stTl` lo pisa con `position:relative`.
 - Pruebas: `juego.py` graba tocando con los golpes reales de test.wav (14 de 14, error ≤ 8 ms), acomoda, guarda, juega la versión, vuelve a "qué tocar" y sigue después de recargar. `tamanos.py` revisa `parts` y `studio` en los 5 tamaños (deja `pruebas/s_estudio.png`).
+
+## Versión 0.15 — ⚔️ desafíos y tira tipo editor de video
+- **Tira del Estudio** (pedido de Leandro: "como en CapCut"): el cursor queda fijo al medio (`stView` = `pos − span/2`), deslizar mueve `ST.pos` con un pedacito de sonido (`stGrain`, 70 ms del mp3) y envión al soltar (`ST.fling`); dos dedos cambian `ST.span` (2 a 24 s); tocar mientras suena la para ahí; rueda = mover, Ctrl + rueda = zoom. Arrastrar una nota la corre; tocar sin deslizar elige la nota o lleva el cursor ahí.
+- **Desafíos**: botón `#dare` en resultados → `retoFromCur()` → `packReto` (JSON → deflate-raw con `CompressionStream` si hay → base64url; prefijo `z` comprimido, `j` sin comprimir) → `…/dina-beat/#reto=…` con `navigator.share` o copiado. El `#` no llega a ningún servidor.
+- Formato `{v:1, n:nombre, c:personaje, s:puntaje, g:nota, a:precisión, d:dificultad, ln:nombre de la versión, song, t:[diferencias en ms]}`; `song`: etapa `{k:'e',i}`, compuesta `{k:'c',id,name,bpm,drums,notes}` (viaja entera), archivo `{k:'f',name,kind,fp,size,dur,part}`. Las notas viajan siempre (los dos tocan lo mismo aunque cambie el algoritmo automático). Con 39 notas el enlace tiene ~220 letras.
+- **Huella** `fingerprint(buf)`: tamaño en base 36 + FNV-1a de todos los bytes (sin `crypto.subtle`, que no anda fuera de https). Se guarda en `meta.fp` y `meta.dur` (los archivos viejos la reciben al abrirlos).
+- **Recibir** (`#reto=` al cargar, se borra de la dirección; las novedades no se abren encima): pantalla `#reto` con el personaje y el puntaje. Archivo: se busca por huella (o por tamaño si no tiene); si no está, se elige con `#retoFile` y se acepta si es la misma huella o si dura lo mismo ±1,5 s (avisa que puede haber notas corridas). Compuesta: se agrega a Tus canciones si no está igual. Las notas quedan como versión "⚔️ Nombre" (clave `key` para no repetir). Se juega con `retoSong` (el puntaje no se guarda como récord; la comparación va en `#resVs`) y el botón pasa a "⚔️ Devolver".
+- `storeFile(buf,name)`: guardar un archivo en Tus canciones (lo usan abrir archivo y los desafíos; conserva las versiones si ya estaba).
+- Nombre del jugador en `save.name` (pantalla `#nameScr` la primera vez).
+- Pruebas: `juego.py` arma un desafío con test.wav en un "teléfono" y lo abre en otro sin la canción (rechaza test.mid, acepta test.wav, juega, queda la versión), desafío de etapa con comparación, y la tira (deslizar y envión). `tamanos.py` revisa también `res` (con comparación) y `reto`.
+- Compartir la música en sí: no se hace (regla del proyecto). Opciones habladas: MIDI dentro del enlace (son pocos KB) o SoundCloud (desde mayo de 2026 las claves de su API son autoservicio, pero solo con suscripción Artist Pro; sus reglas de reproducción no están claras). Pendiente de que Leandro decida.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
