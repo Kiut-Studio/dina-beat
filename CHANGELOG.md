@@ -1,5 +1,8 @@
 # Novedades
 
+## Versión 0.13.1 — octubre 2026
+- 🎧 Tempo de los mp3 más preciso: antes se buscaba de a medio pulso por minuto y en algunas canciones el pulso se iba corriendo (por ejemplo, 98,5 en vez de 98,9).
+
 ## Versión 0.13 — octubre 2026: calificación, combos y archivos guardados
 - 🏅 Calificación al terminar (S, A, B, C o D según la precisión) con sello animado; la mejor queda en el menú y en Tus canciones. ✨ ¡Sin fallos! si no se escapó ninguna.
 - 🔥 Avisos con confeti y sonido al llegar a 10, 25, 50, 75 y 100 de combo (y después cada 50).

@@ -645,8 +645,11 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.13';
+const VERSION='0.13.1';
 const NEWS=[
+  {v:'0.13.1',fecha:'octubre 2026',titulo:'Pulso más justo en los mp3',items:[
+    ['🎧','El juego calcula el tempo de los mp3 con más precisión, así el pulso no se va corriendo a lo largo de la canción.'],
+  ]},
   {v:'0.13',fecha:'octubre 2026',titulo:'Calificación, combos y tus archivos guardados',items:[
     ['🏅','Al terminar te ponemos nota: S, A, B, C o D según tu precisión. Tu mejor nota queda al lado de las 🍓. Y si no fallaste ninguna: ✨ ¡Sin fallos!'],
     ['🔥','Aviso con confeti al llegar a 10, 25, 50 y 100 de combo.'],
@@ -988,6 +991,12 @@ function analyze(buf){
   for(let bpm=70;bpm<=180;bpm+=.5){const l=60/bpm*fps,li=Math.floor(l),fr=l-li;let s=0;
     for(let f=0;f+li+1<F;f+=2)s+=od[f]*(od[f+li]*(1-fr)+od[f+li+1]*fr);
     const w=Math.exp(-.5*(Math.log2(bpm/120)/.7)**2);if(s*w>bv){bv=s*w;best=bpm}}
+  // afinar el tempo: de a 0,5 ppm no alcanza (con 1 % de error el pulso se corre medio golpe en un minuto). Se busca en
+  // ±1,5 ppm de a 0,02 comparando la canción consigo misma 1, 2, 4 y 8 pulsos después: los saltos largos marcan el tempo más fino.
+  const acAt=l=>{const li=Math.floor(l),fr=l-li;let s=0;for(let f=0;f+li+1<F;f++)s+=od[f]*(od[f+li]*(1-fr)+od[f+li+1]*fr);return s};
+  let fine=best,fv=-1;
+  for(let b=best-1.5;b<=best+1.5001;b+=.02){const l=60/b*fps;if(8*l>=F-2)break;const v=acAt(l)+acAt(2*l)+acAt(4*l)+acAt(8*l);if(v>fv){fv=v;fine=b}}
+  best=Math.round(fine*100)/100;
   return {onsets,bpm:best,beats:trackBeats(od,fps,best)};
 }
 

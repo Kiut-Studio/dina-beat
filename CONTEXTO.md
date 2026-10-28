@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.13
+Última actualización: 28/10/2026 · versión 0.13.1
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v15; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v16; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -153,6 +153,11 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - **Archivos guardados** en IndexedDB `dinaBeat.files` (propia de Dina Beat): almacén `meta` ({id, name, kind, size, added, last, best, grade, part}) y `data` (bytes del archivo, clave = id). id = `arch:<bytes>:<nombre>` (el mismo archivo no se duplica). Se guarda después de leerlo bien (`openBuf`); si no hay lugar, se juega igual y avisa. Pide `navigator.storage.persist()`. En Tus canciones aparecen primero (🎧 música / 🎼 MIDI, más recientes arriba) con ▶ y 🗑 (confirma). Al jugar se vuelve a decodificar y analizar (no se guarda el análisis). La fila "repetir archivo" solo aparece si no se pudo guardar.
 - Arreglo: `.row[hidden]` no se ocultaba (la regla `display:flex` le ganaba); en Tus canciones se veía el botón de repetir vacío.
 - Pruebas en `juego.py`: archivos guardados que siguen al recargar, se juegan, guardan calificación y se borran; calificaciones y combos; racha durante el juego.
+
+## Versión 0.13.1 — tempo de los mp3 más fino
+- `analyze()`: después de la búsqueda de a 0,5 ppm se afina en ±1,5 ppm de a 0,02 sumando la autocorrelación a 1, 2, 4 y 8 pulsos. Con una canción de Leandro (ILLIT, "NOT CUTE ANYMORE", 147 s) daba 98,5 y el pulso real (medido con bombo + clap) es ≈ 98,9; con 98,5 el pulso se corría.
+- Análisis de esa canción (no queda en el repo): bombo y clap parejos cada 0,3 s; el juego toma uno sí y uno no (el pulso, ~99 ppm) y en Normal el 97 % de las notas caen en el pulso y sobre golpes fuertes. Lo que se oye es la voz, que va sincopada: por eso "parece seguir otra batida". En el puente (~72 s) la canción se corre medio golpe y el "1" del compás (`audioGrid`, elegido una vez para toda la canción) queda cambiado en esa parte.
+- Idea en prueba: selector para mp3 como en MIDI (🥁 Batería / 🎤 Voz, separando la voz con filtrado armónico/percusivo). Se le mandaron a Leandro dos clips con clics para comparar.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
