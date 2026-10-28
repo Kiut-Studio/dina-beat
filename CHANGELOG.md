@@ -1,5 +1,10 @@
 # Novedades
 
+## Versión 0.17 — octubre 2026: 📜 Tus partidas
+- 📜 Historial: cada partida (etapas, tus canciones, archivos y desafíos) queda guardada en el teléfono con canción, versión de notas, fecha, puntaje, nota, perfectos, bien, fallos, combo y cómo tocaste cada nota. Botón 📜 Tus partidas en el menú. La mejor de cada canción lleva 🏆.
+- ⚔️ Desafiar con una partida guardada, sin volver a jugarla.
+- 🥊 Duelos: cada desafío que jugaste, con quién ganó, cuándo y la diferencia. Al abrirlo: tabla Vos / rival, gráfico del puntaje de los dos a lo largo de la canción y gráfico de qué tan a tiempo tocó cada nota cada uno. Desde ahí se puede devolver el desafío.
+
 ## Versión 0.16 — octubre 2026: 👻 modo fantasma
 - 👻 En un desafío aparece el fantasma de quien te desafió (su personaje, transparente, al lado de la torta): toca justo cuando esa persona tocó, con su "¡Perfecto!", "¡Bien!" o 😿.
 - 📊 Su puntaje se ve arriba en vivo, con ▲ si vas ganando o ▼ si vas perdiendo. Suma con las mismas reglas que vos.

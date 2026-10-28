@@ -148,6 +148,19 @@ label.btn{display:inline-block}
 .pages button{border:0;border-radius:10px;padding:5px 9px;font:700 13px Fredoka,sans-serif;background:var(--rosa2);color:var(--tinta);cursor:pointer;position:relative}
 .pages button[aria-pressed=true]{background:var(--rosa);color:#fff}
 .pages button.has::after{content:'';position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#2fb383}
+/* historial */
+.s5{background:#5b6bd6}
+#hist .card,#playScr .card{width:min(440px,100%);max-height:100%;min-height:0}
+#histList{max-height:none;flex:1 1 auto;min-height:0}
+.part .lv b{display:block;font-size:15px;text-align:right;font-variant-numeric:tabular-nums}
+.part .lv{text-align:right}
+.part .em.g{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex:none}
+.playBody{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+.playCv{position:relative;inset:auto;width:100%;height:132px;border-radius:12px;background:var(--crema);display:block}
+.vsTab{display:grid;grid-template-columns:1fr auto auto;gap:2px 14px;font-size:15px;text-align:left}
+.vsTab b{text-align:right;font-variant-numeric:tabular-nums}
+.vsTab .h{font-size:12px;opacity:.7;font-weight:700}
+.win{color:#1d8c64}.lose{color:#e0405e}
 /* desafíos */
 .vs{background:var(--crema);border-radius:14px;padding:6px 10px;font-size:15px;line-height:1.3}
 .vs b{color:var(--rosa)}
@@ -284,6 +297,32 @@ label.btn{display:inline-block}
     <input type="file" id="retoFile" class="vh">
     <p class="nota" id="retoStatus" style="text-align:center"></p>
     <div class="row"><button class="btn" id="retoGo">▶ ¡Acepto!</button><button class="btn sec" id="retoNo">Ahora no</button></div>
+  </div>
+</section>
+
+<section class="scr" id="hist" hidden>
+  <div class="card">
+    <h2>📜 Tus partidas</h2>
+    <div class="seg" id="histSeg"><button data-v="plays" aria-pressed="true">🎵 Partidas</button><button data-v="duels" aria-pressed="false">⚔️ Duelos</button></div>
+    <div class="songs" id="histList"></div>
+    <div class="row"><button class="btn sec" id="histBack">← Volver</button></div>
+  </div>
+</section>
+
+<section class="scr" id="playScr" hidden>
+  <div class="card">
+    <div class="stHead"><h2 id="plT">Partida</h2><small id="plWhen"></small></div>
+    <div class="playBody">
+      <p class="nota" id="plSub" style="margin:0"></p>
+      <div class="vs" id="plVs" hidden></div>
+      <div class="vsTab" id="plStats"></div>
+      <div class="sub" id="plRaceT" hidden>📈 Puntaje a lo largo de la canción</div>
+      <canvas class="playCv" id="plRace" hidden aria-label="Puntaje de los dos a lo largo de la canción"></canvas>
+      <div class="sub">🎯 Cada nota: arriba tarde, abajo antes</div>
+      <canvas class="playCv" id="plHits" aria-label="Qué tan a tiempo tocaste cada nota"></canvas>
+    </div>
+    <p class="nota" id="plMsg" style="text-align:center" hidden></p>
+    <div class="row"><button class="btn" id="plDare">⚔️ Desafiar con esta</button><button class="btn sec" id="plBack">← Volver</button></div>
   </div>
 </section>
 
@@ -563,7 +602,7 @@ function startSong(S){
   const R=S.reto;ghost=R&&Array.isArray(R.h)&&R.h.length===notes.length?{h:R.h,i:0,score:0,combo:0,n:R.n,img:(CHARS.find(x=>x.id===R.c)||CHARS[0]).id,fl:0,txt:null}:null;
   grid=(S.grid||[]).map(x=>({t:x.t+songStart,bar:x.bar}));for(let k=1;k<=4;k++)grid.unshift({t:songStart-k*beat,bar:k===4}); // con los 4 de la cuenta
   meter=Math.max(2,Math.min(7,S.meter||4));{let bi=0;for(const x of grid){if(x.bar)bi=0;x.bi=bi++}} // tiempo dentro del compás, para el metrónomo
-  ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr'].forEach(id=>show(id,false));
+  ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr','hist','playScr'].forEach(id=>show(id,false));
   $('pauseB').hidden=false;$('cfgB').hidden=true;
 }
 function startStage(i){stage=i;startSong(stageSong(i))}
@@ -600,6 +639,7 @@ function tap(){
     score+=Math.round((p?100:50)*(best.type==='pan'?3:1)*mult);
     if(best.type==='fru')fru++;
     if(best.type==='pan')fru+=5;
+    best.sc=score;
     pop(p?'¡Perfecto!':'¡Bien!',p?'#ff4f9a':'#ff9a4d');
     if(!p)pop(t<best.t?'⏪ antes':'tarde ⏩','#9a7aa8',-34,17); // para saber hacia dónde corregir
     flyers.push({img:best.type,x:g.cx,y:g.hy,vx:(Math.random()<.5?-1:1)*(4+Math.random()*4),vy:-9-Math.random()*3,r:0,vr:(Math.random()-.5)*.5,a:1,wet:save.tool==='spray'});
@@ -714,8 +754,13 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.16';
+const VERSION='0.17';
 const NEWS=[
+  {v:'0.17',fecha:'octubre 2026',titulo:'📜 Tus partidas',items:[
+    ['📜','Cada partida queda guardada en 📜 Tus partidas (en el menú): canción, puntaje, nota, fecha y cómo tocaste cada nota. Tu mejor partida de cada canción lleva 🏆.'],
+    ['⚔️','Desafiá con una partida que ya jugaste, sin volver a jugarla: abrila y tocá ⚔️ Desafiar con esta.'],
+    ['🥊','En ⚔️ Duelos ves cada desafío: quién le ganó a quién, cuándo y por cuánto. Adentro, el puntaje de los dos a lo largo de la canción y qué tan a tiempo tocó cada uno.'],
+  ]},
   {v:'0.16',fecha:'octubre 2026',titulo:'👻 Modo fantasma',items:[
     ['👻','En los desafíos aparece el fantasma de quien te desafió al lado de la torta: toca en el mismo momento en que tocó esa persona, con su "¡Perfecto!" o "¡Bien!".'],
     ['📊','Arriba ves su puntaje en vivo y si vas ganando ▲ o perdiendo ▼.'],
@@ -884,6 +929,7 @@ function finish(win){
   showVs(win);$('dareMsg').hidden=true;$('dare').textContent=cur.reto?'⚔️ Devolver':'⚔️ Desafiar';
   $('grade').hidden=!grade;$('grade').textContent=grade;$('grade').className='grade g'+grade;
   $('resFc').hidden=!(win&&cnt.m===0&&notes.length>0);
+  savePlay(win,acc);
   $('next').hidden=!(win&&cur.stage!=null&&cur.stage<2);
   if(win)sYay();
   setTimeout(()=>show('res',true),win?500:900);
@@ -894,7 +940,7 @@ function bestGrade(a,b){const o='SABCD';if(!a)return b||'';if(!b)return a;return
 $('next').onclick=()=>startStage(cur.stage+1);
 $('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else startSong(cur.rebuild?cur.rebuild():cur)};
 $('home').onclick=()=>{if(cur&&cur.stage==null){state='menu';show('res',false);if(pick)openParts();else openMine()}else toMenu()};
-function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
+function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
 function renderMenu(){
   const sp=save.tool==='spray';
   $('tagline').textContent=sp?'¡Psst! que Dina no se coma la torta':'¡Piii! que Dina no se coma la torta';
@@ -902,9 +948,10 @@ function renderMenu(){
   $('stages').innerHTML=STAGES.map((S,i)=>{
     const lock=i+1>save.open;
     return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):S.sub)}</span></button>`}).join('')
-    +`<button class="st s4" id="mineB">🎵 Tus canciones<span>componé o abrí música</span></button>`;
+    +`<button class="st s4" id="mineB">🎵 Tus canciones<span>componé o abrí música</span></button>`
+    +`<button class="st s5" id="histB">📜 Tus partidas<span>historial y duelos</span></button>`;
   document.querySelectorAll('.st[data-i]').forEach(b=>b.onclick=()=>startStage(+b.dataset.i));
-  $('mineB').onclick=openMine;
+  $('mineB').onclick=openMine;$('histB').onclick=()=>openHist('plays');
   renderWho(true);
 }
 let viewCh=null; // personaje que se está mirando en el menú (puede ser uno que todavía no tenés)
@@ -997,8 +1044,9 @@ const mb=n=>n>=1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':Math.max(1,
 let fdbP=null;
 function fdb(){return fdbP||(fdbP=new Promise((res,rej)=>{
   if(!window.indexedDB)return rej(new Error('sin idb'));
-  const r=indexedDB.open('dinaBeat.files',1);
-  r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('meta',{keyPath:'id'});d.createObjectStore('data')};
+  const r=indexedDB.open('dinaBeat.files',2); // v2: + 'plays' (historial de partidas)
+  r.onupgradeneeded=()=>{const d=r.result,has=n=>d.objectStoreNames.contains(n);
+    if(!has('meta'))d.createObjectStore('meta',{keyPath:'id'});if(!has('data'))d.createObjectStore('data');if(!has('plays'))d.createObjectStore('plays',{keyPath:'id'})};
   r.onsuccess=()=>res(r.result);r.onerror=()=>{fdbP=null;rej(r.error)};
 }))}
 async function ftx(names,mode,fn){
@@ -1342,6 +1390,100 @@ function schedPreview(){
 }
 function stopPreview(){if(!pv)return;pv=null;stopSongBus();$('compPlay').textContent='▶ Escuchar';document.querySelectorAll('.cell.ph').forEach(c=>c.classList.remove('ph'))}
 
+/* ---------- 📜 historial: cada partida queda guardada en el teléfono (IndexedDB 'plays') ----------
+   Se guarda lo mismo que lleva un desafío (r: canción, notas, cómo tocaste cada una, puntaje), así cualquier partida
+   vieja sirve para desafiar sin volver a jugarla. Si fue un desafío, también lo del rival (vs) para ver cómo salió el
+   duelo. ss = puntaje acumulado después de cada nota (para el gráfico). Se guardan las últimas 500 partidas, más la
+   mejor de cada canción. */
+const HIST_MAX=500;
+const songKey=g=>g.k==='e'?'e:'+g.i:g.k==='c'?'c:'+g.id:'f:'+g.fp;
+async function savePlay(win,acc){
+  try{
+    const R=retoFromCur();if(!R||!notes.length)return;
+    let last=0;const ss=notes.map(n=>{if(n.st===1&&n.sc!=null)last=Math.max(last,n.sc);return last});
+    const V=cur.reto,ch=cur.chart?chartsOf().find(x=>x.id===cur.chart):null;
+    const part=lastFile&&lastFile.kind==='midi'&&R.song.k==='f'?(lastFile.parts.find(x=>x.id===lastFile.part)||{}).name:'';
+    const variant=V?'⚔️ desafío de '+V.n:ch?'✋ '+ch.name:R.song.k==='e'?'':(part?part+' · ':'')+DIFF[save.diff].name;
+    const rec={id:Date.now().toString(36)+uid(),at:Date.now(),song:retoSongName(R),variant,key:songKey(R.song)+'|'+R.t.length+':'+R.t.slice(0,5).join(),
+      score,grade:R.g,acc:Math.round(acc*100),p:cnt.p,b:cnt.b,m:cnt.m,combo:maxCombo,win:!!win,c:charId(),r:R,ss,
+      vs:V?{n:V.n,c:V.c,s:V.s,g:V.g,a:V.a,h:Array.isArray(V.h)?V.h:null}:null};
+    await ftx(['plays'],'readwrite',st=>{st.plays.put(rec)});
+    const all=(await ftx(['plays'],'readonly',st=>st.plays.getAll()))||[];
+    if(all.length>HIST_MAX){ // se borran las más viejas, salvo la mejor de cada canción y los duelos
+      const best={};for(const x of all)if(!best[x.key]||x.score>best[x.key].score)best[x.key]=x;
+      const keep=new Set(Object.values(best).map(x=>x.id));const old=all.filter(x=>!keep.has(x.id)&&!x.vs).sort((a,b)=>a.at-b.at).slice(0,all.length-HIST_MAX);
+      if(old.length)await ftx(['plays'],'readwrite',st=>{old.forEach(x=>st.plays.delete(x.id))});
+    }
+  }catch(e){console.warn('historial',e)}
+}
+let histView='plays',histRows=[],playRec=null;
+const when=t=>{const d=new Date(t),n=new Date(),hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  if(d.toDateString()===n.toDateString())return 'hoy '+hm;const y=new Date(n);y.setDate(n.getDate()-1);if(d.toDateString()===y.toDateString())return 'ayer '+hm;
+  return d.getDate()+'/'+(d.getMonth()+1)+(d.getFullYear()!==n.getFullYear()?'/'+d.getFullYear():'')+' '+hm};
+const GCOL={S:'linear-gradient(135deg,#ffd84d,#ff8a3d)',A:'var(--rosa)',B:'var(--vio)',C:'#2fb383',D:'#b9a3b0'};
+async function openHist(view){
+  if(view)histView=view;document.querySelectorAll('.scr').forEach(e=>{e.hidden=true});$('cfgB').hidden=true;show('hist',true);
+  try{histRows=(await ftx(['plays'],'readonly',st=>st.plays.getAll()))||[]}catch(e){histRows=[]}
+  histRows.sort((a,b)=>b.at-a.at);renderHist();
+}
+function renderHist(){
+  document.querySelectorAll('#histSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===histView));
+  const best={};for(const x of histRows)if(!best[x.key]||x.score>best[x.key].score)best[x.key]=x;
+  const L=histView==='duels'?histRows.filter(x=>x.vs):histRows;
+  if(!L.length){$('histList').innerHTML=`<p class="empty">${histView==='duels'?'Todavía no jugaste ningún desafío. Cuando un amigo te mande uno, acá vas a ver quién ganó.':'Todavía no hay partidas guardadas. ¡Jugá una canción y aparece acá!'}</p>`;return}
+  $('histList').innerHTML=L.map(x=>{
+    if(histView==='duels'){const d=x.score-x.vs.s,em=d>0?'🏆':d===0?'🤝':'😿';
+      return `<button class="part" data-h="${x.id}"><span class="em">${em}</span><span class="n">Vos vs ${esc(x.vs.n)}<small>${esc(x.song)} · ${when(x.at)} · <span class="${d>0?'win':d<0?'lose':''}">${d>0?'+':d<0?'−':''}${Math.abs(d).toLocaleString('es-AR')}</span></small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${x.vs.s.toLocaleString('es-AR')}</span></button>`}
+    const g=x.grade;
+    return `<button class="part" data-h="${x.id}"><span class="em${g?' g':''}" style="${g?'background:'+GCOL[g]:''}">${g||(x.win?'🎵':'🍰')}</span><span class="n">${esc(x.song)}<small>${x.variant?esc(x.variant)+' · ':''}${when(x.at)}</small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${best[x.key]===x&&x.score>0?'🏆 mejor':x.acc+' %'}</span></button>`}).join('');
+  $('histList').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>openPlay(histRows.find(x=>x.id===b.dataset.h)));
+}
+document.querySelectorAll('#histSeg button').forEach(b=>b.onclick=()=>{histView=b.dataset.v;renderHist()});
+$('histBack').onclick=()=>{show('hist',false);toMenu()};
+/* puntaje acumulado de alguien a partir de cómo tocó cada nota (mismas reglas que el juego y el fantasma) */
+function scoreSeries(h){let sc=0,c=0;const n=h.length;return h.map((o,i)=>{if(o===999)c=0;else{c++;const pan=i===Math.floor(n*.85)&&n>8;sc+=Math.round((Math.abs(o)<=75?100:50)*(pan?3:1)*(1+Math.min(1,Math.floor(c/10)*.1)))}return sc})}
+const hitStats=h=>{let p=0,b=0,m=0,c=0,mc=0;for(const o of h){if(o===999){m++;c=0}else{Math.abs(o)<=75?p++:b++;c++;mc=Math.max(mc,c)}}return {p,b,m,c:mc,a:Math.round((p+b*.5)/(h.length||1)*100)}};
+function openPlay(x){
+  if(!x)return;playRec=x;show('hist',false);show('playScr',true);$('plMsg').hidden=true;
+  $('plT').textContent=x.song;$('plWhen').textContent=when(x.at);
+  $('plSub').textContent=(x.variant?x.variant+' · ':'')+(x.win?'¡Torta a salvo!':'Dina se comió la torta');
+  const V=x.vs,o=V&&V.h?hitStats(V.h):null,row=(lab,a,b)=>`<span>${lab}</span><b>${a}</b>${V?'<b>'+(b==null?'—':b)+'</b>':''}`;
+  $('plStats').innerHTML=(V?`<span class="h"></span><span class="h" style="text-align:right">Vos</span><span class="h" style="text-align:right">${esc(V.n)}</span>`:'')+
+    row('🏆 Puntaje',x.score.toLocaleString('es-AR'),V&&V.s.toLocaleString('es-AR'))+row('🏅 Nota',x.grade||'—',V&&(V.g||'—'))+row('✨ Perfectos',x.p,o&&o.p)+row('👍 Bien',x.b,o&&o.b)+row('😿 Fallos',x.m,o&&o.m)+row('🔥 Combo',x.combo,o&&o.c)+row('🎯 Precisión',x.acc+' %',V&&V.a!=null?V.a+' %':null);
+  $('plVs').hidden=!V;
+  if(V){const d=x.score-V.s;$('plVs').innerHTML=d>0?`🏆 Le ganaste a ${esc(V.n)} por <b>${d.toLocaleString('es-AR')}</b>`:d===0?'🤝 Empate exacto':`😿 ${esc(V.n)} te ganó por <b>${(-d).toLocaleString('es-AR')}</b>`}
+  const race=!!(V&&V.h&&x.ss);$('plRace').hidden=$('plRaceT').hidden=!race;
+  requestAnimationFrame(()=>{if(race)drawRace(x);drawHits(x)});
+  $('plDare').textContent=V?'⚔️ Devolver el desafío':'⚔️ Desafiar con esta';
+}
+function cvPrep(cv){const r=cv.getBoundingClientRect(),w=Math.round(r.width*DPR),h=Math.round(r.height*DPR);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const c=cv.getContext('2d');c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,r.width,r.height);return [c,r.width,r.height]}
+function drawRace(x){ // dos líneas: tu puntaje y el del rival, nota por nota
+  const [c,W2,H2]=cvPrep($('plRace')),t=decT(x.r.t),me=x.ss,op=scoreSeries(x.vs.h),n=t.length;if(!n)return;
+  const T=t[n-1]||1,mx=Math.max(me[n-1]||0,op[n-1]||0,1),L=34,B=H2-16,X=v=>L+v/T*(W2-L-8),Y=v=>B-v/mx*(B-10);
+  c.strokeStyle='rgba(74,42,63,.12)';c.lineWidth=1;c.fillStyle='rgba(74,42,63,.6)';c.font='600 10px Fredoka,sans-serif';
+  for(const f of [0,.5,1]){const y=Y(mx*f);c.beginPath();c.moveTo(L,y);c.lineTo(W2-8,y);c.stroke();c.fillText(Math.round(mx*f/100)/10+'k',2,y+3)}
+  c.fillText('0:00',L,H2-3);c.textAlign='right';c.fillText(mmss(T),W2-8,H2-3);c.textAlign='left';
+  const line=(S,col,dash)=>{c.strokeStyle=col;c.lineWidth=2.5;c.setLineDash(dash);c.beginPath();c.moveTo(X(0),Y(0));S.forEach((v,i)=>{c.lineTo(X(t[i]),Y(i?S[i-1]:0));c.lineTo(X(t[i]),Y(v))});c.stroke();c.setLineDash([])};
+  line(op,'#7a4fd0',[5,4]);line(me,'#ff4f9a',[]);
+  c.font='700 11px Fredoka,sans-serif';c.fillStyle='#ff4f9a';c.fillText('— Vos',L+4,12);c.fillStyle='#7a4fd0';c.fillText('- - '+x.vs.n,L+50,12);
+}
+function drawHits(x){ // cada nota: arriba tarde, abajo antes; banda = perfecto; ✕ = se escapó
+  const [c,W2,H2]=cvPrep($('plHits')),t=decT(x.r.t),h=x.r.h||[],n=t.length;if(!n)return;
+  const T=t[n-1]||1,L=8,mid=(H2-14)/2,X=v=>L+v/T*(W2-2*L),Y=o=>mid-Math.max(-150,Math.min(150,o))/150*(mid-8);
+  c.fillStyle='rgba(47,179,131,.13)';c.fillRect(L,Y(75),W2-2*L,Y(-75)-Y(75));
+  c.fillStyle='rgba(74,42,63,.18)';c.fillRect(L,mid,W2-2*L,1);
+  c.fillStyle='rgba(74,42,63,.6)';c.font='600 10px Fredoka,sans-serif';c.fillText('tarde ⏩',L+2,10);c.fillText('⏪ antes',L+2,H2-18);
+  c.fillText('0:00',L,H2-3);c.textAlign='right';c.fillText(mmss(T),W2-L,H2-3);c.textAlign='left';
+  const dots=(H,col,r)=>{H.forEach((o,i)=>{const xx=X(t[i]);if(o===999){c.strokeStyle='#e0405e';c.lineWidth=1.5;c.beginPath();c.moveTo(xx-3,3);c.lineTo(xx+3,9);c.moveTo(xx+3,3);c.lineTo(xx-3,9);c.stroke();return}
+    c.fillStyle=col;c.beginPath();c.arc(xx,Y(o),r,0,7);c.fill()})};
+  if(x.vs&&x.vs.h)dots(x.vs.h,'rgba(122,79,208,.4)',2.2);
+  dots(h,'#ff4f9a',2.6);
+}
+$('plBack').onclick=()=>{show('playScr',false);openHist()};
+$('plDare').onclick=async()=>{const x=playRec;if(!x)return;
+  const go=async()=>{const R=Object.assign({},x.r,{n:save.name,c:x.c||x.r.c});await shareReto(R,t=>{$('plMsg').textContent=t;$('plMsg').hidden=false})};
+  if(!save.name){askName('playScr',go);return}go()};
+
 /* ---------- ⚔️ desafíos por enlace ----------
    El enlace lleva todo en la dirección, después de #reto= (no pasa por ningún servidor): quién desafía, su personaje,
    puntaje y nota, las notas que tocó (en milésimas, como diferencias) y qué canción es. La música NO viaja: las etapas y
@@ -1376,22 +1518,26 @@ function retoFromCur(){
     d:save.diff,ln:S.reto?S.reto.ln:ch?ch.name:'',song,t:encT(S.times),
     h:notes.length===S.times.length?notes.map(n=>n.st===1?Math.max(-200,Math.min(200,Math.round((n.off||0)*1000))):999):undefined};
 }
+function askName(from,then){nameAsk={from,then};$('nameIn').value='';show(from,false);show('nameScr',true);setTimeout(()=>$('nameIn').focus(),50)}
+let nameAsk=null;
 async function dare(){
-  if(!save.name){$('nameIn').value='';show('res',false);show('nameScr',true);setTimeout(()=>$('nameIn').focus(),50);return}
-  const R=retoFromCur();if(!R)return;
+  if(!save.name){askName('res',dare);return}
+  const R=retoFromCur();if(!R)return;R.n=save.name;
+  await shareReto(R,t=>{$('dareMsg').textContent=t;$('dareMsg').hidden=false});
+}
+async function shareReto(R,msg){
   // el enlace apunta al juego publicado (en una copia de prueba en otro sitio, el enlace no abriría el desafío)
   const here=/github\.io$|^localhost$|^127\./.test(location.hostname),base=here?location.origin+location.pathname:'https://kiut-studio.github.io/dina-beat/';
   const url=base+'#reto='+await packReto(R),name=retoSongName(R);
   const text=`⚔️ ¡Te desafío en Dina Beat! Saqué ${R.s.toLocaleString('es-AR')}${R.g?' ('+R.g+')':''} en «${name}». ¿Me superás? 🎂`;
-  const msg=t=>{$('dareMsg').textContent=t;$('dareMsg').hidden=false};
   try{if(navigator.share){await navigator.share({title:'Desafío de Dina Beat',text,url});msg('⚔️ ¡Desafío enviado!');return}}catch(e){if(e&&e.name==='AbortError')return}
   try{await navigator.clipboard.writeText(text+'\n'+url);msg('🔗 ¡Enlace copiado! Pegalo en WhatsApp o donde quieras.')}
   catch(e){window.lastDare=url;msg('No pude copiarlo solo. Mantené apretado para copiar: '+url)}
 }
 $('dare').onclick=()=>dare();
-$('nameOk').onclick=()=>{const n=($('nameIn').value||'').trim().slice(0,16);if(!n){$('nameIn').focus();return}save.name=n;persist();show('nameScr',false);show('res',true);dare()};
+$('nameOk').onclick=()=>{const n=($('nameIn').value||'').trim().slice(0,16);if(!n){$('nameIn').focus();return}save.name=n;persist();show('nameScr',false);const A=nameAsk||{from:'res',then:dare};nameAsk=null;show(A.from,true);A.then()};
 $('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
-$('nameBack').onclick=()=>{show('nameScr',false);show('res',true)};
+$('nameBack').onclick=()=>{show('nameScr',false);show((nameAsk||{from:'res'}).from,true);nameAsk=null};
 function retoSongName(R){const g=R.song;return g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:g.name}
 /* comparación al terminar un desafío */
 function showVs(win){
@@ -1823,7 +1969,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba')window.SS={get ghost(){return ghost},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba')window.SS={openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghost(){return ghost},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

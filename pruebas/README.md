@@ -1,6 +1,6 @@
 # Pruebas
 Levantar un servidor en la carpeta del juego: `python3 -m http.server 8766`, y después:
-- `python3 pruebas/tamanos.py`: 5 tamaños de pantalla (incluye 📣 Novedades, "¿Qué querés tocar?", 🎙️ Estudio, resultados con desafío y desafío recibido); avisa si alguna pantalla hay que deslizarla o se sale de ancho.
+- `python3 pruebas/tamanos.py`: 5 tamaños de pantalla (incluye 📣 Novedades, "¿Qué querés tocar?", 🎙️ Estudio, resultados con desafío, desafío recibido, 📜 Tus partidas y detalle de un duelo); avisa si alguna pantalla hay que deslizarla o se sale de ancho.
 - `python3 pruebas/juego.py`: juega solo y revisa, entre otras cosas:
   - música de archivo (test.wav, golpes reales en truth.txt): detección de golpes, pulso y notas por dificultad;
   - MIDI (test.mid): la pantalla "¿Qué querés tocar?" con sus partes, y que al ir al compositor no siga sonando;
@@ -9,6 +9,7 @@ Levantar un servidor en la carpeta del juego: `python3 -m http.server 8766`, y d
   - archivos guardados en el teléfono (siguen al recargar, se juegan y se borran), calificación, avisos de combo y racha;
   - 🎙️ Estudio: grabar con los golpes de test.wav, acomodar, guardar, jugar la versión y que siga al recargar;
   - ⚔️ desafíos: enlace con test.wav abierto en otro "teléfono" sin la canción, desafío de etapa con comparación, 👻 fantasma (su puntaje coincide con el recalculado); tira del Estudio (deslizar y envión);
+  - 📜 historial: el duelo contra el fantasma queda guardado, sus gráficos dibujan y se puede desafiar desde la partida guardada;
   - 📣 Novedades: no salen la primera vez, salen una vez con una versión nueva y se abren desde Ajustes;
   - unión con Dina Run (personajes y frutillas) con un guardado de ejemplo.
 

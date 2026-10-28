@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.16
+Última actualización: 28/10/2026 · versión 0.17
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v19; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v20; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -183,6 +183,13 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - `startSong`: si `S.reto.h` tiene una por nota, arma `ghost` {h, i, score, combo, n, img}. En `draw()` cada nota del fantasma "se toca" en `t + h/1000` (o al cerrarse la ventana si fue 999) con `ghostStep`, que suma igual que el jugador (perfecto ±75 ms = 100, bien = 50, pancito ×3, +10 % cada 10 de combo hasta ×2).
 - Dibujo: personaje de quien desafía, espejado y transparente, a la derecha de la torta (`cx + 132·u`), con "👻 Nombre", su texto de acierto y un saltito al tocar. HUD: "👻 Nombre puntaje ▲ +dif / ▼ −dif" en x = 80, y = 58.
 - Prueba en `juego.py`: desafío de etapa con `h` armado (aciertos, tardes y fallos) → el puntaje del fantasma coincide con el recalculado; y el desafío propio lleva `h`.
+
+## Versión 0.17 — 📜 Tus partidas (historial y duelos)
+- Pedido de Leandro (28/10): guardar todas las partidas (no solo el récord) para desafiar con una partida ya jugada, y un historial de duelos (quién ganó, cuándo, diferencia y cómo salió).
+- IndexedDB `dinaBeat.files` pasa a **versión 2** con el almacén `plays` (keyPath `id`). `savePlay()` al final de `finish()`: `{id, at, song, variant, key (canción + notas), score, grade, acc, p, b, m, combo, win, c, r (el desafío completo de `retoFromCur`, con t y h), ss (puntaje acumulado tras cada nota, de `n.sc`), vs (si fue desafío: n, c, s, g, a, h del rival)}`. Se guardan 500; al pasarse se borran las más viejas salvo la mejor de cada `key` y los duelos.
+- Pantallas `#hist` (seg 🎵 Partidas / ⚔️ Duelos, desde el botón "📜 Tus partidas" del menú) y `#playScr` (detalle: tabla Vos/rival con `hitStats(h)`, gráfico de carrera `drawRace` con `scoreSeries(h)` del rival y `ss` propio, y gráfico de puntería `drawHits`: arriba tarde, abajo antes, banda verde = perfecto, ✕ = se escapó). "⚔️ Desafiar con esta" usa `shareReto` con `x.r` y el nombre actual.
+- `dare()` se dividió en `dare` + `shareReto(R,msg)`; `askName(from,then)` pide el nombre y vuelve a la pantalla que lo pidió.
+- Pruebas: `juego.py` (duelo contra el fantasma queda en ⚔️ Duelos, los dos gráficos dibujan, desafiar desde la partida guardada); `tamanos.py` revisa `hist` y `playScr`.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).

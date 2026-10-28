@@ -172,6 +172,18 @@ async def main():
     # quien juega guarda cómo tocó cada nota para su propio desafío
     h7=await pg7.evaluate('()=>{const R=SS.retoFromCur();return [R.h.length,R.t.length,R.h.slice(0,6)]}')
     print('fantasma: notas que ya tocó, puntaje, puntaje recalculado, tu puntaje',g7,'· tu desafío lleva',h7)
+    # 📜 la partida contra el fantasma queda en el historial como duelo, con el gráfico de los dos
+    await pg7.evaluate('()=>SS.finish(true)');await pg7.wait_for_timeout(1200)
+    await pg7.evaluate('async()=>{await SS.openHist("duels")}');await pg7.wait_for_timeout(300)
+    hd=await pg7.evaluate('()=>[document.querySelectorAll("#histList [data-h]").length,document.querySelector("#histList [data-h]")?.innerText.replace(/\\n/g," ")]')
+    await pg7.click('#histList [data-h]');await pg7.wait_for_timeout(400)
+    ink=lambda cid:pg7.evaluate('(id)=>{const c=document.getElementById(id);if(c.hidden)return -1;const d=c.getContext("2d").getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i])n++;return n}',cid)
+    gr=[await ink('plRace'),await ink('plHits')]
+    await pg7.screenshot(path=SP+'m_duelo.png')
+    await pg7.evaluate('()=>{SS.save.name="Leandro"}');await pg7.click('#plDare');await pg7.wait_for_timeout(500)
+    dm=await pg7.inner_text('#plMsg')
+    pl=await pg7.evaluate('async()=>{await SS.openHist("plays");return SS.histRows.length}')
+    print('historial: duelos',hd,'· gráficos (puntos dibujados)',gr,'· desafiar con la partida guardada:',dm[:60],'· partidas',pl)
     await pg7.close()
     # Dina Run: personajes comprados allá y frutillas que pasan para allá
     pg2=await b.new_page(viewport={'width':360,'height':640});pg2.on('pageerror',lambda e:errs.append(str(e)))
