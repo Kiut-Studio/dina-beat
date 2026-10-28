@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.11
+Última actualización: 28/10/2026 · versión 0.12
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v13; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v14; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -138,6 +138,16 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - `save.set.viz` (1 por defecto), chip **✨ Visualizador** en Ajustes → Ver al jugar (apaga ecualizador, latido y metrónomo; el anillo queda).
 - Prueba en `juego.py`: el ecualizador se mueve y el metrónomo marca el tiempo.
 - **Pausa con más margen (también 0.11):** Leandro notó que al terminar el 3-2-1 Dina ya estaba en el círculo (la canción seguía justo en el pulso donde estaba la próxima nota). Ahora `countIn` busca en la grilla el próximo pulso `tb` y hace volver la canción desde `tr`, R pulsos antes (R = máx(2, ⌈1,2 s / pulso⌉)), así entre el final de la cuenta y la próxima nota hay al menos 1,2 s y se vuelve a escuchar ese pedacito. Las notas ya tocadas no reaparecen (están marcadas). La música de archivo se vuelve a arrancar desde `tr` (se borran arranques viejos para no duplicar). Prueba: "al terminar la cuenta, la próxima nota llega en 1,25 s" (Tranqui).
+
+## Versión 0.12 — novedades
+- Pantalla **📣 Novedades** (`#news`), como la de Dina Run: lista `NEWS` en `index.html` (versión, fecha, título e ítems con emoji, la más nueva primero) y `VERSION`. **Con cada versión, agregar la entrada en `NEWS` además de CHANGELOG.md** (en `NEWS` va resumido y para jugadores; se agruparon las versiones chicas).
+- Se abre sola una vez al cargar una versión nueva si `save.seen` ≠ `VERSION` (se guarda al cerrar). Quien juega por primera vez (no había `sofiSilbato.v1`) no la ve: se marca como vista al cargar. Con `#prueba` no se abre sola.
+- Chip **📣 Novedades** al lado del título de ⚙️ Ajustes (no aparece si los ajustes se abren desde la pausa). Al cerrar vuelve a donde estaba; Escape/Enter también cierran.
+- El emoji ⏸ se ve como "‖" en algunos teléfonos: no usarlo en textos.
+- Pruebas: `tamanos.py` revisa también `news` (y deja `pruebas/s_news.png`); `juego.py` revisa jugador nuevo / viejo / que no vuelva a salir / desde Ajustes.
+
+## Spotify (pregunta de Leandro, 28/10)
+No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
 
 ## Pendientes e ideas
 - **Para más adelante (Leandro, 26/10): multijugador con amigos.** Primero refinar el juego. Después: desafíos por enlace (la canción compuesta viaja en el enlace; para MIDI/mp3, una "huella" del archivo, que no se sube) y un modo de hasta 4 amigos que se vean a la vez, cada uno con su personaje y su puntaje toque a toque, al estilo Just Dance (empezar con "fantasmas" grabados, sin servidor). Más tarde, ranking en línea por canción con inicio de sesión de Google (junto con Dina Run).

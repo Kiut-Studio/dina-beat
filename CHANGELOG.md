@@ -1,5 +1,8 @@
 # Novedades
 
+## Versión 0.12 — octubre 2026: novedades en el juego
+- 📣 Cuando sale una versión nueva, el juego muestra qué cambió (una sola vez). Se ven cuando quieras en ⚙️ Ajustes → 📣 Novedades. Si es tu primera vez jugando, no aparecen.
+
 ## Versión 0.11 — octubre 2026: visualizador
 - 🎛️ Ecualizador detrás de la escena que baila con lo que suena (etapas, tus canciones, MIDI y mp3).
 - ⭕ Anillo que se cierra sobre el círculo: coincide con el borde justo cuando hay que tocar.

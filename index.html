@@ -147,6 +147,17 @@ label.btn{display:inline-block}
 .pages button{border:0;border-radius:10px;padding:5px 9px;font:700 13px Fredoka,sans-serif;background:var(--rosa2);color:var(--tinta);cursor:pointer;position:relative}
 .pages button[aria-pressed=true]{background:var(--rosa);color:#fff}
 .pages button.has::after{content:'';position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#2fb383}
+/* novedades */
+#news .card{width:min(420px,100%);max-height:100%;min-height:0}
+#newsList{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;padding-right:2px}
+.newsVer{background:var(--crema);border-radius:16px;padding:8px 12px;text-align:left}
+.newsVer.now{box-shadow:inset 0 0 0 2px var(--rosa)}
+.newsVer h3{margin:0;font-size:18px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.newsVer h3 small{font-size:11px;font-weight:500;opacity:.65;text-transform:uppercase;letter-spacing:.06em}
+.newsVer .tt{font-size:13px;opacity:.8;margin-top:1px}
+.newsVer ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:4px;font-size:14px;line-height:1.28}
+.newsVer li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px}
+.cfgTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 @media (max-height:700px){
   .scr{gap:6px}h1{font-size:clamp(30px,9vw,44px)}.hero{height:14vh}.how{font-size:13px}.st{padding:7px 12px;font-size:16px}
   #cfg .card{gap:7px;padding:12px 14px}#cfg h2{font-size:21px}#cfg .seg button{padding:6px}
@@ -171,7 +182,7 @@ label.btn{display:inline-block}
 
 <section class="scr" id="cfg" hidden>
   <div class="card">
-    <h2>⚙️ Ajustes</h2>
+    <div class="cfgTop"><h2>⚙️ Ajustes</h2><button class="chip" id="newsB">📣 Novedades</button></div>
     <div class="lbl">Para espantar a Dina</div>
     <div class="seg" id="toolSeg"><button data-t="silbato" aria-pressed="false">📯 Silbato</button><button data-t="spray" aria-pressed="false">💦 Rociador</button></div>
     <div class="lbl">Miau de Dina al espantarla</div>
@@ -183,6 +194,14 @@ label.btn{display:inline-block}
     <div class="lbl" id="hzLbl">Fluidez de la pantalla</div>
     <div class="seg" id="smoothSeg"><button data-s="1" aria-pressed="false">✨ Máxima</button><button data-s="0" aria-pressed="false">🔋 60 cuadros</button></div>
     <div class="row"><button class="btn sec" id="calB">🎧 Calibrar</button><button class="btn" id="cfgOk">Listo</button></div>
+  </div>
+</section>
+
+<section class="scr" id="news" hidden>
+  <div class="card">
+    <h2>📣 Novedades</h2>
+    <div id="newsList"></div>
+    <div class="row"><button class="btn" id="newsOk">¡A jugar! →</button></div>
   </div>
 </section>
 
@@ -269,6 +288,7 @@ addEventListener('resize',resize);resize();
 /* ---------- guardado (solo en este dispositivo) ---------- */
 const KEY='sofiSilbato.v1';
 let save={best:[0,0,0],stars:[0,0,0],open:1,muted:false,tool:'spray',set:{music:70,sfx:80,lat:0,meow:1,smooth:1,fps:0,viz:1},diff:1,songs:[]};
+const firstTime=(()=>{try{return localStorage.getItem(KEY)==null}catch(e){return false}})();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');Object.assign(save,s,{set:Object.assign(save.set,s.set||{})})}catch(e){}
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}};
 
@@ -576,7 +596,7 @@ $('snd').textContent=save.muted?'🔇':'🔊';
 
 /* ---------- ajustes ---------- */
 let cfgFrom='menu';
-function openCfg(from){cfgFrom=from;$('calB').hidden=from==='pause';renderCfg();if(from==='menu')show('menu',false);else show('pause',false);show('cfg',true);$('cfgB').hidden=true}
+function openCfg(from){cfgFrom=from;$('calB').hidden=$('newsB').hidden=from==='pause';renderCfg();if(from==='menu')show('menu',false);else show('pause',false);show('cfg',true);$('cfgB').hidden=true}
 function renderCfg(){
   document.querySelectorAll('#smoothSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===+save.set.smooth));
   $('fpsT').setAttribute('aria-pressed',fpsOn());$('vizT').setAttribute('aria-pressed',save.set.viz!==0);
@@ -599,6 +619,83 @@ $('setMusic').oninput=e=>{ac();save.set.music=+e.target.value;persist();renderCf
 $('setSfx').oninput=e=>{ac();save.set.sfx=+e.target.value;persist();renderCfg();applyVol()};
 $('setSfx').onchange=()=>toolSound(true);
 $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
+
+/* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
+   Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
+   quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
+const VERSION='0.12';
+const NEWS=[
+  {v:'0.12',fecha:'octubre 2026',titulo:'Novedades',items:[
+    ['📣','Cuando sale una versión nueva, el juego te cuenta qué cambió. Las ves cuando quieras en ⚙️ Ajustes → 📣 Novedades.'],
+  ]},
+  {v:'0.11',fecha:'octubre 2026',titulo:'Visualizador',items:[
+    ['🎛️','Ecualizador detrás de la escena que baila con lo que suena.'],
+    ['⭕','Un anillo se cierra sobre el círculo: coincide con el borde justo cuando hay que tocar.'],
+    ['💓','Todo late con el pulso: Sofi y la torta rebotan, el fondo brilla y Dina se balancea.'],
+    ['🔵','Metrónomo arriba: una luz por cada tiempo del compás. Se apaga en ⚙️ Ajustes → ✨ Visualizador.'],
+    ['🔁','Al volver de la pausa, la canción retrocede un poquito para que veas venir a la próxima Dina.'],
+  ]},
+  {v:'0.10',fecha:'octubre 2026',titulo:'MIDI por partes y mp3 al pulso',items:[
+    ['🎼','Al abrir un MIDI elegís qué tocar: 🎤 Melodía, 🎸 Bajo, 🥁 Batería o 👏 Ritmo, y cada instrumento si trae varios.'],
+    ['🎵','Con mp3 y otros archivos, el juego sigue el pulso de toda la canción aunque la banda acelere o frene.'],
+    ['🔥','Fácil, Normal y Difícil se ajustan al tempo de cada canción. Difícil, más justo y menos loco.'],
+    ['⏩','Al tocar "¡Bien!" te dice si fuiste ⏪ antes o tarde ⏩.'],
+  ]},
+  {v:'0.9',fecha:'octubre 2026',titulo:'¡Nos mudamos a Kiut Studio!',items:[
+    ['🏠','Dina Beat ahora vive en Kiut Studio, el estudio de Sofía y Leandro: kiut-studio.github.io/dina-beat'],
+    ['🐱','Si entrás por la dirección vieja, te trae solo con tus estrellas, tus canciones y tus frutillas.'],
+  ]},
+  {v:'0.8',fecha:'octubre 2026',titulo:'Cuenta al volver de la pausa e ícono propio',items:[
+    ['3️⃣','Al seguir hay una cuenta 3, 2, 1 al ritmo de la canción. Botón de pausa más grande.'],
+    ['📲','Ícono nuevo: Dina yendo a la torta, con notas y gotitas. Se instala aparte de Dina Run y Torta Runner.'],
+    ['📊','Contador de cuadros por segundo en ⚙️ Ajustes.'],
+  ]},
+  {v:'0.7',fecha:'octubre 2026',titulo:'Más suave',items:[
+    ['✨','Las notas bajan parejas en pantallas de 90 y 120 Hz, y podés elegir la fluidez en ⚙️ Ajustes (✨ Máxima o 🔋 60 cuadros).'],
+    ['🎧','Sin trabarse con auriculares Bluetooth y con menos ralentizaciones.'],
+  ]},
+  {v:'0.5',fecha:'octubre 2026',titulo:'Calibrador',items:[
+    ['🎧','Calibrar el ritmo: tocás con 16 golpes y el juego calcula solo el atraso de tu teléfono o auriculares.'],
+  ]},
+  {v:'0.4',fecha:'octubre 2026',titulo:'Junto con Dina Run',items:[
+    ['👧','Jugá con Sofi y con los personajes que tengas en Dina Run.'],
+    ['🍓','Las frutillas que juntás acá se suman a tu bolsa de Dina Run.'],
+  ]},
+  {v:'0.3',fecha:'octubre 2026',titulo:'Ahora se llama Dina Beat',items:[
+    ['🐱','Nuevo nombre (antes Sofi Silbato), de la serie de Dina junto con Dina Run. Tu progreso sigue igual.'],
+  ]},
+  {v:'0.2',fecha:'octubre 2026',titulo:'Rociador y tus canciones',items:[
+    ['💦','Rociador para espantar a Dina, que se cambia por el silbato en ⚙️ Ajustes.'],
+    ['✏️','Compositor de melodías, y jugar con tu música (mp3) o tus MIDI. El archivo no sale de tu teléfono.'],
+    ['🔊','Volumen de música y de efectos, y ajuste de ritmo para auriculares.'],
+  ]},
+  {v:'0.1',fecha:'octubre 2026',titulo:'Primera versión',items:[
+    ['🎂','Espantá a Dina a tiempo con la música antes de que muerda la torta. Tres etapas: Tranqui, Picante y ¡Miau-loca!'],
+  ]},
+];
+if(firstTime&&location.hash!=='#prueba'){save.seen=VERSION;persist()} // quien juega por primera vez no ve las novedades viejas
+let newsFrom='menu';
+function openNews(from){
+  newsFrom=from;const box=$('newsList');box.textContent='';
+  NEWS.forEach((n,i)=>{
+    const d=document.createElement('div');d.className='newsVer'+(i===0?' now':'');
+    const h=document.createElement('h3');h.append('Versión '+n.v+' ');
+    const sm=document.createElement('small');sm.textContent=n.fecha;h.appendChild(sm);
+    if(i===0&&save.seen!==n.v){const t=document.createElement('span');t.className='new';t.textContent='NUEVO';h.appendChild(t)}
+    const tt=document.createElement('div');tt.className='tt';tt.textContent=n.titulo;
+    const ul=document.createElement('ul');
+    for(const [em,tx] of n.items){const li=document.createElement('li'),e=document.createElement('span'),t=document.createElement('span');e.textContent=em;t.textContent=tx;li.append(e,t);ul.appendChild(li)}
+    d.append(h,tt,ul);box.appendChild(d);
+  });
+  show(from,false);$('cfgB').hidden=true;show('news',true);box.scrollTop=0;
+}
+function closeNews(){
+  show('news',false);if(save.seen!==VERSION){save.seen=VERSION;persist()}
+  if(newsFrom==='cfg')show('cfg',true);else if(state==='menu'){show('menu',true);$('cfgB').hidden=false}
+}
+$('newsB').onclick=()=>openNews('cfg');
+$('newsOk').onclick=closeNews;
+addEventListener('keydown',e=>{if(!$('news').hidden&&(e.code==='Escape'||e.code==='Enter')){e.preventDefault();closeNews()}});
 
 /* ---------- calibrador: golpes de metrónomo; se mide cuánto tarde tocás respecto del sonido ----------
    El reloj now() ya descuenta la latencia que informa el navegador; lo que queda (auriculares bluetooth,
@@ -670,7 +767,7 @@ function finish(win){
 $('next').onclick=()=>startStage(cur.stage+1);
 $('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else if(cur.custom)playComp(cur.custom);else startSong(cur.rebuild?cur.rebuild():cur)};
 $('home').onclick=()=>{if(cur&&cur.stage==null){state='menu';show('res',false);if(lastFile&&lastFile.kind==='midi'&&cur.rebuild)openParts();else openMine()}else toMenu()};
-function toMenu(){state='menu';['res','pause','mine','comp','cfg','parts'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
+function toMenu(){state='menu';['res','pause','mine','comp','cfg','parts','news'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
 function renderMenu(){
   const sp=save.tool==='spray';
   $('tagline').textContent=sp?'¡Psst! que Dina no se coma la torta':'¡Piii! que Dina no se coma la torta';
@@ -1186,6 +1283,8 @@ function drawNote(n,x,y,u,k){
 }
 applyFps();
 requestAnimationFrame(draw);
+// al abrir una versión nueva por primera vez se muestran las novedades
+if(save.seen!==VERSION&&location.hash!=='#prueba')setTimeout(()=>{if(state==='menu'&&!$('menu').hidden)openNews('menu')},400);
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */

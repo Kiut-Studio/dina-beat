@@ -1,5 +1,5 @@
 // Copia sin conexión. Comparte sitio con otros juegos: solo toca sus propias cachés.
-const CACHE='dina-beat-v13';
+const CACHE='dina-beat-v14';
 const FILES=['./','index.html','manifest.json','favicon-32.png','icon-192.png','icon-512.png',
   'assets/sofi.webp','assets/sofi_hoodie.webp','assets/deisy.webp','assets/leandro.webp','assets/nora.webp','assets/cinthia.webp','assets/dina.webp','assets/dina_corre.webp','assets/frutilla.webp','assets/pancito.webp','assets/torta.webp','assets/nubes.webp'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));self.skipWaiting()});
