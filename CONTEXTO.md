@@ -214,6 +214,8 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Desafíos: `shareReto` crea `desafios/{id}` (sesión anónima si no hay cuenta) y el enlace lleva `id`; se anota en `save.sent` {id, at, song, s}. Al terminar uno con `id`, `savePlay` → `cloudResult` (deja el mejor). `checkResults` (al arrancar, al abrir el historial, como mucho cada 3 min) lista los resultados de tus desafíos de los últimos 30 días (hasta 25) y crea duelos `res:{desafío}:{uid}` con variante "📤 tu desafío"; `save.newRes` muestra el aviso en el botón 📜 del menú y se borra al abrir ⚔️ Duelos.
 - Con Google después de jugar desafíos anónimos, `linkWithPopup` conserva el mismo uid; si esa cuenta de Google ya existía, entra a esa (los resultados de desafíos mandados como anónimo se pierden).
 - **Copia de prueba** en `kiut-studio.github.io/dina-beat/prueba/` (`prueba/index.html` con `<base href="../">`, cartel 🧪 y sin service worker): comparte guardado con el juego (mismo sitio). Se borra al aprobar.
+- Visible (pedido de Leandro): botón `#acctI` arriba a la derecha al lado del sonido ("☁️ Entrar" o la foto de la cuenta), se muestra cuando se muestra ⚙️ (`MutationObserver` sobre `#cfgB`); aviso `#resCloud` en resultados si no entraste (no en desafíos). `openAcct(from)` vuelve a menú, resultados o ajustes.
+- Probado por Leandro en `/prueba/` el 28/10: entra con Google y sincroniza las partidas.
 - Pruebas: `pruebas/nube.py` (nube falsa compartida entre tres "teléfonos": A entra y sube; B con otro progreso entra y se junta; B desafía, C sin cuenta juega y B recibe el resultado con aviso). `tamanos.py` revisa también `acct`.
 
 ## Spotify (pregunta de Leandro, 28/10)

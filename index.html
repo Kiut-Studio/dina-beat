@@ -89,7 +89,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--vio);outline-of
 .how{font-size:15px;max-width:330px;margin:0;line-height:1.35}
 .cred{font-size:12px;opacity:.75;max-width:340px;margin:0}
 .ico{position:fixed;top:max(10px,env(safe-area-inset-top));border:0;background:#fff;border-radius:50%;width:42px;height:42px;font-size:20px;box-shadow:0 3px 0 var(--sombra);cursor:pointer;z-index:5}
-#snd{right:max(12px,env(safe-area-inset-right))}#pauseB,#cfgB{left:max(12px,env(safe-area-inset-left))}
+#snd{right:max(12px,env(safe-area-inset-right))}
+#acctI{right:calc(max(12px,env(safe-area-inset-right)) + 50px);width:auto;border-radius:999px;padding:0 12px;font:700 14px Fredoka,sans-serif;color:var(--tinta);display:flex;align-items:center;gap:4px}
+#acctI[hidden]{display:none}
+#acctI.in{width:42px;padding:0;justify-content:center;overflow:hidden}
+#acctI img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.nudge{border:0;background:var(--crema);border-radius:12px;padding:6px 10px;font:600 13px Fredoka,sans-serif;color:var(--tinta);cursor:pointer}#pauseB,#cfgB{left:max(12px,env(safe-area-inset-left))}
 #pauseB{width:54px;height:54px;background:var(--rosa);box-shadow:0 4px 0 #c94d8a,0 0 0 3px #fff;display:flex;align-items:center;justify-content:center;gap:7px;padding:0}
 #pauseB[hidden]{display:none}
 #pauseB span{width:7px;height:21px;border-radius:3px;background:#fff}
@@ -225,6 +230,7 @@ label.btn{display:inline-block}
 <button class="ico" id="pauseB" hidden aria-label="Pausa"><span></span><span></span></button>
 <button class="ico" id="cfgB" aria-label="Ajustes">⚙️</button>
 <button class="ico" id="snd" aria-label="Sonido">🔊</button>
+<button class="ico" id="acctI" aria-label="Tu cuenta: guardar en la nube">☁️ Entrar</button>
 
 <section class="scr" id="menu">
   <h1>Dina Beat<small id="tagline">¡Piii! que Dina no se coma la torta</small></h1>
@@ -404,6 +410,7 @@ label.btn{display:inline-block}
     <div class="big" id="resScore">0</div>
     <div class="stats" id="stats"></div>
     <p class="nota" id="resRun" style="text-align:center" hidden></p>
+    <button class="nudge" id="resCloud" hidden>☁️ Para no perder tu progreso, <b>entrá con Google</b></button>
     <div class="vs" id="resVs" hidden></div>
     <div class="row"><button class="btn" id="next">Siguiente ▶</button><button class="btn sec" id="again">↻ Otra vez</button><button class="btn sec" id="dare">⚔️ Desafiar</button><button class="btn sec" id="home">🏠</button></div>
     <p class="nota" id="dareMsg" style="text-align:center" hidden></p>
@@ -778,7 +785,7 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 const VERSION='0.18';
 const NEWS=[
   {v:'0.18',fecha:'octubre 2026',titulo:'☁️ Tu cuenta de Google',items:[
-    ['☁️','Entrá con Google en ⚙️ Ajustes → ☁️ Cuenta y tu progreso queda guardado en la nube: estrellas, récords, canciones compuestas, versiones del Estudio, partidas y duelos.'],
+    ['☁️','Tocá ☁️ Entrar (arriba, al lado del sonido) y entrá con Google: tu progreso queda guardado en la nube: estrellas, récords, canciones compuestas, versiones del Estudio, partidas y duelos.'],
     ['📱','En otro teléfono entrás con la misma cuenta y está todo. Lo que ya tenías en cada teléfono se junta: queda lo mejor de cada uno.'],
     ['⚔️','Los desafíos ahora avisan: cuando alguien juega el tuyo, su resultado te llega solo a 📜 Tus partidas (aunque tu amigo no tenga cuenta).'],
     ['🎵','La música de tus archivos no se sube: en otro teléfono la elegís de nuevo y se le pegan tus récords y versiones.'],
@@ -953,7 +960,7 @@ function finish(win){
   $('stars').innerHTML=win?'🍓'.repeat(stars)+'<span style="opacity:.25;filter:grayscale(1)">🍓</span>'.repeat(3-stars):'🍰💨';
   $('resScore').innerHTML=score.toLocaleString('es-AR')+(nb&&score>0?'<span class="new">¡Récord!</span>':'');
   $('stats').innerHTML=`<div>✨ Perfectos<b>${cnt.p}</b></div><div>👍 Bien<b>${cnt.b}</b></div><div>😿 Fallos<b>${cnt.m}</b></div><div>🔥 Combo<b>${maxCombo}</b></div><div>🎯 Precisión<b>${Math.round(acc*100)}%</b></div><div>🍓 Frutillas<b>${fru}</b></div>`;
-  showVs(win);$('dareMsg').hidden=true;$('dare').textContent=cur.reto?'⚔️ Devolver':'⚔️ Desafiar';
+  showVs(win);acctUi();$('dareMsg').hidden=true;$('dare').textContent=cur.reto?'⚔️ Devolver':'⚔️ Desafiar';
   $('grade').hidden=!grade;$('grade').textContent=grade;$('grade').className='grade g'+grade;
   $('resFc').hidden=!(win&&cnt.m===0&&notes.length>0);
   savePlay(win,acc);
@@ -1561,10 +1568,12 @@ async function checkResults(force){ // ¿alguien jugó tus desafíos? cada resul
 }
 /* pantalla de cuenta */
 const G_LOGO='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
-function openAcct(){show('cfg',false);show('acct',true);$('acctMsg').hidden=true;renderAcct();cloudLoad()}
+let acctFrom='cfg';
+function openAcct(from){acctFrom=from||'cfg';['cfg','menu','res'].forEach(id=>show(id,false));$('cfgB').hidden=true;show('acct',true);$('acctMsg').hidden=true;renderAcct();cloudLoad()}
 function acctMsg(t){$('acctMsg').textContent=t;$('acctMsg').hidden=!t}
 function renderAcct(){
   if(!$('cfg').hidden)$('acctB').textContent=cloudAcctLabel();
+  acctUi();
   if($('acct').hidden)return;const u=cloud.user;
   if(cloud.google){
     const ago=cloud.lastSync?Math.max(0,Math.round((Date.now()-cloud.lastSync)/60000)):null;
@@ -1584,8 +1593,14 @@ function renderAcct(){
       catch(e){console.warn(e);acctMsg(/popup-closed|cancelled/.test(e.code||'')?'':/popup-blocked/.test(e.code||'')?'😿 El navegador bloqueó la ventana de Google. Permití las ventanas emergentes y probá de nuevo.':'😿 No se pudo entrar ('+(e.code||e.message||'error')+').')}};
   }
 }
-$('acctB').onclick=openAcct;
-$('acctBack').onclick=()=>{show('acct',false);renderCfg();show('cfg',true)};
+$('acctB').onclick=()=>openAcct('cfg');$('acctI').onclick=()=>openAcct('menu');$('resCloud').onclick=()=>openAcct('res');
+$('acctBack').onclick=()=>{show('acct',false);if(acctFrom==='menu')toMenu();else if(acctFrom==='res'){acctUi();show('res',true)}else{renderCfg();show('cfg',true)}};
+/* botón de cuenta arriba (al lado del sonido): "☁️ Entrar" si no entraste; tu foto si ya entraste. Se ve donde se ve ⚙️. */
+function acctUi(){const b=$('acctI'),u=cloud&&cloud.google?cloud.user:null;b.classList.toggle('in',!!u);
+  b.innerHTML=u?(u.photo?`<img src="${esc(u.photo)}" alt="" referrerpolicy="no-referrer">`:'🙂'):'☁️ Entrar';b.setAttribute('aria-label',u?'Tu cuenta':'Entrar con Google para guardar en la nube');
+  $('resCloud').hidden=!!u||!!(cur&&cur.reto)||!!save.cloud}
+new MutationObserver(()=>{$('acctI').hidden=$('cfgB').hidden}).observe($('cfgB'),{attributes:true,attributeFilter:['hidden']});
+acctUi();
 // al abrir el juego: si ya usaste la cuenta o mandaste desafíos, se conecta solo (sin trabar el arranque)
 setTimeout(()=>{if(save.cloud||(save.sent&&save.sent.length))cloudLoad()},1200);
 addEventListener('online',()=>{if(save.cloud||(save.sent&&save.sent.length)){cloudLoad();if(cloud.google)cloudPushSave();checkResults(true)}});

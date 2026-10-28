@@ -18,6 +18,12 @@ async def main():
       r=await pg.evaluate("()=>{const s=document.getElementById('acct');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}")
       if any(r): print(w,h,'acct','desliza/ancho/oculta',r)
       if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_cuenta.png')
+      # botón de cuenta del menú: no tapa el título
+      await pg.evaluate("()=>{document.getElementById('acctBack').click();document.getElementById('cfgOk').click()}")
+      r=await pg.evaluate("()=>{const a=document.getElementById('acctI').getBoundingClientRect(),t=document.querySelector('#menu h1').getBoundingClientRect(),c=document.getElementById('cfgB').getBoundingClientRect();return [a.bottom>t.top&&a.left<t.right&&a.right>t.left,a.left<c.right,document.getElementById('acctI').hidden]}")
+      if any(r): print(w,h,'botón de cuenta tapa/oculto',r)
+      if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_menu_cuenta.png')
+      await pg.evaluate("()=>document.getElementById('cfgB').click()")
       await pg.evaluate("()=>{document.getElementById('acctBack').click()}")
       if (w,h)==(360,640):  # captura de las novedades
         await pg.evaluate("()=>{document.getElementById('newsB').click()}");await pg.wait_for_timeout(100)
