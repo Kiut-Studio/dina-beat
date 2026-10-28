@@ -1379,7 +1379,9 @@ function retoFromCur(){
 async function dare(){
   if(!save.name){$('nameIn').value='';show('res',false);show('nameScr',true);setTimeout(()=>$('nameIn').focus(),50);return}
   const R=retoFromCur();if(!R)return;
-  const url=location.origin+location.pathname+'#reto='+await packReto(R),name=retoSongName(R);
+  // el enlace apunta al juego publicado (en una copia de prueba en otro sitio, el enlace no abriría el desafío)
+  const here=/github\.io$|^localhost$|^127\./.test(location.hostname),base=here?location.origin+location.pathname:'https://kiut-studio.github.io/dina-beat/';
+  const url=base+'#reto='+await packReto(R),name=retoSongName(R);
   const text=`⚔️ ¡Te desafío en Dina Beat! Saqué ${R.s.toLocaleString('es-AR')}${R.g?' ('+R.g+')':''} en «${name}». ¿Me superás? 🎂`;
   const msg=t=>{$('dareMsg').textContent=t;$('dareMsg').hidden=false};
   try{if(navigator.share){await navigator.share({title:'Desafío de Dina Beat',text,url});msg('⚔️ ¡Desafío enviado!');return}}catch(e){if(e&&e.name==='AbortError')return}
