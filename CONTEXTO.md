@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.17
+Última actualización: 28/10/2026 · versión 0.18
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v20; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v21; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -191,6 +191,33 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - `dare()` se dividió en `dare` + `shareReto(R,msg)`; `askName(from,then)` pide el nombre y vuelve a la pantalla que lo pidió.
 - Pruebas: `juego.py` (duelo contra el fantasma queda en ⚔️ Duelos, los dos gráficos dibujan, desafiar desde la partida guardada); `tamanos.py` revisa `hist` y `playScr`.
 
+## Versión 0.18 — ☁️ cuenta de Google y desafíos con resultado automático
+- **Firebase** proyecto `kiut-studio` (nombre visible "Kiut Studio Games"), creado con el correo de kiutstudiogames el 28/10, plan **Spark** (gratis, sin facturación). Authentication: Google (nombre público "Kiut Studio Games") y Anónimo; dominio autorizado `kiut-studio.github.io`. Firestore Standard en `southamerica-east1`, modo producción. Pensado para que Dina Run use el mismo proyecto. Sapito Guaraní usa otro proyecto (`sapito-guarani`) con correo y contraseña.
+- **Reglas de Firestore** (publicadas):
+  ```
+  match /jugadores/{uid}/{doc=**} { allow read, write: if request.auth != null && request.auth.uid == uid; }
+  match /desafios/{id} {
+    allow get: if request.auth != null;
+    allow create: if request.auth != null && request.resource.data.de == request.auth.uid;
+    allow delete: if request.auth != null && resource.data.de == request.auth.uid;
+    match /resultados/{uid} {
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && (request.auth.uid == uid || get(/databases/$(database)/documents/desafios/$(id)).data.de == request.auth.uid);
+    }
+  }
+  ```
+- Límites del plan gratis: 20.000 escrituras y 50.000 lecturas por día, 1 GB. Si se pasa, la nube deja de guardar hasta el día siguiente (sin cobro) y el juego sigue local.
+- **Código**: SDK 12.10.0 desde gstatic con `import()` dinámico (solo se carga si hace falta: al abrir ☁️ Cuenta, al desafiar, al abrir un desafío con código, o al arrancar si ya usaste la cuenta o mandaste desafíos). Todo pasa por `cloud.api` {onUser, google, anon, out, get, set, list}; las pruebas la reemplazan con `window.CLOUD_MOCK`.
+- Datos: `jugadores/{uid}` {beat: guardado sin lo propio del aparato (`muted`, `seen`, `syncAt`, `newRes`, `set.lat`, `set.smooth`, `set.fps`), beatAt, nombre, personaje}; `jugadores/{uid}/partidas/{id}` (las del historial); `jugadores/{uid}/archivos/{huella}` (`fileMeta`: nombre, tipo, tamaño, duración, récord, nota, parte, versiones; **nunca la música**); `desafios/{id}` {de: uid, …desafío}; `desafios/{id}/resultados/{uid}` {n, c, s, g, a, h, at} (se guarda el mejor).
+- `persist()` ahora pone `save.mod` y, con cuenta, sube el guardado a los 3 s (`cloudSoon`). `mergeSave(local, nube)`: récords, estrellas y etapas el máximo; nota la mejor; canciones compuestas y versiones juntadas por id (récord máximo); ajustes, personaje y nombre del que tenga `mod` más nuevo, salvo los del aparato; `sent` juntados. `cloudSyncAll`: siempre el guardado; partidas y archivos al entrar y cada 12 h por teléfono (`syncAt`).
+- Archivos de la cuenta que no están en el teléfono: `cloudFiles`, se ven como "☁️ … elegila con 📂"; `storeFile` les pega récord, nota y versiones si coincide la huella.
+- Desafíos: `shareReto` crea `desafios/{id}` (sesión anónima si no hay cuenta) y el enlace lleva `id`; se anota en `save.sent` {id, at, song, s}. Al terminar uno con `id`, `savePlay` → `cloudResult` (deja el mejor). `checkResults` (al arrancar, al abrir el historial, como mucho cada 3 min) lista los resultados de tus desafíos de los últimos 30 días (hasta 25) y crea duelos `res:{desafío}:{uid}` con variante "📤 tu desafío"; `save.newRes` muestra el aviso en el botón 📜 del menú y se borra al abrir ⚔️ Duelos.
+- Con Google después de jugar desafíos anónimos, `linkWithPopup` conserva el mismo uid; si esa cuenta de Google ya existía, entra a esa (los resultados de desafíos mandados como anónimo se pierden).
+- **Copia de prueba** en `kiut-studio.github.io/dina-beat/prueba/` (`prueba/index.html` con `<base href="../">`, cartel 🧪 y sin service worker): comparte guardado con el juego (mismo sitio). Se borra al aprobar.
+- Visible (pedido de Leandro): botón `#acctI` arriba a la derecha al lado del sonido ("☁️ Entrar" o la foto de la cuenta), se muestra cuando se muestra ⚙️ (`MutationObserver` sobre `#cfgB`); aviso `#resCloud` en resultados si no entraste (no en desafíos). `openAcct(from)` vuelve a menú, resultados o ajustes.
+- Probado por Leandro en `/prueba/` el 28/10: entra con Google y sincroniza las partidas.
+- Pruebas: `pruebas/nube.py` (nube falsa compartida entre tres "teléfonos": A entra y sube; B con otro progreso entra y se junta; B desafía, C sin cuenta juega y B recibe el resultado con aviso). `tamanos.py` revisa también `acct`.
+
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
 
@@ -198,7 +225,7 @@ No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego 
 - **Para más adelante (Leandro, 26/10): multijugador con amigos.** Primero refinar el juego. Después: desafíos por enlace (la canción compuesta viaja en el enlace; para MIDI/mp3, una "huella" del archivo, que no se sube) y un modo de hasta 4 amigos que se vean a la vez, cada uno con su personaje y su puntaje toque a toque, al estilo Just Dance (empezar con "fantasmas" grabados, sin servidor). Más tarde, ranking en línea por canción con inicio de sesión de Google (junto con Dina Run).
 1. Que Sofía dibuje el silbato y el rociador (hoy son provisorios, hechos con código).
 2. En Dina Run: botón para abrir Dina Beat y escuchar el evento `storage` (ver 0.4).
-3. Inicio de sesión con Google para guardar el progreso en la nube (Dina Run y Dina Beat juntos; necesita una base de datos, por ejemplo Firebase). Hoy cada juego guarda solo en el dispositivo y navegador.
+3. ~~Inicio de sesión con Google~~ (0.18 en Dina Beat; falta Dina Run, con el mismo proyecto de Firebase).
 4. Probarlo con amigos y ajustar dificultad de ¡Miau-loca!.
 5. ~~Guardar los archivos de música en el dispositivo~~ (hecho en 0.13).
 6. Probar la detección de golpes con canciones reales de distintos estilos (hecho con una de city pop en mp3 y MIDI; faltan sin batería, con cambios de tempo, muy rápidas o muy lentas, y sincopadas).

@@ -1,5 +1,12 @@
 # Novedades
 
+## Versión 0.18 — octubre 2026: ☁️ cuenta de Google
+- ☁️ Entrar con Google (botón ☁️ Entrar arriba en el menú, al lado del sonido, o ⚙️ Ajustes → ☁️ Cuenta; después de entrar, ahí aparece tu foto; y un aviso en resultados si no entraste): el progreso se guarda en la nube de Kiut Studio Games (Firebase): estrellas, récords, notas, canciones compuestas, versiones del 🎙️ Estudio, 📜 partidas y duelos, nombre y personaje.
+- 📱 En otro teléfono, con la misma cuenta, está todo. Al entrar se junta lo de cada teléfono con lo de la nube: queda lo mejor de cada uno, sin perder nada. El ajuste de ritmo, la fluidez y el contador quedan propios de cada teléfono.
+- 🎵 La música no se sube: tus archivos aparecen como ☁️ en Tus canciones y, al elegir el mismo archivo, se le pegan récord, nota y versiones.
+- ⚔️ Los desafíos llevan un código: cuando alguien juega el tuyo (aunque no tenga cuenta), su resultado te llega solo. Aviso en el menú ("⚔️ 1 resultado nuevo"), el duelo aparece en 📜 Tus partidas → ⚔️ Duelos, y los desafíos que esperan respuesta se ven como "📤 Enviado · esperando".
+- Al abrir un desafío sin tener nombre, se puede escribir ahí mismo.
+
 ## Versión 0.17 — octubre 2026: 📜 Tus partidas
 - 📜 Historial: cada partida (etapas, tus canciones, archivos y desafíos) queda guardada en el teléfono con canción, versión de notas, fecha, puntaje, nota, perfectos, bien, fallos, combo y cómo tocaste cada nota. Botón 📜 Tus partidas en el menú. La mejor de cada canción lleva 🏆.
 - ⚔️ Desafiar con una partida guardada, sin volver a jugarla.
