@@ -13,4 +13,6 @@ Levantar un servidor en la carpeta del juego: `python3 -m http.server 8766`, y d
   - 📣 Novedades: no salen la primera vez, salen una vez con una versión nueva y se abren desde Ajustes;
   - unión con Dina Run (personajes y frutillas) con un guardado de ejemplo.
 
+- `python3 pruebas/nube.py`: ☁️ cuenta y desafíos con una nube falsa (sin Firebase): juntar el progreso de dos teléfonos y el resultado automático de un desafío.
+
 Necesita Playwright (`pip install playwright && playwright install chromium`). Las capturas que deja en esta carpeta son solo para mirar; no hace falta subirlas cada vez.
