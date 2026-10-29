@@ -220,30 +220,29 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 
 ## Versión 0.19 — 🏆 salas, 🌎 rankings por etapa, varios fantasmas y enlaces cortos
 - Pedido de Leandro (28/10): que un desafío mandado a un grupo registre a todos, con tabla; varios fantasmas; enlaces más cortos; y ranking global por etapa.
-- **Reglas de Firestore nuevas** (publicar al probar la 0.19):
+- **Reglas de Firestore** (las de los dos juegos juntas; Dina Run tiene `ranking/{uid}` y `semanas/{semana}/filas/{uid}`, Dina Beat usa `rankingBeat/{etapa}/filas/{uid}`):
   ```
   rules_version = '2';
   service cloud.firestore {
     match /databases/{database}/documents {
+      function esGoogle(uid) { return request.auth != null && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider == 'google.com'; }
+      // Dina Beat: también vale si la cuenta empezó anónima y después se unió a Google (linkWithPopup: ahí sign_in_provider sigue diciendo 'anonymous')
+      function conGoogle(uid) { return request.auth != null && request.auth.uid == uid && 'google.com' in request.auth.token.firebase.identities; }
       match /jugadores/{uid}/{doc=**} { allow read, write: if request.auth != null && request.auth.uid == uid; }
       match /desafios/{id} {
         allow get: if request.auth != null;
         allow create: if request.auth != null && request.resource.data.de == request.auth.uid;
         allow delete: if request.auth != null && resource.data.de == request.auth.uid;
-        match /resultados/{uid} {
-          allow read: if request.auth != null;
-          allow create, update: if request.auth != null && request.auth.uid == uid;
-        }
+        match /resultados/{uid} { allow read: if request.auth != null; allow create, update: if request.auth != null && request.auth.uid == uid; }
       }
-      match /ranking/{etapa}/filas/{uid} {
+      match /rankingBeat/{etapa}/filas/{uid} {
         allow read: if true;
-        allow create, update: if request.auth != null && request.auth.uid == uid
-          && request.auth.token.firebase.sign_in_provider != 'anonymous'
-          && request.resource.data.n is string && request.resource.data.n.size() <= 16
+        allow create, update: if conGoogle(uid) && request.resource.data.n is string && request.resource.data.n.size() > 0 && request.resource.data.n.size() <= 16
           && request.resource.data.s is int && request.resource.data.s >= 0
           && request.resource.data.s <= (etapa == 'e0' ? 7230 : etapa == 'e1' ? 10170 : 18400);
         allow delete: if request.auth != null && request.auth.uid == uid;
       }
+      // + las de Dina Run (ranking/{uid}, semanas/{semana}/filas/{uid}, funciones filaOk), ver su proyecto
     }
   }
   ```
@@ -251,7 +250,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - **Salas**: `cloudChallenge` también escribe tu resultado en `resultados/{tu uid}`. `save.salas[id] = {song, at, own, by, me, pos, count, top, upd}` (viaja con la cuenta; los `save.sent` de la 0.18 se convierten). `salaFromRows` ordena, ubica tu puesto y cuenta novedades (gente nueva o que te pasó) → `save.newRes`. `checkResults` revisa las salas de los últimos 30 días (hasta 25). Pantalla `#sala` (tabla + `drawRaceN`, una línea por jugador), botones ▶ Jugar (abre la pantalla de desafío con `retoRows`) y 🔗 Invitar (`shareSala`). En resultados de una sala, `showSala` ("Vas 2° de 5") y el botón pasa a "🔗 Invitar a más". En ⚔️ Duelos: filas de salas + duelos viejos sin código (los `res:` de la 0.18 se ocultan).
 - **Enlaces cortos** `#r=código` (`openRetoCode`: inicia sesión anónima si hace falta, lee `desafios/{código}` y su tabla `#retoTab`). Sin código (sin internet), el `#reto=` largo de siempre.
 - **Fantasmas**: `ghosts[]` (hasta 3) en vez de uno; `S.ghostRows` (de la sala o del ranking) o, si no, `S.reto.h`. Posiciones a la derecha de la torta (`slot` 0/1/2, los de atrás más chicos). Con más de uno, mini ranking en vivo arriba a la izquierda. Chip "👻 Fantasmas" en Ajustes (`save.set.ghost`).
-- **Ranking** `ranking/e{i}/filas/{uid}` {n, c, s, g, a, h, at}, solo con Google, apodo (`save.name`) y sin `save.rankOff`. `rankSubmit` al terminar una etapa (no en desafíos) si mejoraste; puesto con `count` (puntajes mayores + 1); `save.rk[i] = {best, pos, at, down}`. `rankRefresh` (cada 10 min en el menú) marca ▼ si bajaste. `rankTop` (20 mejores, 10 min en memoria). `stageGhosts`: los 3 que están justo arriba tuyo. `rankBackfill` al entrar: tu mejor partida guardada de cada etapa. Pestaña 🌎 Ranking en 📜 Tus partidas. En ☁️ Cuenta: apodo y "🌎 Aparecer en los rankings" (al apagarlo se borran tus filas).
+- **Ranking** `rankingBeat/e{i}/filas/{uid}` {n, c, s, g, a, h, at}, solo con Google, apodo (`save.name`) y sin `save.rankOff`. `rankSubmit` al terminar una etapa (no en desafíos) si mejoraste; puesto con `count` (puntajes mayores + 1); `save.rk[i] = {best, pos, at, down}`. `rankRefresh` (cada 10 min en el menú) marca ▼ si bajaste. `rankTop` (20 mejores, 10 min en memoria). `stageGhosts`: los 3 que están justo arriba tuyo. `rankBackfill` al entrar: tu mejor partida guardada de cada etapa. Pestaña 🌎 Ranking en 📜 Tus partidas. En ☁️ Cuenta: apodo y "🌎 Aparecer en los rankings" (al apagarlo se borran tus filas).
 - API de la nube: + `top`, `count`, `del` (y en la nube falsa de las pruebas).
 - Pruebas: `nube.py` agrega ranking (dos cuentas, puesto ▼, fantasmas), sala con tres personas (dos sin cuenta), enlace corto, tabla y avisos.
 
