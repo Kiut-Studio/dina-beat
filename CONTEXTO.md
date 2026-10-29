@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.18
+Última actualización: 28/10/2026 · versión 0.19
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v21; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v22; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -217,6 +217,43 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Visible (pedido de Leandro): botón `#acctI` arriba a la derecha al lado del sonido ("☁️ Entrar" o la foto de la cuenta), se muestra cuando se muestra ⚙️ (`MutationObserver` sobre `#cfgB`); aviso `#resCloud` en resultados si no entraste (no en desafíos). `openAcct(from)` vuelve a menú, resultados o ajustes.
 - Probado por Leandro en `/prueba/` el 28/10: entra con Google y sincroniza las partidas.
 - Pruebas: `pruebas/nube.py` (nube falsa compartida entre tres "teléfonos": A entra y sube; B con otro progreso entra y se junta; B desafía, C sin cuenta juega y B recibe el resultado con aviso). `tamanos.py` revisa también `acct`.
+
+## Versión 0.19 — 🏆 salas, 🌎 rankings por etapa, varios fantasmas y enlaces cortos
+- Pedido de Leandro (28/10): que un desafío mandado a un grupo registre a todos, con tabla; varios fantasmas; enlaces más cortos; y ranking global por etapa.
+- **Reglas de Firestore nuevas** (publicar al probar la 0.19):
+  ```
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /jugadores/{uid}/{doc=**} { allow read, write: if request.auth != null && request.auth.uid == uid; }
+      match /desafios/{id} {
+        allow get: if request.auth != null;
+        allow create: if request.auth != null && request.resource.data.de == request.auth.uid;
+        allow delete: if request.auth != null && resource.data.de == request.auth.uid;
+        match /resultados/{uid} {
+          allow read: if request.auth != null;
+          allow create, update: if request.auth != null && request.auth.uid == uid;
+        }
+      }
+      match /ranking/{etapa}/filas/{uid} {
+        allow read: if true;
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && request.auth.token.firebase.sign_in_provider != 'anonymous'
+          && request.resource.data.n is string && request.resource.data.n.size() <= 16
+          && request.resource.data.s is int && request.resource.data.s >= 0
+          && request.resource.data.s <= (etapa == 'e0' ? 7230 : etapa == 'e1' ? 10170 : 18400);
+        allow delete: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+  ```
+  Máximos = puntaje con todas perfectas (`scoreSeries` de las notas de cada etapa: 56, 74 y 117 notas). Si se cambian las notas de una etapa, hay que actualizar `RANK_MAX` y las reglas.
+- **Salas**: `cloudChallenge` también escribe tu resultado en `resultados/{tu uid}`. `save.salas[id] = {song, at, own, by, me, pos, count, top, upd}` (viaja con la cuenta; los `save.sent` de la 0.18 se convierten). `salaFromRows` ordena, ubica tu puesto y cuenta novedades (gente nueva o que te pasó) → `save.newRes`. `checkResults` revisa las salas de los últimos 30 días (hasta 25). Pantalla `#sala` (tabla + `drawRaceN`, una línea por jugador), botones ▶ Jugar (abre la pantalla de desafío con `retoRows`) y 🔗 Invitar (`shareSala`). En resultados de una sala, `showSala` ("Vas 2° de 5") y el botón pasa a "🔗 Invitar a más". En ⚔️ Duelos: filas de salas + duelos viejos sin código (los `res:` de la 0.18 se ocultan).
+- **Enlaces cortos** `#r=código` (`openRetoCode`: inicia sesión anónima si hace falta, lee `desafios/{código}` y su tabla `#retoTab`). Sin código (sin internet), el `#reto=` largo de siempre.
+- **Fantasmas**: `ghosts[]` (hasta 3) en vez de uno; `S.ghostRows` (de la sala o del ranking) o, si no, `S.reto.h`. Posiciones a la derecha de la torta (`slot` 0/1/2, los de atrás más chicos). Con más de uno, mini ranking en vivo arriba a la izquierda. Chip "👻 Fantasmas" en Ajustes (`save.set.ghost`).
+- **Ranking** `ranking/e{i}/filas/{uid}` {n, c, s, g, a, h, at}, solo con Google, apodo (`save.name`) y sin `save.rankOff`. `rankSubmit` al terminar una etapa (no en desafíos) si mejoraste; puesto con `count` (puntajes mayores + 1); `save.rk[i] = {best, pos, at, down}`. `rankRefresh` (cada 10 min en el menú) marca ▼ si bajaste. `rankTop` (20 mejores, 10 min en memoria). `stageGhosts`: los 3 que están justo arriba tuyo. `rankBackfill` al entrar: tu mejor partida guardada de cada etapa. Pestaña 🌎 Ranking en 📜 Tus partidas. En ☁️ Cuenta: apodo y "🌎 Aparecer en los rankings" (al apagarlo se borran tus filas).
+- API de la nube: + `top`, `count`, `del` (y en la nube falsa de las pruebas).
+- Pruebas: `nube.py` agrega ranking (dos cuentas, puesto ▼, fantasmas), sala con tres personas (dos sin cuenta), enlace corto, tabla y avisos.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
