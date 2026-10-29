@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 29/10/2026 · versión 0.22
+Última actualización: 29/10/2026 · versión 0.22.1
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v26; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v27; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -285,6 +285,9 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Pedido de Leandro (29/10): modo noche y más efectos; después pidió que la noche sea **solo de noche** y un **fondo propio para Halloween**.
 - `nightK()`: 0 de día. De 19 a 6 h en el teléfono (o con `#noche` en la dirección): el menú se ve de noche y cada canción arranca al atardecer (brillo naranja cerca del piso) y llega a noche cerrada al 60 %. Funciona en todos los temas. `drawNight`: cielo azul profundo (violeta en Halloween) encima del de la etapa, piso más oscuro, 70 estrellas que titilan y brillan con el pulso, luna finita amarilla (en Halloween queda la naranja), estrellas fugaces en los avisos de combo (`shootingStar`). De noche el puntaje se escribe en blanco. Chip 🌙 Noche en ⚙️ Ajustes → Ver al jugar (`save.set.night`). Solo visual.
 - **Fondo por tema** (`themeTile()`): clásico, las nubes de Sofía; Halloween, `hwTile()`: un dibujo de 1024×1024 que se repite, hecho con código en el mismo estilo (fantasmitas, calabazas, murciélagos, lunas, caramelos y destellos, con trazo negro grueso). Provisorio hasta que Sofía dibuje el suyo: guardarlo como `assets/fondo_halloween.webp` y devolverlo en `themeTile()`.
+
+## Versión 0.22.1 — hora de las salas
+- Leandro vio que en ⚔️ Duelos todas las salas decían "hoy 14:11": se mostraba `upd`, que `salaSet` pone en cada revisión (`checkResults` al abrir el historial). Ahora cada sala guarda `last` = el `at` más nuevo de sus resultados (o cuando jugaste vos, en `cloudResult`) y la lista muestra y ordena por `last` (si falta, `at`). `upd` queda solo para juntar con la nube. Prueba en `nube.py`.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).

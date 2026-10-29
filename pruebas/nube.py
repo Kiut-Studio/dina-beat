@@ -120,6 +120,8 @@ async def main():
     av=await a.evaluate('()=>[SS.save.newRes,document.getElementById("histB").innerText.replace(/\\n/g," ")]')
     await a.evaluate('async()=>{await SS.openHist("duels")}');await a.wait_for_timeout(400)
     du=await a.evaluate('()=>[...document.querySelectorAll("#histList .part")].map(e=>e.innerText.replace(/\\n/g," "))[0]')
+    la=await a.evaluate('async(id)=>{const x=SS.save.salas[id],l1=x.last,u1=x.upd;await new Promise(r=>setTimeout(r,1200));await SS.checkResults(true);const y=SS.save.salas[id];return [!!l1,l1===y.last,y.upd>u1]}',sid)
+    print('      hora de la sala: tiene última jugada, no cambia al volver a revisar, la revisión sí se anota',la)
     await a.evaluate('(id)=>SS.openSala(id)',sid);await a.wait_for_timeout(800)
     sa=await a.evaluate('()=>[document.getElementById("saSub").innerText,document.getElementById("saList").innerText.replace(/\\n/g," "),!document.getElementById("saRace").hidden]')
     await a.screenshot(path=SP+'m_sala.png')

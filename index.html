@@ -993,9 +993,10 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.22';
+const VERSION='0.22.1';
 const NEWS=[
   {v:'0.22',fecha:'octubre 2026',titulo:'🌙 De noche',items:[
+    ['🕒','En ⚔️ Duelos, cada desafío muestra cuándo lo jugó alguien por última vez (antes mostraba la hora en que abriste la lista).'],
     ['🌙','De 19 a 6 h el juego se pone de noche: cada canción arranca al atardecer y termina con cielo estrellado, con estrellas que brillan con la música y estrellas fugaces en los combos. Se apaga con 🌙 Noche en ⚙️ Ajustes.'],
     ['🎃','Halloween tiene su propio fondo, con fantasmitas, calabazas, murciélagos y caramelos.'],
   ]},
@@ -1798,18 +1799,18 @@ async function cloudChallenge(R){
   const id=Array.from(crypto.getRandomValues(new Uint8Array(9)),b=>'abcdefghijkmnpqrstuvwxyz23456789'[b&31]).join('');
   await withTimeout(cloud.api.set('desafios/'+id,clean(Object.assign({},R,{de:uid,at:Date.now()}))),8000);
   await withTimeout(cloud.api.set('desafios/'+id+'/resultados/'+uid,clean({n:R.n,c:R.c,s:R.s,g:R.g||'',a:R.a,h:R.h||[],at:Date.now()})),8000).catch(()=>{}); // vos también en la tabla
-  salaSet(id,{song:retoSongName(R),at:Date.now(),own:1,me:R.s,pos:1,count:1,top:{n:R.n,s:R.s},by:R.n});
+  salaSet(id,{song:retoSongName(R),at:Date.now(),last:Date.now(),own:1,me:R.s,pos:1,count:1,top:{n:R.n,s:R.s},by:R.n});
   return id;
 }
 async function cloudResult(V,R){ // terminaste un desafío con código: tu mejor resultado queda para quien te desafió
   try{const uid=await cloudUid();if(!uid)return;const path='desafios/'+V.id+'/resultados/'+uid;
     const prev=await cloud.api.get(path).catch(()=>null);
     if(!prev||prev.s<R.s)await cloud.api.set(path,clean({n:save.name||'Alguien',c:charId(),s:R.s,g:R.g||'',a:R.a,h:R.h||[],at:Date.now()}));
-    const rows=await cloud.api.list('desafios/'+V.id+'/resultados');salaFromRows(V.id,rows,{song:retoSongName(V),by:V.n});return rows;
+    const rows=await cloud.api.list('desafios/'+V.id+'/resultados');salaFromRows(V.id,rows,{song:retoSongName(V),by:V.n});salaSet(V.id,{last:Date.now()});return rows; // jugaste vos: también cuenta como última vez
   }catch(e){console.warn('nube',e);return null}
 }
 /* ---------- 🏆 salas: cada desafío con código tiene su tabla (todos los que lo jugaron) ----------
-   save.salas[id] = {song, at, own (lo creaste vos), by (quién lo creó), me (tu puntaje), pos, count, top:{n,s}, upd}. Viaja con la cuenta. */
+   save.salas[id] = {song, at, own (lo creaste vos), by (quién lo creó), me (tu puntaje), pos, count, top:{n,s}, last (la última vez que alguien jugó), upd (última revisión)}. Viaja con la cuenta. */
 function showSala(V,rows){ // al terminar un desafío con código: tu puesto en la tabla
   if(state!=='res'||!cur||cur.reto!==V)return;
   if(!rows){$('resVs').innerHTML=`⚔️ ${esc(V.n)}: <b>${V.s.toLocaleString('es-AR')}</b> · Vos: <b>${score.toLocaleString('es-AR')}</b> (sin internet para ver la tabla)`;return}
@@ -1823,7 +1824,8 @@ function salaFromRows(id,rows,base){ // ordena la tabla, ubica tu puesto y avisa
   if(me<0&&old.me!=null){me=L.filter(r=>r.s>old.me).length;L.splice(me,0,{uid,n:save.name||'Vos',s:old.me,me:1})} // desafíos viejos: tu puntaje no estaba en la tabla
   const pos=me+1,count=L.length,top=L[0]?{n:L[0].n,s:L[0].s}:null;let news=0;
   if(old.count!=null&&count>old.count)news+=count-old.count;if(old.pos!=null&&pos>old.pos)news++;
-  salaSet(id,Object.assign({},base||{},{me:L[me]?L[me].s:old.me,pos,count,top,at:old.at||Date.now()}));
+  const last=Math.max(old.at||0,...L.map(r=>+r.at||0)); // cuándo jugó alguien por última vez (upd es cuándo se revisó, no sirve para mostrar)
+  salaSet(id,Object.assign({},base||{},{me:L[me]?L[me].s:old.me,pos,count,top,at:old.at||Date.now(),last:last||old.last||Date.now()}));
   return {L,pos,count,news};
 }
 const MEDAL=p=>p===1?'🥇':p===2?'🥈':p===3?'🥉':p+'°';
@@ -1969,10 +1971,10 @@ function renderHist(){
   const best={};for(const x of histRows)if(!best[x.key]||x.score>best[x.key].score)best[x.key]=x;
   if(histView==='duels'){
     if(save.newRes){save.newRes=0;persist()}
-    const S=Object.entries(save.salas||{}).sort((a,b)=>(b[1].upd||b[1].at||0)-(a[1].upd||a[1].at||0));
+    const S=Object.entries(save.salas||{}).sort((a,b)=>(b[1].last||b[1].at||0)-(a[1].last||a[1].at||0));
     const old=histRows.filter(x=>x.vs&&!x.vs.id&&!x.id.startsWith('res:')); // duelos de enlaces sin código (antes de las salas)
     if(!S.length&&!old.length){$('histList').innerHTML='<p class="empty">Todavía no hay desafíos. Al terminar una canción tocá ⚔️ Desafiar y mandale el enlace a tus amigos: acá vas a ver la tabla de cada desafío.</p>';return}
-    $('histList').innerHTML=S.map(([id,x])=>`<button class="part" data-s="${id}"><span class="em">${x.count>1?MEDAL(x.pos||1):'📤'}</span><span class="n">${esc(niceName(x.song||'Desafío'))}<small>${x.count>1?x.count+' jugadores':'esperando a tus amigos'} · ${x.own?'tu desafío':'de '+esc(x.by||'alguien')} · ${when(x.upd||x.at)}</small></span><span class="lv"><b>${(x.me||0).toLocaleString('es-AR')}</b>${x.top&&x.count>1&&x.pos!==1?'1° '+esc(x.top.n):''}</span></button>`).join('')+
+    $('histList').innerHTML=S.map(([id,x])=>`<button class="part" data-s="${id}"><span class="em">${x.count>1?MEDAL(x.pos||1):'📤'}</span><span class="n">${esc(niceName(x.song||'Desafío'))}<small>${x.count>1?x.count+' jugadores':'esperando a tus amigos'} · ${x.own?'tu desafío':'de '+esc(x.by||'alguien')} · ${when(x.last||x.at)}</small></span><span class="lv"><b>${(x.me||0).toLocaleString('es-AR')}</b>${x.top&&x.count>1&&x.pos!==1?'1° '+esc(x.top.n):''}</span></button>`).join('')+
       old.map(x=>{const d=x.score-x.vs.s,em=d>0?'🏆':d===0?'🤝':'😿';
         return `<button class="part" data-h="${x.id}"><span class="em">${em}</span><span class="n">Vos vs ${esc(x.vs.n)}<small>${esc(niceName(x.song))} · ${when(x.at)} · <span class="${d>0?'win':d<0?'lose':''}">${d>0?'+':d<0?'−':''}${Math.abs(d).toLocaleString('es-AR')}</span></small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${x.vs.s.toLocaleString('es-AR')}</span></button>`}).join('');
     $('histList').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>openSala(b.dataset.s));

@@ -1,5 +1,7 @@
 # Novedades
 
+## Versión 0.22.1 — octubre 2026
+- 🕒 En 📜 Tus partidas → ⚔️ Duelos, la hora de cada sala era la de la última vez que el juego revisó la tabla (`upd`, que se pone en cada revisión), así que todas mostraban la hora en que abriste la lista. Ahora muestra cuándo jugó alguien por última vez (`last`: el resultado más nuevo de la tabla, o tu última partida en ella) y se ordenan por eso.
 ## Versión 0.22 — octubre 2026: 🌙 de noche
 - 🌙 De 19 a 6 h (hora del teléfono) el menú se ve de noche y cada canción arranca al atardecer y llega a noche cerrada: cielo azul profundo (violeta en Halloween), estrellas que titilan y brillan con el pulso, luna finita (la naranja en Halloween), estrellas fugaces en los avisos de combo y el puntaje en blanco. En todos los temas. De día, todo igual que antes. Chip 🌙 Noche en ⚙️ Ajustes. Solo visual. `#noche` en la dirección la muestra de día.
 - 🎃 Fondo propio para Halloween (fantasmitas, calabazas, murciélagos, lunas, caramelos), hecho con código en el estilo de las nubes de Sofía, provisorio hasta que ella dibuje el suyo. Cada tema puede tener su fondo.
