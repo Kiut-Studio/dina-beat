@@ -280,6 +280,10 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Menú en pantallas de 600 px o menos: botones, Sofi y textos un poco más chicos para que entren las 6 filas (regla al final del CSS, para ganarle a la de ≤ 700 px).
 - Pruebas: `juego.py` juega *Baile de las calabazas* con el robot, revisa récord, desafío ida y vuelta, que el botón no aparezca sin Halloween y el miau (nuevo, viejo y si lo prendés). `tamanos.py` revisa el menú con Halloween (sin deslizar, botón de temas sin tapar cuenta ni título) y `#esp` (deja `s_menu_hw.png` y `s_esp.png`).
 
+## En prueba (0.22) — 🌙 modo noche
+- Rama `prueba` y copia en `kiut-studio.github.io/dina-beat/prueba/` (comparte guardado; cartel 🧪). Va a `main` cuando Leandro lo apruebe; después se borra `prueba/`.
+- Pedido de Leandro (29/10, "probemos"): modo noche y más efectos. `nightK()`: durante la canción atardece y se hace de noche (del 40 % al 85 % de la canción, con un brillo naranja de atardecer a mitad de camino); si en el teléfono son las 19 a 6 h, arranca al atardecer y el menú se ve de noche. `drawNight`: cielo azul profundo (violeta en Halloween) encima del de la etapa, piso más oscuro, 70 estrellas que titilan y brillan con el pulso, luna finita amarilla (en Halloween queda la naranja), estrellas fugaces en los avisos de combo (`shootingStar`). De noche el puntaje se escribe en blanco. Chip 🌙 Noche en ⚙️ Ajustes → Ver al jugar (`save.set.night`). Solo visual.
+
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
 
