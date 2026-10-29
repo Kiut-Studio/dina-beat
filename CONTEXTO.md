@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 29/10/2026 · versión 0.21
+Última actualización: 29/10/2026 · versión 0.22
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v25; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v26; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -280,8 +280,8 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Menú en pantallas de 600 px o menos: botones, Sofi y textos un poco más chicos para que entren las 6 filas (regla al final del CSS, para ganarle a la de ≤ 700 px).
 - Pruebas: `juego.py` juega *Baile de las calabazas* con el robot, revisa récord, desafío ida y vuelta, que el botón no aparezca sin Halloween y el miau (nuevo, viejo y si lo prendés). `tamanos.py` revisa el menú con Halloween (sin deslizar, botón de temas sin tapar cuenta ni título) y `#esp` (deja `s_menu_hw.png` y `s_esp.png`).
 
-## En prueba (0.22) — 🌙 modo noche y fondo de Halloween
-- Rama `prueba` y copia en `kiut-studio.github.io/dina-beat/prueba/` (comparte guardado; cartel 🧪; ahí la noche está forzada con `window.FORCE_NIGHT` para poder verla de día). Va a `main` cuando Leandro lo apruebe; después se borra `prueba/`.
+## Versión 0.22 — 🌙 modo noche y fondo de Halloween
+- Se probó en `/prueba/` (con la noche forzada por `window.FORCE_NIGHT`) y Leandro lo aprobó el 29/10. Leandro va a pedirle a Sofía su propio fondo de Halloween (se le pasó el provisorio como referencia).
 - Pedido de Leandro (29/10): modo noche y más efectos; después pidió que la noche sea **solo de noche** y un **fondo propio para Halloween**.
 - `nightK()`: 0 de día. De 19 a 6 h en el teléfono (o con `#noche` en la dirección): el menú se ve de noche y cada canción arranca al atardecer (brillo naranja cerca del piso) y llega a noche cerrada al 60 %. Funciona en todos los temas. `drawNight`: cielo azul profundo (violeta en Halloween) encima del de la etapa, piso más oscuro, 70 estrellas que titilan y brillan con el pulso, luna finita amarilla (en Halloween queda la naranja), estrellas fugaces en los avisos de combo (`shootingStar`). De noche el puntaje se escribe en blanco. Chip 🌙 Noche en ⚙️ Ajustes → Ver al jugar (`save.set.night`). Solo visual.
 - **Fondo por tema** (`themeTile()`): clásico, las nubes de Sofía; Halloween, `hwTile()`: un dibujo de 1024×1024 que se repite, hecho con código en el mismo estilo (fantasmitas, calabazas, murciélagos, lunas, caramelos y destellos, con trazo negro grueso). Provisorio hasta que Sofía dibuje el suyo: guardarlo como `assets/fondo_halloween.webp` y devolverlo en `themeTile()`.

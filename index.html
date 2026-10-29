@@ -993,8 +993,12 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.21';
+const VERSION='0.22';
 const NEWS=[
+  {v:'0.22',fecha:'octubre 2026',titulo:'🌙 De noche',items:[
+    ['🌙','De 19 a 6 h el juego se pone de noche: cada canción arranca al atardecer y termina con cielo estrellado, con estrellas que brillan con la música y estrellas fugaces en los combos. Se apaga con 🌙 Noche en ⚙️ Ajustes.'],
+    ['🎃','Halloween tiene su propio fondo, con fantasmitas, calabazas, murciélagos y caramelos.'],
+  ]},
   {v:'0.21',fecha:'octubre 2026',titulo:'🎃 Música de Halloween',items:[
     ['🎵','Música de Halloween en el menú: cuatro canciones nuevas para tocar. "En la cueva del rey de la montaña" (Grieg, se acelera en cada vuelta), "Tocata del castillo" (Bach), "Marcha de los fantasmitas" (Chopin) y "Baile de las calabazas", original del juego.'],
     ['🎨','Botón 🎨 Temas arriba en el menú, al lado de ⚙️.'],

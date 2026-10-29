@@ -1,5 +1,8 @@
 # Novedades
 
+## Versión 0.22 — octubre 2026: 🌙 de noche
+- 🌙 De 19 a 6 h (hora del teléfono) el menú se ve de noche y cada canción arranca al atardecer y llega a noche cerrada: cielo azul profundo (violeta en Halloween), estrellas que titilan y brillan con el pulso, luna finita (la naranja en Halloween), estrellas fugaces en los avisos de combo y el puntaje en blanco. En todos los temas. De día, todo igual que antes. Chip 🌙 Noche en ⚙️ Ajustes. Solo visual. `#noche` en la dirección la muestra de día.
+- 🎃 Fondo propio para Halloween (fantasmitas, calabazas, murciélagos, lunas, caramelos), hecho con código en el estilo de las nubes de Sofía, provisorio hasta que ella dibuje el suyo. Cada tema puede tener su fondo.
 ## Versión 0.21 — octubre 2026: 🎃 música de Halloween
 - 🎵 **Música de Halloween** (botón en el menú mientras el tema es Halloween): cuatro canciones con la cajita del juego, hechas con código. Tres son de compositores de dominio público: *En la cueva del rey de la montaña* (Grieg, 1875; cada vuelta más rápido: 92 → 112 → 136 pulsos), *Tocata del castillo* (Bach, Tocata y fuga en re menor) y *Marcha de los fantasmitas* (Chopin, marcha fúnebre de la Sonata n.º 2); y *Baile de las calabazas*, original. Dan frutillas, guardan récord y nota, y se pueden desafiar (salas incluidas); no van al ranking.
 - 🎨 Botón **Temas** arriba a la izquierda del menú (🎃 en Halloween), además del de ⚙️ Ajustes.
