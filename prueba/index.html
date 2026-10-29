@@ -1606,10 +1606,10 @@ const MEDAL=p=>p===1?'🥇':p===2?'🥈':p===3?'🥉':p+'°';
 // desafíos mandados antes de las salas (0.18): pasan a ser salas
 if(save.sent&&save.sent.length){save.salas=save.salas||{};for(const x of save.sent)if(!save.salas[x.id])save.salas[x.id]={song:x.song,at:x.at,own:1,me:x.s,pos:1,count:1,top:{n:save.name||'Vos',s:x.s},by:save.name||''};delete save.sent;persist()}
 /* ---------- 🌎 ranking de cada etapa (solo con cuenta de Google, con tu apodo) ----------
-   ranking/e{i}/filas/{uid} = {n, c, s, g, a, h, at}: tu mejor partida de la etapa, con cómo tocaste cada nota (para los fantasmas).
+   rankingBeat/e{i}/filas/{uid} = {n, c, s, g, a, h, at} ("ranking" y "semanas" son de Dina Run): tu mejor partida de la etapa, con cómo tocaste cada nota (para los fantasmas).
    save.rk[i] = {best, pos, at, down}. Las reglas no dejan pasar puntajes imposibles (máximo de cada etapa). */
 const RANK_MAX=[7230,10170,18400],rankCache={};
-const rankPath=i=>'ranking/e'+i+'/filas';
+const rankPath=i=>'rankingBeat/e'+i+'/filas'; // "ranking" a secas es el de Dina Run
 const canRank=()=>cloud.google&&save.name&&!save.rankOff;
 async function rankSubmit(i,R){
   if(!canRank()||!cloud.api||R.s<=0||R.s>RANK_MAX[i])return null;
