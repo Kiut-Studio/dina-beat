@@ -42,13 +42,18 @@ Juego de ritmo con los dibujos de Sofía. Dina baja a comerse la torta al ritmo 
 Dina Beat es hermano de [Dina Run](https://github.com/Kiut-Studio/dina-run). Como los dos juegos están en el mismo sitio (`kiut-studio.github.io`):
 - Podés tocar con los personajes que compraste en Dina Run (Deisy, Leandro, Nora, Cinthia; Sofi siempre).
 - Las frutillas que juntás en Dina Beat se suman a tu bolsa de Dina Run.
+- Lo que tenés puesto allá (ropa, sombreros, confeti) y los disfraces de Dina del Pase de Halloween se ven también acá.
+
+## Temas
+En ⚙️ Ajustes → 🎨 Temas: según la fecha (Halloween del 15/10 al 2/11), Clásico o Halloween. En Halloween la torta es la calabaza con golosinas de Sofía y hay murciélagos, golosinas y disfraces.
 
 El progreso se guarda solo en el dispositivo y navegador donde jugás.
 
 Se puede instalar como app desde el menú del navegador ("Agregar a pantalla de inicio") y funciona sin conexión.
 
 ## Créditos
-- Dibujos: **Sofía** © (Sofi, Deisy, Leandro, Nora, Cinthia, Dina, la torta, frutilla, pancito y el fondo de nubes).
+- Dibujos: **Sofía** © (Sofi, Deisy, Leandro, Nora, Cinthia, Dina, la torta, frutilla, pancito, el fondo de nubes, los disfraces de Dina, Dina comiendo la calabaza y la calabaza con golosinas, que es un recorte de ese dibujo).
+- Con ayuda de IA sobre dibujos de Sofía (como en Dina Run): el vestido de Alicia y las golosinas de Halloween. Los murciélagos, la luna y las calabacitas del fondo están hechos con código.
 - El silbato y el rociador son dibujos provisorios hechos con código; la música, el rocío y el miau también se hacen con código.
 - Código: Leandro, con asistencia de IA. Licencia MIT solo para el código (ver [LICENSE](LICENSE)); los dibujos no se pueden reutilizar sin permiso de Sofía.
 - Inspirado en la idea de juego de ritmo de *Break Whistle*. Antes se llamaba *Sofi Silbato*.

@@ -206,6 +206,32 @@ label.btn{display:inline-block}
 @media (prefers-reduced-motion:reduce){.grade{animation:none}}
 .card .gmini{background:var(--rosa);color:#fff}
 @media (max-height:640px){#res .card{gap:6px;padding:12px 14px}.resimg{height:11vh}.stars{font-size:26px}.res h2{font-size:21px}#res .big{font-size:26px}.stats{font-size:14px}.grade{width:50px;height:50px;font-size:30px}}
+/* temas */
+.cfgBot .btn.sec{padding:9px 12px}
+@media (max-width:380px){.cfgBot{gap:6px}.cfgBot .btn{padding:8px 11px;font-size:15px}.cfgBot .btn.sec{padding:8px 9px;font-size:14px}}
+.themeList{display:flex;flex-direction:column;gap:6px}
+.themeList .part img{width:44px;height:40px;object-fit:contain;flex:none}
+.themeList .part[aria-pressed=true]{box-shadow:inset 0 0 0 3px var(--rosa);background:#fff}
+.themeList .part .lv{font-size:18px}
+.lbl small{opacity:.8}
+.looks{display:flex;gap:6px;justify-content:center}
+.look{flex:1;background:var(--crema);border-radius:14px;padding:4px 2px 5px;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.look img{height:46px;max-width:100%;object-fit:contain}
+.look.lock img{filter:grayscale(1) brightness(1.15);opacity:.45}
+.look.lock{opacity:.8}
+.cred2{font-size:11px;opacity:.6;text-align:center}
+#temas .card{gap:8px}
+@media (max-height:640px){.themeList .part{padding:5px 10px}.themeList .part img{height:32px}.look img{height:36px}#temas .card{gap:6px;padding:12px 14px}}
+/* Halloween: naranja y violeta (como en Dina Run) */
+body[data-theme=halloween]{--rosa:#f0781e;--rosa2:#ffe0c4;--sombra:#e9b78c;--crema:#fff3e6}
+html:has(body[data-theme=halloween]),body[data-theme=halloween]{background:#ffe0c4}
+body[data-theme=halloween] .scr{background:rgba(255,229,206,.74)}
+body[data-theme=halloween] h1{text-shadow:0 3px 0 #ff8a1f,0 6px 0 #7a4fd0,0 8px 14px rgba(80,30,120,.3)}
+body[data-theme=halloween] .btn{box-shadow:0 4px 0 #b9560f}
+body[data-theme=halloween] .btn:active{box-shadow:0 1px 0 #b9560f}
+body[data-theme=halloween] .btn.sec{box-shadow:0 4px 0 var(--sombra)}
+body[data-theme=halloween] .btn.verde{box-shadow:0 4px 0 #1d7d5a}
+body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
 /* novedades */
 #news .card{width:min(420px,100%);max-height:100%;min-height:0}
 #newsList{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;padding-right:2px}
@@ -255,7 +281,19 @@ label.btn{display:inline-block}
     <div class="hzRow"><span class="lbl">Ver al jugar</span><span class="chips"><button class="chip" id="vizT" aria-pressed="true">✨ Visualizador</button><button class="chip" id="ghostT" aria-pressed="true">👻 Fantasmas</button><button class="chip" id="fpsT" aria-pressed="false">📊 Contador</button></span></div>
     <div class="lbl" id="hzLbl">Fluidez de la pantalla</div>
     <div class="seg" id="smoothSeg"><button data-s="1" aria-pressed="false">✨ Máxima</button><button data-s="0" aria-pressed="false">🔋 60 cuadros</button></div>
-    <div class="row"><button class="btn sec" id="calB">🎧 Calibrar</button><button class="btn" id="cfgOk">Listo</button></div>
+    <div class="row cfgBot"><button class="btn sec" id="calB">🎧 Calibrar</button><button class="btn sec" id="temasB">🎨 Temas</button><button class="btn" id="cfgOk">Listo</button></div>
+  </div>
+</section>
+
+<section class="scr" id="temas" hidden>
+  <div class="card">
+    <h2>🎨 Temas</h2>
+    <div class="themeList" id="themeList"></div>
+    <div class="lbl">🐱 Disfraces de Dina <small>· se ganan en el Pase de Halloween de Dina Run</small></div>
+    <div class="looks" id="lookList"></div>
+    <p class="nota" id="themeNote">La ropa, los sombreros y el confeti se eligen en Dina Run; acá se ven igual.</p>
+    <p class="nota cred2">Calabaza y disfraces: dibujos de Sofía · golosinas y vestido de Alicia con ayuda de IA sobre sus dibujos.</p>
+    <div class="row"><button class="btn" id="temasOk">Listo</button></div>
   </div>
 </section>
 
@@ -451,7 +489,7 @@ const persist=()=>{save.mod=Date.now();try{localStorage.setItem(KEY,JSON.stringi
 
 /* ---------- dibujos de Sofía ---------- */
 const IMG={};
-['sofi','sofi_hoodie','deisy','leandro','nora','cinthia','dina','dina_corre','frutilla','pancito','torta','nubes'].forEach(k=>{const i=new Image();i.src='assets/'+k+'.webp';IMG[k]=i});
+['sofi','sofi_hoodie','sofi_alicia','deisy','leandro','nora','cinthia','dina','dina_corre','frutilla','pancito','torta','nubes','calabaza','dina_bruja','dina_brujito','dina_vampiro','hw_caramelo_verde','hw_chupetin','hw_candy_corn','hw_gomita','hw_bombon','hw_caramelo_violeta'].forEach(k=>{const i=new Image();i.src='assets/'+k+'.webp';IMG[k]=i});
 const ok=i=>i&&i.complete&&i.naturalWidth>0;
 
 /* ---------- Dina Run: personajes y frutillas compartidas ----------
@@ -464,7 +502,70 @@ let run=runRead();
 const owned=id=>id==='sofi'||!!(run&&Array.isArray(run.owned)&&run.owned.includes(id));
 const pocket=()=>run?Math.max(0,(run.total|0)-(run.spent|0)):0;
 function charId(){const c=save.char||(run&&run.char)||'sofi';return CHARS.some(x=>x.id===c)&&owned(c)?c:'sofi'}
-const charImg=(id=charId())=>id==='sofi'&&run&&run.outfit==='hoodie'?'sofi_hoodie':id; // si en Dina Run Sofi tiene el hoodie, acá también
+/* Lo que tenés puesto en Dina Run se ve igual acá (no se elige ni se compra desde Dina Beat).
+   Ropa que cambia el dibujo (hoodie, vestido de Alicia: solo Sofi) o accesorio dibujado encima (corazón, corona, sombrero de bruja).
+   Dina Run guarda el accesorio de cada personaje en run.outfits (antes solo run.outfit, el del personaje elegido). */
+const picCache={}; // fotos del personaje con accesorio (ver charPic)
+const RUN_ACCS={hoodie:{only:'sofi',img:'sofi_hoodie'},alicia:{only:'sofi',img:'sofi_alicia'},corazon:{},corona:{},bruja:{}};
+const RUN_TRAILS={rosa:['#FF9EBB','#FF4D6D','#FFC2D6'],menta:['#7BE08F','#B5F56A','#3CCB7F'],cielo:['#60A5FA','#93C5FD','#B79CF7'],
+  dorado:['#FFD93D','#FFB627','#FFF0A0'],arcoiris:['#FF9EBB','#FFD93D','#4ADE80','#60A5FA','#FF4D6D','#B79CF7'],calabaza:['#FF8A1F','#8B5CF6','#2B2B2B','#FFB347']};
+const runHas=id=>!run||!Array.isArray(run.cosm)||run.cosm.includes(id);
+function runAcc(id){
+  if(!run)return '';
+  const o=run.outfits&&typeof run.outfits==='object'?run.outfits:null;
+  const a=o&&o[id]!=null?o[id]:run.char===id||(!o&&id==='sofi')?run.outfit:'';
+  const A=RUN_ACCS[a];
+  return A&&(!A.only||A.only===id)&&runHas(a)?a:'';
+}
+const charImg=(id=charId())=>{const A=RUN_ACCS[runAcc(id)];return A&&A.img?A.img:id};
+const charHat=(id=charId())=>{const a=runAcc(id);return a&&!RUN_ACCS[a].img?a:''};
+const runTrail=()=>{const t=run&&run.trail;return t&&RUN_TRAILS[t]&&runHas(t)?RUN_TRAILS[t]:null};
+const DINA_LOOKS=[{id:'bruja',img:'dina_bruja',name:'Bruja'},{id:'brujito',img:'dina_brujito',name:'Brujito'},{id:'vampiro',img:'dina_vampiro',name:'Vampiro'}];
+const dinaLooksOwned=()=>DINA_LOOKS.filter(l=>run&&Array.isArray(run.dinaLooks)&&run.dinaLooks.includes(l.id));
+
+/* ---------- 🎨 temas ----------
+   save.set.theme: 'auto' (según la fecha: Halloween del 15/10 al 2/11, el resto del año clásico), o uno fijo.
+   Para agregar uno: sumarlo a THEMES (con desde/hasta si es de temporada), darle sus colores en THEME_LOOK y sus dibujos. */
+const THEMES=[
+  {id:'clasico',name:'Clásico',em:'🌸',img:'torta',sub:'la torta de Sofía'},
+  {id:'halloween',name:'Halloween',em:'🎃',img:'calabaza',desde:[15,10],hasta:[2,11],sub:'calabaza con golosinas, murciélagos y disfraces'},
+];
+let themeTest=null; // solo para pruebas
+function seasonOf(d=new Date()){
+  const v=(d.getMonth()+1)*100+d.getDate();
+  return THEMES.find(t=>{if(!t.desde)return false;const a=t.desde[1]*100+t.desde[0],b=t.hasta[1]*100+t.hasta[0];return a<=b?(v>=a&&v<=b):(v>=a||v<=b)})||null;
+}
+function themeId(){
+  if(themeTest)return themeTest;
+  const s=save.set&&save.set.theme;
+  if(s&&s!=='auto'&&THEMES.some(t=>t.id===s))return s;
+  const t=seasonOf();return t?t.id:'clasico';
+}
+const HW=()=>themeId()==='halloween';
+const cakeKey=()=>HW()?'calabaza':'torta';
+const cakeWord=()=>HW()?'calabaza':'torta';
+const seasonFmt=t=>`del ${t.desde[0]}/${t.desde[1]} al ${t.hasta[0]}/${t.hasta[1]}`;
+// colores de cada etapa con el tema puesto (el color de la etapa, el de los anillos, no cambia)
+const THEME_LOOK={halloween:{
+  s1:{sky:['#e6cff9','#ffe2c6'],floor:'#f39a4e'},s2:{sky:['#d6b6f4','#ffcd9b'],floor:'#e3742a'},
+  s3:{sky:['#a587e4','#f6c39b'],floor:'#5b2fb0'},s4:{sky:['#dcebc9','#f3e2ff'],floor:'#6faa52'}}};
+const lookOf=L=>{const T=THEME_LOOK[themeId()],o=T&&T[L.cls];return o?Object.assign({},L,o):L};
+let dinaLookN=0,candyN=0;
+const HW_CANDY=['hw_caramelo_verde','hw_chupetin','hw_candy_corn','hw_gomita','hw_bombon','hw_caramelo_violeta'];
+// dibujo de cada nota: Dina (con disfraz en Halloween, rotando los que ganaste en Dina Run), frutilla, pancito (golosina en Halloween)
+function noteKey(n){
+  if(n.type==='fru')return 'frutilla';
+  if(n.type==='pan'){if(!HW())return 'pancito';if(n.ci==null)n.ci=candyN++%HW_CANDY.length;return HW_CANDY[n.ci]}
+  if(!HW())return 'dina_corre';
+  if(n.look==null){const L=dinaLooksOwned();n.look=L.length?L[dinaLookN++%L.length].img:'dina_corre'}
+  return n.look;
+}
+function applyTheme(){
+  const id=themeId();document.body.dataset.theme=id;
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=id==='halloween'?'#ffe0c4':'#ffb3d1';
+  const L=dinaLooksOwned(),d=document.querySelector('.hero img.d');
+  if(d){d.src='assets/'+(id==='halloween'&&L.length?L[(Date.now()/4e3|0)%L.length].img:'dina_corre')+'.webp';d.alt=id==='halloween'&&L.length?'Dina disfrazada':'Dina'}
+}
 function runGive(n){ // se lee fresco justo antes de escribir, para no pisar lo que haya guardado Dina Run
   if(!(n>0))return false;
   try{const d=runRead()||{cosm:['default','none']};d.total=(d.total|0)+n;localStorage.setItem(RUN_KEY,JSON.stringify(d));run=d;return true}catch(e){return false}
@@ -575,7 +676,7 @@ const STAGES=[
        'A5','','G5','E5','D5','','B4','','G4','','B4','D5','G5','','',''],
   bass:['G2','C3','C3','D3','G2','C3','D3','G2'],pick:(s,m)=>!!m,drums:1,
   sky:['#ffd0a8','#fff0dc'],floor:'#f5a36b'},
- {name:'¡Miau-loca!',sub:'Dina quiere TODA la torta',bpm:128,loops:3,approach:1.15,cls:'s3',acc:'#5b2fb0',
+ {name:'¡Miau-loca!',sub:'Dina quiere TODA la torta',subHw:'Dina quiere TODOS los dulces',bpm:128,loops:3,approach:1.15,cls:'s3',acc:'#5b2fb0',
   mel:['A4','','C5','E5','A5','','G5','E5','F5','','E5','D5','E5','','C5','',
        'A4','','C5','E5','A5','','B5','C6','B5','','G5','','E5','','','',
        'F5','','A5','','C6','','A5','F5','G5','','B5','','D6','','B5','G5',
@@ -626,11 +727,11 @@ function thin(cand,gap){ // deja las notas más fuertes, separadas por al menos 
 let state='menu',paused=false,cur=null,stage=0;
 let meter=4,grid=[],ev=[],evI=0,notes=[],songStart=0,songEnd=0,beat=.5,bufSrc=null;
 let score=0,combo=0,maxCombo=0,cnt={p:0,b:0,m:0},cake=CAKE_MAX,goodHits=0,fru=0,heat=0,sparks=[];
-let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[],ghosts=[];
+let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[],ghosts=[],conf=[];
 
 function startSong(S){
   ac();cur=S;state='play';paused=false;counting=null;resuming=false;stopPreview();
-  score=0;combo=0;maxCombo=0;cnt={p:0,b:0,m:0};cake=CAKE_MAX;goodHits=0;fru=0;heat=0;sparks=[];fx=[];flyers=[];pops=[];crumbs=[];drops=[];
+  score=0;combo=0;maxCombo=0;cnt={p:0,b:0,m:0};cake=CAKE_MAX;goodHits=0;fru=0;heat=0;sparks=[];fx=[];flyers=[];pops=[];crumbs=[];drops=[];conf=[];
   if(!AC)fakeT0=performance.now();
   newSongBus();
   beat=S.beat;const base=now()+(AC?LAT():0)+.5;
@@ -688,10 +789,11 @@ function tap(){
     best.sc=score;
     pop(p?'¡Perfecto!':'¡Bien!',p?'#ff4f9a':'#ff9a4d');
     if(!p)pop(t<best.t?'⏪ antes':'tarde ⏩','#9a7aa8',-34,17); // para saber hacia dónde corregir
-    flyers.push({img:best.type,x:g.cx,y:g.hy,vx:(Math.random()<.5?-1:1)*(4+Math.random()*4),vy:-9-Math.random()*3,r:0,vr:(Math.random()-.5)*.5,a:1,wet:save.tool==='spray'});
+    flyers.push({img:noteKey(best),k:best.type,x:g.cx,y:g.hy,vx:(Math.random()<.5?-1:1)*(4+Math.random()*4),vy:-9-Math.random()*3,r:0,vr:(Math.random()-.5)*.5,a:1,wet:save.tool==='spray'});
     for(let k=0;k<10;k++)fx.push({x:g.cx,y:g.hy,vx:Math.cos(k*.63)*4,vy:Math.sin(k*.63)*4,l:1,c:save.tool==='spray'?'#7cc8ff':p?'#ff7eb6':'#ffc04d'});
     goodHits++;
-    if(goodHits%HEAL===0&&cake<CAKE_MAX){cake++;pop('🍰 +1','#3fb37f',30);sYay()}
+    if(goodHits%HEAL===0&&cake<CAKE_MAX){cake++;pop((HW()?'🎃':'🍰')+' +1','#3fb37f',30);sYay()}
+    confHit(g);
   }else{
     toolSound(false);
     if(best&&bd<.3){combo=0;pop('¡Fuera de ritmo!','#9a7aa8')}
@@ -702,7 +804,7 @@ function tap(){
 const comboMile=c=>[10,25,50,75,100].includes(c)||(c>100&&c%50===0);
 function comboParty(c){
   pop('🔥 ¡'+c+' de combo!','#ff4f9a',48,30);sCombo(c);
-  const g=geo(),cols=['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d'];
+  const g=geo(),cols=runTrail()||(HW()?['#ff8a1f','#8a5ae0','#ffd84d','#2b2140','#ff9a4d','#b48cf2']:['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d']);
   for(let k=0;k<28;k++){const a=k/28*Math.PI*2,v=5+Math.random()*4;fx.push({x:g.cx,y:g.hy-60*g.u,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1.4,c:cols[k%cols.length]})}
 }
 /* el fantasma suma con las mismas reglas que vos: perfecto ±75 ms = 100, bien = 50, pancito ×3 y extra por combo */
@@ -716,7 +818,7 @@ function miss(n){
   if(n.type==='dina'||n.type==='pan'){
     cake--;shake=1;sBite();pop('¡Ñam!','#c94d8a');
     const g=geo();for(let k=0;k<12;k++)crumbs.push({x:g.cx+(Math.random()-.5)*60,y:g.cy-20,vx:(Math.random()-.5)*5,vy:-3-Math.random()*4,l:1});
-    flyers.push({img:'dina_corre',x:g.cx,y:g.cy-40,vx:0,vy:0,r:0,vr:0,a:1,sit:1});
+    flyers.push({img:noteKey(n),k:'dina',x:g.cx,y:g.cy-40,vx:0,vy:0,r:0,vr:0,a:1,sit:1});
     if(cake<=0)finish(false);
   }else pop('¡Se fue!','#9a7aa8');
 }
@@ -773,7 +875,7 @@ $('snd').textContent=save.muted?'🔇':'🔊';
 
 /* ---------- ajustes ---------- */
 let cfgFrom='menu';
-function openCfg(from){cfgFrom=from;$('calB').hidden=$('newsB').hidden=$('acctB').hidden=from==='pause';renderCfg();if(from==='menu')show('menu',false);else show('pause',false);show('cfg',true);$('cfgB').hidden=true}
+function openCfg(from){cfgFrom=from;$('calB').hidden=$('newsB').hidden=$('acctB').hidden=$('temasB').hidden=from==='pause';renderCfg();if(from==='menu')show('menu',false);else show('pause',false);show('cfg',true);$('cfgB').hidden=true}
 function renderCfg(){
   $('acctB').textContent=cloudAcctLabel();
   document.querySelectorAll('#smoothSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===+save.set.smooth));
@@ -786,6 +888,21 @@ function renderCfg(){
   $('setLat').value=save.set.lat;$('setLatV').textContent=save.set.lat?save.set.lat+' ms':'no';
 }
 $('cfgB').onclick=()=>openCfg('menu');
+/* 🎨 pantalla de temas (desde ⚙️ Ajustes) */
+function renderTemas(){
+  const now=seasonOf(),sel=save.set.theme||'auto',autoId=now?now.id:'clasico',A=THEMES.find(t=>t.id===autoId);
+  const row=(id,img,em,name,sub)=>`<button class="part" data-th="${id}" aria-pressed="${sel===id}"><img src="assets/${img}.webp" alt=""><span class="n">${em} ${name}<small>${sub}</small></span><span class="lv">${sel===id?'✔️':''}</span></button>`;
+  $('themeList').innerHTML=row('auto',A.img,'📅','Según la fecha',`hoy: ${A.em} ${A.name}`+(now?', hasta el '+now.hasta[0]+'/'+now.hasta[1]:'')+' · cambia solo')
+    +THEMES.map(t=>row(t.id,t.img,t.em,t.name,t.sub+(t.desde?' · '+seasonFmt(t):''))).join('');
+  document.querySelectorAll('#themeList [data-th]').forEach(b=>b.onclick=()=>{save.set.theme=b.dataset.th;persist();applyTheme();renderTemas()});
+  const own=dinaLooksOwned().map(l=>l.id);
+  $('lookList').innerHTML=DINA_LOOKS.map(l=>{const has=own.includes(l.id);return `<div class="look${has?'':' lock'}"><img src="assets/${l.img}.webp" alt="Dina ${l.name}">${has?'✔️ ':'🔒 '}${l.name}</div>`}).join('');
+  const hat=charHat(),cl=runTrail();
+  $('themeNote').textContent=(own.length?'En Halloween, Dina va disfrazada con los que ganaste. ':'')+'La ropa, los sombreros y el confeti se eligen en Dina Run; acá se ven igual'+(hat||cl||charImg()!==charId()?' (ya tenés algo puesto ✨).':'.');
+}
+function openTemas(){run=runRead();renderTemas();show('cfg',false);show('temas',true)}
+$('temasB').onclick=openTemas;
+$('temasOk').onclick=()=>{show('temas',false);renderCfg();show('cfg',true)};
 $('pauseCfg').onclick=()=>openCfg('pause');
 $('cfgOk').onclick=()=>{show('cfg',false);if(cfgFrom==='pause')show('pause',true);else{renderMenu();show('menu',true);$('cfgB').hidden=false}};
 document.querySelectorAll('#toolSeg button').forEach(b=>b.onclick=()=>{ac();save.tool=b.dataset.t;persist();renderCfg();toolSound(true);if(save.set.meow)sMeow(.16)});
@@ -802,8 +919,14 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.19.1';
+const VERSION='0.20';
 const NEWS=[
+  {v:'0.20',fecha:'octubre 2026',titulo:'🎃 Halloween y 🎨 temas',items:[
+    ['🎃','Halloween (del 15/10 al 2/11): la calabaza llena de golosinas que dibujó Sofía en vez de la torta, murciélagos, luna naranja, golosinas en vez de pancitos y colores naranja y violeta. Si Dina se la come: "miau… ¡la calabaza era mía!".'],
+    ['🎨','Nueva sección 🎨 Temas en ⚙️ Ajustes: "Según la fecha" (Halloween se pone solo en su temporada), Clásico o Halloween cuando quieras.'],
+    ['🐱','Dina se pone los disfraces que ganaste en el Pase de Halloween de Dina Run (bruja, brujito y vampiro).'],
+    ['👗','Lo que tenés puesto en Dina Run se ve también acá: el vestido de Alicia y el hoodie de Sofi, el corazón, la corona y el sombrero de bruja, y tu confeti salta en cada acierto.'],
+  ]},
   {v:'0.19.1',fecha:'octubre 2026',titulo:'Tu nombre y tu foto en ☁️ Cuenta',items:[
     ['🙂','Si jugaste un desafío sin cuenta y después entraste con Google, ahora se ven bien tu nombre y tu foto en ☁️ Cuenta y arriba en el menú.'],
   ]},
@@ -984,10 +1107,10 @@ function finish(win){
   const gave=runGive(fru);
   $('resRun').hidden=!gave;
   if(gave)$('resRun').textContent=`🍓 +${fru} a tu bolsa de Dina Run · 👛 ${pocket().toLocaleString('es-AR')}`;
-  $('resImg').src=win?'assets/'+charImg()+'.webp':'assets/dina.webp';
-  $('globo').hidden=win;
-  $('resT').textContent=win?(stars===3?'¡Torta a salvo!':stars===2?'¡Muy bien!':'¡Zafaste!'):'¡Uy! Dina se comió la torta';
-  $('stars').innerHTML=win?'🍓'.repeat(stars)+'<span style="opacity:.25;filter:grayscale(1)">🍓</span>'.repeat(3-stars):'🍰💨';
+  $('resImg').src=win?charPic():'assets/'+(HW()?'dina_calabaza':'dina')+'.webp';$('resImg').alt=win?'':HW()?'Dina comiendo la calabaza':'Dina comiendo la torta';
+  $('globo').hidden=win;$('globo').textContent=HW()?'miau… ¡la calabaza era mía!':'miau… ¡la torta era mía!';
+  $('resT').textContent=win?(stars===3?(HW()?'¡Calabaza a salvo!':'¡Torta a salvo!'):stars===2?'¡Muy bien!':'¡Zafaste!'):'¡Uy! Dina se comió la '+cakeWord();
+  $('stars').innerHTML=win?'🍓'.repeat(stars)+'<span style="opacity:.25;filter:grayscale(1)">🍓</span>'.repeat(3-stars):(HW()?'🎃💨':'🍰💨');
   $('resScore').innerHTML=score.toLocaleString('es-AR')+(nb&&score>0?'<span class="new">¡Récord!</span>':'');
   $('stats').innerHTML=`<div>✨ Perfectos<b>${cnt.p}</b></div><div>👍 Bien<b>${cnt.b}</b></div><div>😿 Fallos<b>${cnt.m}</b></div><div>🔥 Combo<b>${maxCombo}</b></div><div>🎯 Precisión<b>${Math.round(acc*100)}%</b></div><div>🍓 Frutillas<b>${fru}</b></div>`;
   showVs(win);acctUi();$('dareMsg').hidden=true;$('dare').textContent=cur.reto?(cur.reto.id?'🔗 Invitar a más':'⚔️ Devolver'):'⚔️ Desafiar';
@@ -1004,14 +1127,15 @@ function bestGrade(a,b){const o='SABCD';if(!a)return b||'';if(!b)return a;return
 $('next').onclick=()=>startStage(cur.stage+1);
 $('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else startSong(cur.rebuild?cur.rebuild():cur)};
 $('home').onclick=()=>{if(cur&&cur.stage==null){state='menu';show('res',false);if(pick)openParts();else openMine()}else toMenu()};
-function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct','sala'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
+function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct','sala','temas'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
 function renderMenu(){
   const sp=save.tool==='spray';
-  $('tagline').textContent=sp?'¡Psst! que Dina no se coma la torta':'¡Piii! que Dina no se coma la torta';
-  $('howTxt').innerHTML=`👆 Tocá la pantalla <b>justo</b> cuando Dina llega al círculo, al ritmo de la música, para espantarla con ${sp?'el rociador':'el silbato'}. ¡Si te atrasás, le da un mordisco a la torta!`;
+  applyTheme();
+  $('tagline').textContent=(sp?'¡Psst!':'¡Piii!')+' que Dina no se coma la '+cakeWord();
+  $('howTxt').innerHTML=`👆 Tocá la pantalla <b>justo</b> cuando Dina llega al círculo, al ritmo de la música, para espantarla con ${sp?'el rociador':'el silbato'}. ¡Si te atrasás, le da un mordisco a la ${cakeWord()}!`;
   $('stages').innerHTML=STAGES.map((S,i)=>{
     const lock=i+1>save.open;
-    return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):S.sub)+(((save.rk||[])[i]||{}).pos&&canRank()?` · 🌎 #${save.rk[i].pos}${save.rk[i].down?' ▼':''}`:'')}</span></button>`}).join('')
+    return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):HW()&&S.subHw||S.sub)+(((save.rk||[])[i]||{}).pos&&canRank()?` · 🌎 #${save.rk[i].pos}${save.rk[i].down?' ▼':''}`:'')}</span></button>`}).join('')
     +`<button class="st s4" id="mineB">🎵 Tus canciones<span>componé o abrí música</span></button>`
     +`<button class="st s5" id="histB">📜 Tus partidas<span>${save.newRes?'⚔️ '+save.newRes+(save.newRes>1?' novedades en tus desafíos':' novedad en tus desafíos'):'historial y duelos'}</span></button>`;
   document.querySelectorAll('.st[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(save.rk&&save.rk[i]&&save.rk[i].down){save.rk[i].down=0;persist()}startStage(i)});
@@ -1023,7 +1147,7 @@ let viewCh=null; // personaje que se está mirando en el menú (puede ser uno qu
 function renderWho(reset){
   if(reset||!CHARS.some(x=>x.id===viewCh))viewCh=charId(); // al volver al menú se muestra con quién jugás
   const c=CHARS.find(x=>x.id===viewCh)||CHARS[0],own=owned(c.id),h=$('heroImg');
-  h.src='assets/'+charImg(c.id)+'.webp';h.alt=c.name;h.classList.toggle('lock',!own);
+  h.src=charPic(c.id);h.alt=c.name;h.classList.toggle('lock',!own);
   $('chName').innerHTML=c.name+'<small>'+(own?'✔️ para jugar':'🔒 en Dina Run')+'</small>';
   $('wallet').textContent=run?' · 🍓 '+pocket().toLocaleString('es-AR'):'';
 }
@@ -2236,7 +2360,7 @@ function draw(){
   if(!save.set.smooth&&performance.now()-lastFrame<15)return; // modo 60 cuadros: se saltea un cuadro si la pantalla va más rápido
   const pf=performance.now(),dt=Math.min(3,(pf-lastFrame)/16.67);lastFrame=pf;
   if(!FPS.el.hidden){FPS.n++;if(pf-FPS.t>=1000){FPS.el.textContent=Math.round(FPS.n*1000/(pf-FPS.t))+' cuadros/s';FPS.n=0;FPS.t=pf}}
-  const g=geo(),u=g.u,t=judgeNow(),L=state==='menu'||!cur?STAGES[0]:cur.look;
+  const g=geo(),u=g.u,t=judgeNow(),L=lookOf(state==='menu'||!cur?STAGES[0]:cur.look);
   if(state==='play'&&!paused){
     for(const n of notes)if(!n.st&&t>n.t+WIN_B)miss(n);
     for(const G of ghosts)while(G.i<notes.length){const n=notes[G.i],o=G.h[G.i];if(t<n.t+(o===999?WIN_B:o/1000))break;ghostStep(G,n,o);G.i++}
@@ -2251,6 +2375,7 @@ function draw(){
   else{const gr=ctx.createLinearGradient(0,0,0,H);gr.addColorStop(0,L.sky[0]);gr.addColorStop(1,L.sky[1]);ctx.fillStyle=gr;ctx.fillRect(0,0,W,H)}
   ctx.fillStyle=L.floor;ctx.fillRect(0,g.cy+40*u,W,H);
   ctx.fillStyle='rgba(255,255,255,.25)';for(let x=-stX;x<W;x+=40)ctx.fillRect(x,g.cy+40*u,20,6);
+  if(HW())drawHalloween(g,u,pf,dt);
   if(state==='menu'||!cur)return;
 
   // pulso actual según la grilla de la canción (sigue cambios de tempo y el pulso detectado en los mp3)
@@ -2294,14 +2419,16 @@ function draw(){
   }
   // torta y mordiscos
   const sh=shake>0?Math.sin(pf/20)*shake*6:0;shake=Math.max(0,shake-.03*dt);
-  if(ok(IMG.torta)){const w=150*u,h=w*IMG.torta.height/IMG.torta.width,sc=1+.045*pk;
-    ctx.drawImage(IMG.torta,g.cx+sh-w*sc/2,g.cy+h/2-h*sc,w*sc,h*sc); // late desde abajo, como si saltara sobre el plato
+  const CK=IMG[cakeKey()];
+  if(ok(CK)){const w=(HW()?158:150)*u,h=w*CK.height/CK.width,sc=1+.045*pk;
+    ctx.drawImage(CK,g.cx+sh-w*sc/2,g.cy+h/2-h*sc,w*sc,h*sc); // late desde abajo, como si saltara sobre el plato
     ctx.fillStyle=L.sky[1];for(let b=0;b<CAKE_MAX-cake;b++){const bx=g.cx+sh+[-.3,.25,-.05,.38,-.42,.1,-.18,.3][b]*w,by=g.cy-h*.32+[0,.05,-.08,.1,.12,.15,.2,.22][b]*h;ctx.beginPath();ctx.arc(bx,by,14*u,0,7);ctx.arc(bx+12*u,by+3*u,11*u,0,7);ctx.fill()}}
   // Sofi con silbato o rociador
   blow=Math.max(0,blow-.08*dt);
   const PJ=IMG[charImg()];
   if(ok(PJ)){const P=sofiPos(g),h=P.h,w=h*PJ.width/PJ.height,sx=P.sx,sy=P.sy-blow*8*u+Math.sin(beatPh*Math.PI*2)*1.5-pk*7*u;
     ctx.drawImage(PJ,sx-w/2,sy,w,h);
+    const hat=charHat();if(hat){ctx.save();ctx.translate(sx,sy+h);drawAcc(ctx,hat,w,h,pf/16.67);ctx.restore()}
     if(save.tool==='spray')drawSpray(sx+34*u,sy+h*.55,u,blow);else drawWhistle(sx-2*u,sy+h*.44,u,blow);
   }
   for(const G of ghosts){const im=IMG[G.img];G.fl=Math.max(0,G.fl-.05*dt);
@@ -2313,7 +2440,7 @@ function draw(){
   for(const f of flyers){
     if(f.sit){f.a-=.012*dt}else{f.x+=f.vx*dt;f.y+=f.vy*dt;f.vy+=.45*dt;f.r+=f.vr*dt;if(f.y>H+100)f.a=0}
     const im=IMG[f.img==='dina'?'dina_corre':f.img==='fru'?'frutilla':f.img==='pan'?'pancito':f.img];if(!ok(im))continue;
-    const w=(f.img==='fru'?44:f.img==='pan'?60:90)*u,h=w*im.height/im.width;
+    const fk=f.k||f.img,w=(fk==='fru'?44:fk==='pan'?60:90)*u,h=w*im.height/im.width;
     ctx.save();ctx.globalAlpha=Math.max(0,f.a);ctx.translate(f.x,f.y);ctx.rotate(f.r);ctx.drawImage(im,-w/2,-h/2,w,h);
     if(f.wet){ctx.fillStyle='rgba(124,200,255,.9)';for(let k=0;k<4;k++){ctx.beginPath();ctx.ellipse((k-1.5)*16*u,-h*.45-Math.sin(pf/90+k)*4*u,3*u,5*u,0,0,7);ctx.fill()}}
     ctx.restore();
@@ -2324,7 +2451,10 @@ function draw(){
   for(const p of fx){p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=.035*dt;ctx.globalAlpha=Math.max(0,p.l);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,4*u,0,7);ctx.fill()}
   fx=fx.filter(p=>p.l>0);
   for(const c of crumbs){c.x+=c.vx*dt;c.y+=c.vy*dt;c.vy+=.35*dt;c.l-=.025*dt;ctx.globalAlpha=Math.max(0,c.l);ctx.fillStyle='#fff3c4';ctx.fillRect(c.x,c.y,5*u,5*u)}
-  crumbs=crumbs.filter(c=>c.l>0);ctx.globalAlpha=1;
+  crumbs=crumbs.filter(c=>c.l>0);
+  for(const c of conf){c.x+=c.vx*dt;c.y+=c.vy*dt;c.vy+=.18*dt;c.vx*=Math.pow(.985,dt);c.rot+=c.vr*dt;c.l-=.016*dt;
+    ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,c.l));ctx.translate(c.x,c.y);ctx.rotate(c.rot);ctx.fillStyle=c.c;ctx.fillRect(-3*u,-4.5*u,6*u,9*u);ctx.restore()}
+  conf=conf.filter(c=>c.l>0&&c.y<H+20);ctx.globalAlpha=1;
   ctx.textAlign='center';
   for(const p of pops){p.l-=.022*dt;ctx.globalAlpha=Math.max(0,p.l);ctx.font=`700 ${p.sz*u}px Fredoka`;ctx.lineWidth=5;ctx.strokeStyle='#fff';const y=g.hy-70*u-(1-p.l)*30-p.dy*u;ctx.strokeText(p.txt,g.cx,y);ctx.fillStyle=p.c;ctx.fillText(p.txt,g.cx,y)}
   pops=pops.filter(p=>p.l>0);ctx.globalAlpha=1;
@@ -2341,8 +2471,8 @@ function draw(){
   ctx.textAlign='right';ctx.font=`700 22px Fredoka`;ctx.fillStyle='#4a2a3f';ctx.fillText(score.toLocaleString('es-AR'),W-64,32);
   if(combo>=3){ctx.font=`700 ${15+Math.round(heat*5)}px Fredoka`;ctx.fillStyle='#ff4f9a';ctx.fillText('🔥 '+combo,W-64,52+heat*3)}
   ctx.textAlign='left';
-  if(ok(IMG.torta)){ctx.font=`700 22px Fredoka`;const x0=80,sw=ctx.measureText(score.toLocaleString('es-AR')).width,sp=Math.max(11,Math.min(19,(W-64-sw-10-x0)/CAKE_MAX)),cs=sp-1;
-    for(let i=0;i<CAKE_MAX;i++){ctx.globalAlpha=i<cake?1:.2;ctx.drawImage(IMG.torta,x0+i*sp,26-cs*.53,cs,cs*1.05)}}ctx.globalAlpha=1;
+  if(ok(CK)){ctx.font=`700 22px Fredoka`;const x0=80,sw=ctx.measureText(score.toLocaleString('es-AR')).width,sp=Math.max(11,Math.min(19,(W-64-sw-10-x0)/CAKE_MAX)),cs=sp-1;
+    for(let i=0;i<CAKE_MAX;i++){ctx.globalAlpha=i<cake?1:.2;ctx.drawImage(CK,x0+i*sp,26-cs*.53,cs,cs*CK.height/CK.width)}}ctx.globalAlpha=1;
   if(ghosts.length===1){const G=ghosts[0],d=score-G.score;ctx.textAlign='left';ctx.font='700 14px Fredoka';ctx.fillStyle='#7a4fd0';const tx='👻 '+G.n+' '+G.score.toLocaleString('es-AR');ctx.fillText(tx,80,58);
     if(d){ctx.fillStyle=d>0?'#1d8c64':'#e0405e';ctx.fillText((d>0?' ▲ +':' ▼ −')+Math.abs(d).toLocaleString('es-AR'),80+ctx.measureText(tx).width,58)}}
   else if(ghosts.length>1){ // ranking en vivo: vos y los fantasmas, ordenados por puntaje
@@ -2358,6 +2488,81 @@ function draw(){
       ctx.globalAlpha=on?1:.55;ctx.fillStyle=on?L.acc:'#fff';ctx.beginPath();ctx.arc(x0+i*sp,y0,r,0,7);ctx.fill();
       if(!on){ctx.globalAlpha=.35;ctx.strokeStyle=L.acc;ctx.lineWidth=1.5;ctx.stroke()}}
     ctx.globalAlpha=1}
+}
+/* confeti de Dina Run: si tenés uno puesto allá, salta de tu personaje en cada acierto */
+function confHit(g){
+  const cols=runTrail();if(!cols||conf.length>140)return;
+  const P=sofiPos(g),n=calmMotion?3:6;
+  for(let k=0;k<n;k++)conf.push({x:P.sx+(Math.random()-.5)*40*g.u,y:P.sy+P.h*(.3+Math.random()*.3),vx:(Math.random()-.5)*4,vy:-3-Math.random()*4,rot:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[Math.random()*cols.length|0],l:1.3});
+}
+/* accesorios de Dina Run dibujados sobre el personaje (centro abajo en 0,0; alto h). Mismo dibujo que allá. */
+function heartPath(c,x,y,sz){c.beginPath();c.moveTo(x,y+sz*.35);c.bezierCurveTo(x-sz*.9,y-sz*.25,x-sz*.35,y-sz*.95,x,y-sz*.4);c.bezierCurveTo(x+sz*.35,y-sz*.95,x+sz*.9,y-sz*.25,x,y+sz*.35);c.closePath()}
+function drawAcc(c,acc,w,h,t){
+  const k=h/112;
+  if(acc==='corazon'){c.fillStyle='#FF4D6D';c.strokeStyle='#000';c.lineWidth=3*k;heartPath(c,w*.42,-h-6*k+Math.sin(t*.12)*5*k,16*k);c.fill();c.stroke()}
+  if(acc==='corona'){
+    const cw=w*.5,cy=-h+4*k;
+    c.fillStyle='#FFD93D';c.strokeStyle='#000';c.lineWidth=3*k;c.lineJoin='round';c.beginPath();
+    c.moveTo(-cw/2,cy);c.lineTo(-cw/2,cy-18*k);c.lineTo(-cw/4,cy-8*k);c.lineTo(0,cy-24*k);c.lineTo(cw/4,cy-8*k);c.lineTo(cw/2,cy-18*k);c.lineTo(cw/2,cy);c.closePath();c.fill();c.stroke();
+    c.fillStyle='#FF4D6D';for(const dx of[-cw/4,0,cw/4]){c.beginPath();c.arc(dx,cy-5*k,3*k,0,7);c.fill()}
+  }
+  if(acc==='bruja')witchHat(c,w*.02,-h+10*k,w*.62,k);
+}
+function witchHat(c,x,y,W,k){ // ala ancha, punta doblada y cinta naranja
+  c.save();c.translate(x,y);c.lineWidth=3*k;c.strokeStyle='#000';c.lineJoin='round';c.fillStyle='#5B3A8C';
+  c.beginPath();c.ellipse(0,0,W*.62,W*.13,0,0,7);c.fill();c.stroke();
+  c.beginPath();c.moveTo(-W*.3,-W*.04);c.quadraticCurveTo(-W*.12,-W*.55,W*.05,-W*.78);c.quadraticCurveTo(W*.3,-W*.86,W*.38,-W*.66);
+  c.quadraticCurveTo(W*.18,-W*.62,W*.14,-W*.5);c.quadraticCurveTo(W*.24,-W*.25,W*.3,-W*.04);c.closePath();c.fill();c.stroke();
+  c.fillStyle='#FF8A1F';c.beginPath();c.moveTo(-W*.28,-W*.12);c.lineTo(W*.29,-W*.12);c.lineTo(W*.27,-W*.22);c.lineTo(-W*.23,-W*.22);c.closePath();c.fill();c.stroke();
+  c.restore();
+}
+/* foto del personaje para el menú y los resultados: con el accesorio de Dina Run dibujado encima */
+function charPic(id=charId()){
+  const key=charImg(id),hat=charHat(id),im=IMG[key];
+  if(!hat)return 'assets/'+key+'.webp';
+  if(!ok(im)){im.addEventListener('load',()=>{if(state==='menu')renderWho()},{once:true});return 'assets/'+key+'.webp'}
+  const ck=key+'+'+hat;if(picCache[ck])return picCache[ck];
+  const h=im.naturalHeight,w=im.naturalWidth,top=Math.round(h*.4),c=document.createElement('canvas');c.width=w;c.height=h+top;
+  const x=c.getContext('2d');x.drawImage(im,0,top);x.translate(w/2,top+h);drawAcc(x,hat,w,h,0);
+  try{return picCache[ck]=c.toDataURL('image/png')}catch(e){return 'assets/'+key+'.webp'}
+}
+/* ---------- 🎃 Halloween: murciélagos, luna naranja y calabacitas en el piso (dibujados con código, como en Dina Run) ---------- */
+const BATS=Array.from({length:6},(_,i)=>({x:i/6+Math.random()*.1,y:.1+Math.random()*.32,ph:Math.random()*7,s:.6+Math.random()*.5,v:.5+Math.random()*.6}));
+function bat(x,y,s,f){
+  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle='#2B2140';
+  const wy=Math.sin(f)*9;
+  ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(-12,-8-wy,-26,-4-wy);ctx.quadraticCurveTo(-20,2,-14,2);ctx.quadraticCurveTo(-8,8,0,4);
+  ctx.quadraticCurveTo(8,8,14,2);ctx.quadraticCurveTo(20,2,26,-4-wy);ctx.quadraticCurveTo(12,-8-wy,0,0);ctx.fill();
+  ctx.beginPath();ctx.ellipse(0,1,6,7,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.moveTo(-5,-4);ctx.lineTo(-3,-11);ctx.lineTo(-1,-5);ctx.moveTo(5,-4);ctx.lineTo(3,-11);ctx.lineTo(1,-5);ctx.fill();
+  ctx.fillStyle='#FFD93D';ctx.beginPath();ctx.arc(-2.3,0,1.5,0,7);ctx.arc(2.3,0,1.5,0,7);ctx.fill();
+  ctx.restore();
+}
+let _pk=null,_moon=null;
+function pumpkinCv(){ // calabacita de fondo (una sola vez en una imagen aparte)
+  if(_pk)return _pk;const r=40,c=document.createElement('canvas');c.width=c.height=r*2.6;const x=c.getContext('2d');
+  x.translate(r*1.3,r*1.45);x.lineWidth=5;x.strokeStyle='#000';x.lineJoin='round';
+  x.fillStyle='#3E8E41';x.beginPath();x.moveTo(-4,-r*.9);x.quadraticCurveTo(0,-r*1.35,10,-r*1.3);x.lineTo(8,-r*.85);x.closePath();x.fill();x.stroke();
+  x.fillStyle='#FF8A1F';for(const [dx,rx] of [[-r*.45,r*.6],[r*.45,r*.6],[0,r*.62]]){x.beginPath();x.ellipse(dx,0,rx,r*.85,0,0,7);x.fill();x.stroke()}
+  x.fillStyle='#2B2140';
+  x.beginPath();x.moveTo(-r*.42,-r*.2);x.lineTo(-r*.18,-r*.2);x.lineTo(-r*.3,-r*.42);x.closePath();x.fill();
+  x.beginPath();x.moveTo(r*.42,-r*.2);x.lineTo(r*.18,-r*.2);x.lineTo(r*.3,-r*.42);x.closePath();x.fill();
+  x.beginPath();x.moveTo(-r*.4,r*.15);x.quadraticCurveTo(0,r*.55,r*.4,r*.15);x.quadraticCurveTo(0,r*.32,-r*.4,r*.15);x.fill();
+  return _pk=c;
+}
+function moonCv(){
+  if(_moon)return _moon;const c=document.createElement('canvas');c.width=c.height=200;const x=c.getContext('2d');
+  const gl=x.createRadialGradient(100,100,40,100,100,100);gl.addColorStop(0,'rgba(255,190,110,.55)');gl.addColorStop(1,'rgba(255,190,110,0)');x.fillStyle=gl;x.fillRect(0,0,200,200);
+  x.fillStyle='#FFB347';x.beginPath();x.arc(100,100,52,0,7);x.fill();
+  x.fillStyle='#F59B2E';for(const [a,b,r] of [[82,118,9],[118,84,7],[78,86,5],[116,120,5]]){x.beginPath();x.arc(a,b,r,0,7);x.fill()}
+  return _moon=c;
+}
+function drawHalloween(g,u,pf,dt){
+  const m=moonCv(),ms=Math.min(150,130*u+20);ctx.globalAlpha=.95;ctx.drawImage(m,W-ms*.95,Math.max(60,H*.13)-ms/2,ms,ms);ctx.globalAlpha=1;
+  const fl=calmMotion?.4:1,bw=W+120;
+  for(const b of BATS){const x=((b.x*bw-pf*.035*b.v*fl)%bw+bw)%bw-60,y=b.y*g.hy+Math.sin(pf/700+b.ph)*10*u;bat(x,y,b.s*Math.max(.7,u),pf/90*fl+b.ph)}
+  const pk=pumpkinCv(),sz=34*u,fy=g.cy+40*u-sz*.78,step=Math.max(170,W/3);
+  for(let x=-((bgX*2.2)%step)+step*.3;x<W+sz;x+=step)ctx.drawImage(pk,x-sz/2,fy,sz,sz);
 }
 function drawWhistle(wx,wy,u,b){ // silbato provisorio (hecho con código)
   ctx.save();ctx.translate(wx,wy);ctx.rotate(-.25);ctx.fillStyle='#ffd23f';ctx.strokeStyle='#4a2a3f';ctx.lineWidth=2;
@@ -2377,7 +2582,7 @@ function drawSpray(x,y,u,b){ // rociador provisorio (hecho con código)
   if(b>.05){ctx.save();ctx.font=`700 ${18*u}px Fredoka`;ctx.textAlign='center';ctx.lineWidth=4;ctx.strokeStyle=`rgba(255,255,255,${b})`;ctx.fillStyle=`rgba(40,130,210,${b})`;ctx.strokeText('¡Psst!',x+30*u,y-40*u);ctx.fillText('¡Psst!',x+30*u,y-40*u);ctx.restore()}
 }
 function drawNote(n,x,y,u,k){
-  const im=n.type==='dina'?IMG.dina_corre:n.type==='fru'?IMG.frutilla:IMG.pancito;if(!ok(im))return;
+  const im=IMG[noteKey(n)];if(!ok(im))return;
   const w=(n.type==='fru'?44:n.type==='pan'?62:88)*u,h=w*im.height/im.width;
   ctx.save();ctx.translate(x,y);
   if(n.type==='dina')ctx.rotate(save.set.viz!==0&&beatNow.bi>=0?Math.sin(beatNow.ph*Math.PI)*(beatNow.bi%2?-.14:.14):Math.sin(performance.now()/120+n.wob)*.12); // con el visualizador, Dina se balancea al pulso
@@ -2393,7 +2598,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io')&&!/\/prueba\//.test(location.pathname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba'||window.FORCE_SS)window.SS={openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba'||window.FORCE_SS)window.SS={set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.19.1
+Última actualización: 29/10/2026 · versión 0.20
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v23; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v24; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -260,6 +260,17 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Se nota en ☁️ Cuenta, el botón de arriba (`#acctI`) y el `nombre` de respaldo en `jugadores/{uid}`. Los rankings no cambian: usan el apodo.
 - Prueba: `nube.py` revisa `mapUser` con una cuenta así.
 
+## Versión 0.20 — 🎃 Halloween y 🎨 temas
+- Pedido de Leandro (29/10): temporada de Halloween como en Dina Run, con sus skins y efectos; la calabaza del dibujo de Sofía en vez de la torta, sin Dina; que se pueda apagar, mejor como sección de temas para ir sumando.
+- **Temas** (`THEMES`, `themeId()`, `save.set.theme`): `'auto'` por defecto (el tema cuya temporada `desde`/`hasta` incluye hoy; si ninguno, clásico), `'clasico'` o `'halloween'` fijos (Halloween se puede poner fuera de temporada: es solo visual). Pantalla `#temas` desde ⚙️ Ajustes → 🎨 Temas (botón en la fila de Calibrar/Listo; no aparece si los ajustes se abren desde la pausa). `applyTheme()` pone `body[data-theme]` (colores en CSS), el `theme-color` y a Dina del menú. `set.theme` viaja con la cuenta.
+- **Para sumar un tema:** agregarlo a `THEMES` (con `desde`/`hasta` si es de temporada, `img` para su fila), sus cielos/pisos por etapa en `THEME_LOOK[id][cls]` (`lookOf(L)`), su CSS `body[data-theme=id]`, y decidir qué cambia en `cakeKey()`, `cakeWord()`, `noteKey()` y el dibujo de fondo (como `drawHalloween`).
+- **Halloween:** `assets/calabaza.webp` = la calabaza con golosinas recortada de `dina_calabaza.webp` (dibujo de Sofía): se sacó a Dina, el costado derecho y el borde de la boca se redibujaron con trazo negro, y el hueco que tapaba su cabeza se llenó con dos golosinas copiadas de la misma pila (script en `pruebas/herramientas/recorte_calabaza.py`). Va en lugar de la torta (158 de ancho en vez de 150) y en las vidas del HUD. Cielos de atardecer violeta/naranja por etapa, luna naranja, 6 murciélagos y calabacitas en el piso (`drawHalloween`, hechos con código como en Dina Run; con menos movimiento van más lentos). Pancitos → golosinas de Dina Run (`HW_CANDY`, rotan, mismo puntaje). Textos: "que Dina no se coma la calabaza", "¡Calabaza a salvo!", "¡Uy! Dina se comió la calabaza", globito "miau… ¡la calabaza era mía!" (como Dina Run en Halloween), 🎃💨, 🎃 +1; ¡Miau-loca! dice "Dina quiere TODOS los dulces". Al perder, `dina_calabaza.webp`. Confeti de combo en naranja/violeta. **No cambian notas, puntajes ni rankings.**
+- **Cosas de Dina Run** (se leen de `sofiRunner.v1`, no se eligen acá): `runAcc(id)` = `run.outfits[id]` (o `run.outfit` si es el personaje elegido allá, para guardados viejos), solo si está en `run.cosm` y es para ese personaje. Ropa que cambia el dibujo (`RUN_ACCS`: hoodie y alicia, solo Sofi) → `charImg`; accesorios dibujados encima (corazón, corona, sombrero de bruja; `drawAcc`/`witchHat` copiados de Dina Run) → `charHat`. En el menú y resultados, `charPic()` arma la foto con el accesorio en un canvas (más alta, el personaje queda un poco más chico). Confeti (`run.trail`, colores en `RUN_TRAILS`): `confHit()` tira 6 papelitos desde el personaje en cada acierto (3 con menos movimiento) y los avisos de combo usan esos colores. Son de todo el año (no dependen del tema).
+- **Disfraces de Dina** (`run.dinaLooks`: bruja, brujito, vampiro; dibujos de Sofía `dina_bruja/brujito/vampiro.webp`, una pose): solo en Halloween, cada nota de Dina lleva uno de los que ganaste, rotando (`noteKey`, guardado en `n.look`; el mordisco usa el mismo). Sin disfraces ganados, Dina normal. En 🎨 Temas se ven los tres, con 🔒 los que faltan.
+- Créditos: calabaza y disfraces, de Sofía; golosinas y vestido de Alicia, con ayuda de IA sobre sus dibujos (como en Dina Run). Están en 🎨 Temas y en el README.
+- Pruebas: `juego.py` revisa fechas de la temporada, tema fijo clásico/Halloween (dibujos de las notas, foto, globito y título al perder), confeti al acertar, foto con el vestido de Alicia, guardado viejo de Dina Run (solo `outfit`) y Dina sin disfraces si no ganaste ninguno. `tamanos.py` revisa `temas` y que ⚙️ Ajustes siga sin deslizar con el botón nuevo en la misma fila (deja `pruebas/s_temas.png` y `s_temas_cfg.png`).
+- Ideas: música de Halloween en el menú o Tus canciones (en las etapas no, para no cambiar las notas del ranking); más temas (Navidad, verano) con dibujos de Sofía.
+
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
 
@@ -272,3 +283,4 @@ No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego 
 5. ~~Guardar los archivos de música en el dispositivo~~ (hecho en 0.13).
 6. Probar la detección de golpes con canciones reales de distintos estilos (hecho con una de city pop en mp3 y MIDI; faltan sin batería, con cambios de tempo, muy rápidas o muy lentas, y sincopadas).
 7. ~~Más ganas de repetir: avisos de combo, fondo con la racha y calificación final~~ (hecho en 0.13).
+8. Más temas en 🎨 Temas (Navidad, verano, Pascua), idealmente con dibujos de Sofía. Que Sofía dibuje sus calabacitas y murciélagos del fondo (hoy hechos con código).

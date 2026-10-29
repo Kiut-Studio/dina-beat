@@ -219,5 +219,31 @@ async def main():
     await pg3.keyboard.press('Escape');vuelve=await pg3.evaluate('()=>!document.getElementById("cfg").hidden')
     print('novedades: nuevo no las ve',nuevo,'· viejo las ve',viejo,'· al cerrar menú/guarda',menu,'· no vuelven',otra,'· desde ajustes',desde,'vuelve a ajustes',vuelve)
     await ctx.close()
+    # 🎨 temas y cosas de Dina Run (ropa, sombreros, confeti, disfraces de Dina)
+    ctx=await b.new_context(viewport={'width':390,'height':844});pg4=await ctx.new_page();pg4.on('pageerror',lambda e:errs.append(str(e)))
+    await pg4.goto('http://localhost:8766/#prueba');await pg4.wait_for_timeout(300)
+    RUN={'total':500,'spent':0,'owned':['sofi','deisy','leandro'],'cosm':['default','none','alicia','bruja','calabaza'],'char':'sofi','outfits':{'sofi':'alicia','deisy':'bruja','leandro':'corona'},'trail':'calabaza','dinaLooks':['vampiro']}
+    await pg4.evaluate("r=>{localStorage.setItem('sofiRunner.v1',JSON.stringify(r));localStorage.setItem('sofiSilbato.v1',JSON.stringify({best:[0,0,0],stars:[0,0,0],open:3,seen:'x',set:{music:0,sfx:0,lat:0,meow:1,smooth:1,viz:1}}))}",RUN)
+    await pg4.reload();await pg4.wait_for_timeout(500)
+    t=await pg4.evaluate('''()=>{const S=SS,f=(d,m)=>{const x=new Date(2026,m-1,d);return (window.seasonOf?seasonOf(x):null)};
+      return {fechas:[[14,10],[15,10],[31,10],[2,11],[3,11],[25,12]].map(([d,m])=>{const o=f(d,m);return d+'/'+m+':'+(o?o.id:'-')}).join(' '),
+        sofi:[SS.charImg('sofi'),SS.charHat('sofi')],deisy:[SS.charImg('deisy'),SS.charHat('deisy')],leandro_sin_corona:SS.charHat('leandro'),confeti:!!SS.runTrail()}}''')
+    print('temas: fechas',t['fechas'],'· sofi',t['sofi'],'· deisy',t['deisy'],'· corona no comprada',repr(t['leandro_sin_corona']),'· confeti',t['confeti'])
+    async def modo(m):
+      await pg4.evaluate("m=>{SS.save.set.theme=m;SS.themeTest=null;SS.startStage(0)}",m);await pg4.wait_for_timeout(200)
+      k=await pg4.evaluate("()=>{const ks=SS.notes.map(n=>SS.noteKey(n));return [document.body.dataset.theme,[...new Set(ks)].sort().join(',')]}")
+      await pg4.evaluate("()=>SS.finish(false)");await pg4.wait_for_timeout(1000)
+      r=await pg4.evaluate("()=>[document.getElementById('resImg').src.split('/').pop(),document.getElementById('globo').textContent,document.getElementById('resT').textContent]")
+      await pg4.evaluate("()=>document.getElementById('home').click()");return k+r
+    print('clásico fijo',await modo('clasico'));print('halloween fijo',await modo('halloween'))
+    await pg4.evaluate("()=>{SS.save.set.theme='halloween';SS.startStage(1);const f=()=>{const t=SS.now();for(const n of SS.notes){if(!n.st&&Math.abs(n.t-t)<.02){SS.tap();break}}if(SS.state==='play')requestAnimationFrame(f)};f()}")
+    await pg4.wait_for_timeout(7000)
+    print('confeti al acertar',await pg4.evaluate("()=>[SS.cnt.p,SS.conf.length>0]"))
+    await pg4.screenshot(path=SP+'h_juego.png')
+    await pg4.evaluate("()=>{SS.finish(true)}");await pg4.wait_for_timeout(900)
+    print('foto con vestido de Alicia',await pg4.evaluate("()=>document.getElementById('resImg').src.split('/').pop()"))
+    await pg4.evaluate("()=>{document.getElementById('home').click();localStorage.setItem('sofiRunner.v1',JSON.stringify({total:5,char:'sofi',outfit:'hoodie',cosm:['default','none','hoodie']}));SS.runRefresh()}")
+    print('guardado viejo de Dina Run (solo outfit): sofi',await pg4.evaluate("()=>SS.charImg('sofi')"),'· Dina sin disfraces en Halloween',await pg4.evaluate("()=>{SS.startStage(0);return [...new Set(SS.notes.map(n=>SS.noteKey(n)))].sort().join(',')}"))
+    await ctx.close()
     print(errs);await b.close()
 asyncio.run(main())

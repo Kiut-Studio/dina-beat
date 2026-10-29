@@ -1,5 +1,10 @@
 # Novedades
 
+## Versión 0.20 — octubre 2026: 🎃 Halloween y 🎨 temas
+- 🎨 Sección **Temas** (⚙️ Ajustes → 🎨 Temas): 📅 Según la fecha (por defecto; Halloween del 15/10 al 2/11, el resto del año Clásico), 🌸 Clásico o 🎃 Halloween fijo. Pensada para sumar más temas (Navidad, verano…).
+- 🎃 Halloween: la calabaza llena de golosinas del dibujo de Sofía (recortada de "Dina comiendo la calabaza") en vez de la torta, también en las vidas de arriba; murciélagos, luna naranja y calabacitas en el piso; cielos de atardecer violeta y naranja en cada etapa; golosinas de Dina Run en vez de pancitos (valen lo mismo); colores de la página en naranja y violeta; al perder, Dina comiendo la calabaza con "miau… ¡la calabaza era mía!"; textos con calabaza ("¡Calabaza a salvo!"). Las notas, los puntajes y los rankings no cambian.
+- 🐱 Disfraces de Dina del Pase de Halloween de Dina Run (bruja, brujito, vampiro): en Halloween, cada Dina que baja lleva uno de los que ganaste. En 🎨 Temas se ve cuáles tenés.
+- 👗 Lo que tenés puesto en Dina Run se ve en Dina Beat: vestido de Alicia y hoodie de Sofi, corazón, corona y sombrero de bruja (en el juego, en el menú y en resultados), y tu confeti salta del personaje en cada acierto y en los avisos de combo.
 ## Versión 0.19.1 — octubre 2026
 - 🙂 Cuentas que empezaron anónimas (un desafío jugado sin cuenta) y después entraron con Google: ahora se ven su nombre y su foto en ☁️ Cuenta y en el botón de arriba. Firebase los deja vacíos en la cuenta; se toman del perfil de Google (`providerData`) y se copian a la cuenta, igual que Dina Run desde la 0.9.3.
 
