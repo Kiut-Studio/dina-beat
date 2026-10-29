@@ -77,6 +77,7 @@ a.btn{text-decoration:none;display:inline-block}
 .st{white-space:nowrap}.st span{white-space:normal;font-weight:500;font-size:13px;opacity:.95;text-align:right}
 .st[disabled]{filter:grayscale(.8);opacity:.55;cursor:default}
 .st:not([disabled]):active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.s6{background:linear-gradient(90deg,#f0781e,#8a5ae0)}
 .s1{background:#ff8fbf}.s2{background:#ff9a4d}.s3{background:#8a5ae0}.s4{background:#2fb383}
 .btn{border:0;border-radius:999px;padding:11px 24px;font:700 19px Fredoka,sans-serif;background:var(--rosa);color:#fff;cursor:pointer;box-shadow:0 4px 0 #c94d8a}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #c94d8a}
@@ -92,6 +93,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--vio);outline-of
 #snd{right:max(12px,env(safe-area-inset-right))}
 #acctI{right:calc(max(12px,env(safe-area-inset-right)) + 50px);width:auto;border-radius:999px;padding:0 12px;font:700 14px Fredoka,sans-serif;color:var(--tinta);display:flex;align-items:center;gap:4px}
 #acctI[hidden]{display:none}
+#temaI{left:calc(max(12px,env(safe-area-inset-left)) + 50px);width:auto;border-radius:999px;padding:0 12px;font:700 14px Fredoka,sans-serif;color:var(--tinta);display:flex;align-items:center;gap:4px}
+#temaI[hidden]{display:none}
+@media (max-width:360px){#temaI,#acctI{padding:0 9px;font-size:13px}}
 #acctI.in{width:42px;padding:0;justify-content:center;overflow:hidden}
 #acctI img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .nudge{border:0;background:var(--crema);border-radius:12px;padding:6px 10px;font:600 13px Fredoka,sans-serif;color:var(--tinta);cursor:pointer}#pauseB,#cfgB{left:max(12px,env(safe-area-inset-left))}
@@ -245,11 +249,12 @@ body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
 .cfgTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .cfgTop .chips{flex-wrap:nowrap}.cfgTop h2{white-space:nowrap}
 @media (max-width:380px){.cfgTop h2{font-size:20px}.cfgTop .chip{padding:3px 7px;font-size:11px}}
-@media (max-height:700px){
+@media (max-height:760px){
   .scr{gap:6px}h1{font-size:clamp(30px,9vw,44px)}.hero{height:14vh}.how{font-size:13px}.st{padding:7px 12px;font-size:16px}
   #cfg .card{gap:7px;padding:12px 14px}#cfg h2{font-size:21px}#cfg .seg button{padding:6px}
   #comp .nota,#stHelp{display:none}#stTl{height:100px}.cell{aspect-ratio:1/1}#comp .card{gap:6px;padding:10px 12px}.btn{padding:9px 20px;font-size:17px}
 }
+@media (max-height:600px){.stages{gap:4px}.st{padding:5px 12px}.st span{font-size:12px}.hero{height:10.5vh}.scr{gap:5px}.how{font-size:12px;line-height:1.25}.cred{font-size:11px}}
 </style>
 </head>
 <body>
@@ -258,6 +263,7 @@ body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
 <button class="ico" id="cfgB" aria-label="Ajustes">⚙️</button>
 <button class="ico" id="snd" aria-label="Sonido">🔊</button>
 <button class="ico" id="acctI" aria-label="Tu cuenta: guardar en la nube">☁️ Entrar</button>
+<button class="ico" id="temaI" aria-label="Temas">🎨 Temas</button>
 
 <section class="scr" id="menu">
   <h1>Dina Beat<small id="tagline">¡Piii! que Dina no se coma la torta</small></h1>
@@ -294,6 +300,15 @@ body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
     <p class="nota" id="themeNote">La ropa, los sombreros y el confeti se eligen en Dina Run; acá se ven igual.</p>
     <p class="nota cred2">Calabaza y disfraces: dibujos de Sofía · golosinas y vestido de Alicia con ayuda de IA sobre sus dibujos.</p>
     <div class="row"><button class="btn" id="temasOk">Listo</button></div>
+  </div>
+</section>
+
+<section class="scr" id="esp" hidden>
+  <div class="card">
+    <h2 id="espT">🎃 Música de Halloween</h2>
+    <div class="themeList" id="espList"></div>
+    <p class="nota">Las de compositores famosos son de dominio público (tienen más de 150 años): acá están tocadas con la cajita musical del juego, hechas con código. Valen frutillas y se pueden desafiar, pero no van al ranking.</p>
+    <div class="row"><button class="btn sec" id="espBack">← Volver</button></div>
   </div>
 </section>
 
@@ -482,9 +497,10 @@ addEventListener('resize',resize);resize();
 
 /* ---------- guardado (en el dispositivo; con cuenta de Google, también en la nube: ver ☁️ nube) ---------- */
 const KEY='sofiSilbato.v1';
-let save={best:[0,0,0],stars:[0,0,0],grade:['','',''],open:1,muted:false,tool:'spray',set:{music:70,sfx:80,lat:0,meow:1,smooth:1,fps:0,viz:1},diff:1,songs:[]};
+let save={best:[0,0,0],stars:[0,0,0],grade:['','',''],open:1,muted:false,tool:'spray',set:{music:70,sfx:80,lat:0,meow:0,smooth:1,fps:0,viz:1},diff:1,songs:[]};
 const firstTime=(()=>{try{return localStorage.getItem(KEY)==null}catch(e){return false}})();
 try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');Object.assign(save,s,{set:Object.assign(save.set,s.set||{})})}catch(e){}
+if(!save.mig20){save.set.meow=0;save.mig20=1} // 0.20.1: el miau de Dina pasa a venir apagado (a muchos les molestaba); quien lo quiera lo prende en ⚙️
 const persist=()=>{save.mod=Date.now();try{localStorage.setItem(KEY,JSON.stringify(save))}catch(e){}cloudSoon()};
 
 /* ---------- dibujos de Sofía ---------- */
@@ -714,6 +730,62 @@ function compSong(c){ // canción compuesta (64 pasos)
   }
   return {name:c.name,label:c.name,look:CUSTOM_LOOK,approach:D.approach,beat:e*2,ev,times:thin(cand,D.gap),len:loops*64*e,custom:c.id,grid:regGrid(e*2,loops*64*e)};
 }
+/* ---------- 🎃 canciones de temporada ----------
+   Como las etapas (64 corcheas = 8 compases, bajo por compás), pero cada vuelta puede ir a otra velocidad (bpms).
+   Las de compositores famosos son de dominio público; el arreglo para la cajita es propio. No van al ranking. */
+const SPECIAL=[
+ {id:'grieg',season:'halloween',name:'En la cueva del rey de la montaña',by:'Edvard Grieg, 1875 · cada vuelta más rápido',em:'👹',cls:'s3',acc:'#5b2fb0',approach:1.35,bpms:[92,112,136],drums:1,
+  mel:['B4','C#5','D5','E5','F#5','D5','F#5','',  'F5','C#5','F5','','E5','C5','E5','',
+       'B4','C#5','D5','E5','F#5','D5','F#5','B5', 'A5','F#5','D5','F#5','A5','','','',
+       'B4','C#5','D5','E5','F#5','D5','F#5','',  'F5','C#5','F5','','E5','C5','E5','',
+       'B4','C#5','D5','E5','F#5','D5','F#5','B5', 'A5','F#5','D5','F#5','B4','','',''],
+  bass:['B2','F#2','B2','F#2','B2','F#2','D3','B2'],pick:(s,m)=>!!m&&s%2===0},
+ {id:'bach',season:'halloween',name:'Tocata del castillo',by:'J. S. Bach, Tocata y fuga en re menor (~1705)',em:'🏰',cls:'s2',acc:'#e86a1a',approach:1.45,bpms:[84,84],drums:0,
+  mel:['A5','G5','A5','','','','','',        'G5','F5','E5','D5','C#5','','D5','',
+       'A4','G4','A4','','','','','',        'G4','F4','E4','D4','C#4','','D4','',
+       'D4','E4','F4','G4','A4','A#4','C#5','D5','E5','F5','G5','A5','A#5','C#6','D6','',
+       'D6','C#6','A#5','A5','G5','F5','E5','C#5','D5','','','','A4','','D5',''],
+  bass:['D3','A2','D3','A2','D3','A2','A2','D3'],pick:(s,m)=>!!m&&s%2===0},
+ {id:'chopin',season:'halloween',name:'Marcha de los fantasmitas',by:'Frédéric Chopin, Marcha fúnebre (1839)',em:'👻',cls:'s1',acc:'#ff4f9a',approach:1.7,bpms:[76,76],drums:0,
+  mel:['A4','','','A4','A4','','','A4',     'A4','','','','C5','','','B4',
+       'B4','','','A4','A4','','','G#4',     'A4','','','','','','','',
+       'E5','','','D5','C5','','','B4',      'C5','','','B4','A4','','','G#4',
+       'A4','','','A4','A4','','','A4',      'A4','','','','','','',''],
+  bass:['A2','A2','E2','A2','A2','E2','A2','A2'],pick:(s,m)=>!!m},
+ {id:'calabazas',season:'halloween',name:'Baile de las calabazas',by:'Original de Dina Beat',em:'🎃',cls:'s2',acc:'#e86a1a',approach:1.4,bpms:[116,116],drums:2,
+  mel:['A4','','C5','E5','D#5','E5','','',    'A4','','C5','E5','F5','E5','D5','',
+       'G4','','B4','D5','C#5','D5','','',    'G4','','B4','D5','E5','D5','C5','B4',
+       'A4','C5','E5','A5','G#5','A5','E5','C5','D5','F5','A5','','G#5','','E5','',
+       'A5','G#5','F5','E5','D5','C5','B4','G#4','A4','','E4','','A4','','',''],
+  bass:['A2','A2','G2','G2','A2','D3','E2','A2'],pick:(s,m)=>!!m&&(s%2===0||s%8===5)},
+];
+const seasonTheme=()=>THEMES.find(t=>t.id===themeId())||THEMES[0];
+const seasonSongs=()=>SPECIAL.filter(x=>x.season===themeId());
+function specialSong(id){
+  const S=SPECIAL.find(x=>x.id===id);if(!S)return null;
+  const ev=[],times=[],grid=[];let t0=0;
+  S.bpms.forEach((bpm,L)=>{const e=60/bpm/2;
+    for(let s=0;s<64;s++){const t=t0+s*e,m=S.mel[s];
+      if(s%2===0)grid.push({t,bar:s%8===0});
+      if(m)ev.push({t,k:'tone',f:noteF(m),d:e*2.2,v:.13});
+      if(s%8===0)ev.push({t,k:'tone',f:noteF(S.bass[s>>3]),d:e*7,v:.11});
+      if(S.drums&&s%4===0)ev.push({t,k:'kick'});
+      if(S.drums>1&&s%2===1)ev.push({t,k:'hat'});
+      if(S.pick(s,m)&&!(L===0&&s<8))times.push(t)}
+    t0+=64*e});
+  grid.push({t:t0,bar:true});
+  return {name:S.name,label:S.em+' '+S.name,look:{cls:S.cls,acc:S.acc,sky:(STAGES.find(x=>x.cls===S.cls)||STAGES[0]).sky,floor:(STAGES.find(x=>x.cls===S.cls)||STAGES[0]).floor},
+    approach:S.approach,beat:60/S.bpms[0],ev,times,len:t0,special:id,grid};
+}
+function openEsp(){
+  const sp=save.special||{};
+  $('espT').textContent=seasonTheme().em+' Música de '+seasonTheme().name;
+  $('espList').innerHTML=seasonSongs().map(x=>{const r=sp[x.id]||{};return `<button class="part" data-sp="${x.id}"><span class="em">${x.em}</span><span class="n">${esc(x.name)}<small>${esc(x.by)}</small></span><span class="lv">${r.best?(r.stars?'🍓'.repeat(r.stars):'')+(r.grade?'<b class="gmini">'+r.grade+'</b>':'')+'<b>🏆 '+r.best.toLocaleString('es-AR')+'</b>':'▶'}</span></button>`}).join('');
+  document.querySelectorAll('#espList [data-sp]').forEach(b=>b.onclick=()=>startSong(specialSong(b.dataset.sp)));
+  show('menu',false);$('cfgB').hidden=true;show('res',false);show('esp',true);
+}
+$('espBack').onclick=()=>toMenu();
+
 /* Grilla de pulsos de una canción (para las líneas de pulso y el latido del círculo): [{t, bar}] en segundos desde el
    comienzo; bar = primer tiempo del compás. */
 function regGrid(b,len){const g=[];for(let k=0;k*b<=len+.01;k++)g.push({t:k*b,bar:k%4===0});return g}
@@ -749,7 +821,7 @@ function startSong(S){
     .map((r,k)=>({h:r.h,i:0,score:0,combo:0,n:r.n||'Alguien',img:(CHARS.find(x=>x.id===r.c)||CHARS[0]).id,fl:0,txt:null,slot:k}));
   grid=(S.grid||[]).map(x=>({t:x.t+songStart,bar:x.bar}));for(let k=1;k<=4;k++)grid.unshift({t:songStart-k*beat,bar:k===4}); // con los 4 de la cuenta
   meter=Math.max(2,Math.min(7,S.meter||4));{let bi=0;for(const x of grid){if(x.bar)bi=0;x.bi=bi++}} // tiempo dentro del compás, para el metrónomo
-  ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr','hist','playScr','acct','sala'].forEach(id=>show(id,false));
+  ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr','hist','playScr','acct','sala','temas','esp'].forEach(id=>show(id,false));
   $('pauseB').hidden=false;$('cfgB').hidden=true;
 }
 function startStage(i){stage=i;const S=stageSong(i),G=stageGhosts(i);if(G)S.ghostRows=G;startSong(S)}
@@ -900,9 +972,10 @@ function renderTemas(){
   const hat=charHat(),cl=runTrail();
   $('themeNote').textContent=(own.length?'En Halloween, Dina va disfrazada con los que ganaste. ':'')+'La ropa, los sombreros y el confeti se eligen en Dina Run; acá se ven igual'+(hat||cl||charImg()!==charId()?' (ya tenés algo puesto ✨).':'.');
 }
-function openTemas(){run=runRead();renderTemas();show('cfg',false);show('temas',true)}
-$('temasB').onclick=openTemas;
-$('temasOk').onclick=()=>{show('temas',false);renderCfg();show('cfg',true)};
+let temasFrom='cfg';
+function openTemas(from='cfg'){temasFrom=from;run=runRead();renderTemas();show('cfg',false);show('menu',false);$('cfgB').hidden=true;show('temas',true)}
+$('temasB').onclick=()=>openTemas('cfg');$('temaI').onclick=()=>openTemas('menu');
+$('temasOk').onclick=()=>{show('temas',false);if(temasFrom==='menu')toMenu();else{renderCfg();show('cfg',true)}};
 $('pauseCfg').onclick=()=>openCfg('pause');
 $('cfgOk').onclick=()=>{show('cfg',false);if(cfgFrom==='pause')show('pause',true);else{renderMenu();show('menu',true);$('cfgB').hidden=false}};
 document.querySelectorAll('#toolSeg button').forEach(b=>b.onclick=()=>{ac();save.tool=b.dataset.t;persist();renderCfg();toolSound(true);if(save.set.meow)sMeow(.16)});
@@ -919,8 +992,13 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.20';
+const VERSION='0.21';
 const NEWS=[
+  {v:'0.21',fecha:'octubre 2026',titulo:'🎃 Música de Halloween',items:[
+    ['🎵','Música de Halloween en el menú: cuatro canciones nuevas para tocar. "En la cueva del rey de la montaña" (Grieg, se acelera en cada vuelta), "Tocata del castillo" (Bach), "Marcha de los fantasmitas" (Chopin) y "Baile de las calabazas", original del juego.'],
+    ['🎨','Botón 🎨 Temas arriba en el menú, al lado de ⚙️.'],
+    ['😺','El miau de Dina ahora viene apagado. Si te gustaba, prendelo en ⚙️ Ajustes.'],
+  ]},
   {v:'0.20',fecha:'octubre 2026',titulo:'🎃 Halloween y 🎨 temas',items:[
     ['🎃','Halloween (del 15/10 al 2/11): la calabaza llena de golosinas que dibujó Sofía en vez de la torta, murciélagos, luna naranja, golosinas en vez de pancitos y colores naranja y violeta. Si Dina se la come: "miau… ¡la calabaza era mía!".'],
     ['🎨','Nueva sección 🎨 Temas en ⚙️ Ajustes: "Según la fecha" (Halloween se pone solo en su temporada), Clásico o Halloween cuando quieras.'],
@@ -1101,6 +1179,7 @@ function finish(win){
   else if(cur.chart){const ch=chartsOf().find(x=>x.id===cur.chart);if(ch)nb=score>(ch.best||0);
     editCharts(L=>{const c2=L.find(x=>x.id===cur.chart);if(c2){if(score>(c2.best||0))c2.best=score;c2.grade=bestGrade(c2.grade,grade)}})}
   else if(cur.stage!=null){const i=cur.stage;nb=score>save.best[i];if(nb)save.best[i]=score;save.stars[i]=Math.max(save.stars[i],stars);save.grade[i]=bestGrade(save.grade[i],grade);if(win&&save.open<i+2)save.open=Math.min(3,i+2)}
+  else if(cur.special){const sp=save.special=save.special||{},r=sp[cur.special]=sp[cur.special]||{};nb=score>(r.best||0);if(nb)r.best=score;r.stars=Math.max(r.stars||0,stars);r.grade=bestGrade(r.grade,grade)}
   else if(cur.custom){const c=save.songs.find(x=>x.id===cur.custom);if(c){nb=score>(c.best||0);if(nb)c.best=score;c.stars=Math.max(c.stars||0,stars);c.grade=bestGrade(c.grade,grade)}}
   else if(cur.fileId){nb=score>(lastFile&&lastFile.best||0);if(nb&&lastFile)lastFile.best=score;fileRec(cur.fileId,r=>{if(score>(r.best||0))r.best=score;r.grade=bestGrade(r.grade,grade)})}
   persist();
@@ -1125,21 +1204,22 @@ function finish(win){
 function gradeOf(acc){return acc>=.95?'S':acc>=.88?'A':acc>=.75?'B':acc>=.6?'C':'D'}
 function bestGrade(a,b){const o='SABCD';if(!a)return b||'';if(!b)return a;return o.indexOf(b)<o.indexOf(a)?b:a}
 $('next').onclick=()=>startStage(cur.stage+1);
-$('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else startSong(cur.rebuild?cur.rebuild():cur)};
-$('home').onclick=()=>{if(cur&&cur.stage==null){state='menu';show('res',false);if(pick)openParts();else openMine()}else toMenu()};
-function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct','sala','temas'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
+$('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else if(cur.special&&!cur.reto)startSong(specialSong(cur.special));else startSong(cur.rebuild?cur.rebuild():cur)};
+$('home').onclick=()=>{if(cur&&cur.special&&!cur.reto){state='menu';openEsp()}else if(cur&&cur.stage==null){state='menu';show('res',false);if(pick)openParts();else openMine()}else toMenu()};
+function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct','sala','temas','esp'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
 function renderMenu(){
   const sp=save.tool==='spray';
-  applyTheme();
+  applyTheme();$('temaI').textContent=(HW()?'🎃':'🎨')+' Temas';
   $('tagline').textContent=(sp?'¡Psst!':'¡Piii!')+' que Dina no se coma la '+cakeWord();
   $('howTxt').innerHTML=`👆 Tocá la pantalla <b>justo</b> cuando Dina llega al círculo, al ritmo de la música, para espantarla con ${sp?'el rociador':'el silbato'}. ¡Si te atrasás, le da un mordisco a la ${cakeWord()}!`;
   $('stages').innerHTML=STAGES.map((S,i)=>{
     const lock=i+1>save.open;
     return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):HW()&&S.subHw||S.sub)+(((save.rk||[])[i]||{}).pos&&canRank()?` · 🌎 #${save.rk[i].pos}${save.rk[i].down?' ▼':''}`:'')}</span></button>`}).join('')
+    +(seasonSongs().length?`<button class="st s6" id="espB">${seasonTheme().em} Música de ${seasonTheme().name}<span>${seasonSongs().length} canciones</span></button>`:'')
     +`<button class="st s4" id="mineB">🎵 Tus canciones<span>componé o abrí música</span></button>`
     +`<button class="st s5" id="histB">📜 Tus partidas<span>${save.newRes?'⚔️ '+save.newRes+(save.newRes>1?' novedades en tus desafíos':' novedad en tus desafíos'):'historial y duelos'}</span></button>`;
   document.querySelectorAll('.st[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(save.rk&&save.rk[i]&&save.rk[i].down){save.rk[i].down=0;persist()}startStage(i)});
-  $('mineB').onclick=openMine;$('histB').onclick=()=>openHist(save.newRes?'duels':'plays');
+  $('mineB').onclick=openMine;if($('espB'))$('espB').onclick=openEsp;$('histB').onclick=()=>openHist(save.newRes?'duels':'plays');
   if(cloud&&cloud.google)rankRefresh();
   renderWho(true);
 }
@@ -1670,6 +1750,7 @@ function mergeSave(L,C){
     if(newer){m.name=c.name;m.notes=c.notes;m.bpm=c.bpm;m.drums=c.drums}}
   o.songs=songs;
   if(newer){for(const k of ['tool','diff','char','name'])if(C[k]!=null&&C[k]!=='')o[k]=C[k];o.set=Object.assign({},o.set,C.set||{});for(const k of ['lat','smooth','fps'])o.set[k]=(L.set||{})[k]}
+  {const a=L.special||{},b=C.special||{},sp={};for(const id of new Set([...Object.keys(a),...Object.keys(b)])){const x=a[id]||{},y=b[id]||{};sp[id]={best:Math.max(x.best||0,y.best||0),stars:Math.max(x.stars||0,y.stars||0),grade:bestGrade(x.grade||'',y.grade||'')}}if(Object.keys(sp).length)o.special=sp}
   if(!o.name&&C.name)o.name=C.name;
   const sent=(L.sent||[]).slice();for(const x of C.sent||[])if(!sent.some(y=>y.id===x.id))sent.push(x);o.sent=sent.sort((a,b)=>b.at-a.at).slice(0,40);
   o.salas=Object.assign({},C.salas||{},L.salas||{});for(const id in C.salas||{})if(L.salas&&L.salas[id]&&(C.salas[id].upd||0)>(L.salas[id].upd||0))o.salas[id]=C.salas[id];
@@ -1831,7 +1912,7 @@ $('acctBack').onclick=()=>{show('acct',false);if(acctFrom==='menu')toMenu();else
 function acctUi(){const b=$('acctI'),u=cloud&&cloud.google?cloud.user:null;b.classList.toggle('in',!!u);
   b.innerHTML=u?(u.photo?`<img src="${esc(u.photo)}" alt="" referrerpolicy="no-referrer">`:'🙂'):'☁️ Entrar';b.setAttribute('aria-label',u?'Tu cuenta':'Entrar con Google para guardar en la nube');
   $('resCloud').hidden=!!u||!!(cur&&cur.reto)||!!save.cloud}
-new MutationObserver(()=>{$('acctI').hidden=$('cfgB').hidden}).observe($('cfgB'),{attributes:true,attributeFilter:['hidden']});
+new MutationObserver(()=>{$('acctI').hidden=$('temaI').hidden=$('cfgB').hidden}).observe($('cfgB'),{attributes:true,attributeFilter:['hidden']});
 acctUi();
 // al abrir el juego: si ya usaste la cuenta o mandaste desafíos, se conecta solo (sin trabar el arranque)
 setTimeout(()=>{if(save.cloud||(save.sent&&save.sent.length))cloudLoad()},1200);
@@ -1843,14 +1924,14 @@ addEventListener('online',()=>{if(save.cloud||(save.sent&&save.sent.length)){clo
    duelo. ss = puntaje acumulado después de cada nota (para el gráfico). Se guardan las últimas 500 partidas, más la
    mejor de cada canción. */
 const HIST_MAX=500;
-const songKey=g=>g.k==='e'?'e:'+g.i:g.k==='c'?'c:'+g.id:'f:'+g.fp;
+const songKey=g=>g.k==='s'?'s:'+g.id:g.k==='e'?'e:'+g.i:g.k==='c'?'c:'+g.id:'f:'+g.fp;
 async function savePlay(win,acc){
   try{
     const R=retoFromCur();if(!R||!notes.length)return;
     let last=0;const ss=notes.map(n=>{if(n.st===1&&n.sc!=null)last=Math.max(last,n.sc);return last});
     const V=cur.reto,ch=cur.chart?chartsOf().find(x=>x.id===cur.chart):null;
     const part=lastFile&&lastFile.kind==='midi'&&R.song.k==='f'?(lastFile.parts.find(x=>x.id===lastFile.part)||{}).name:'';
-    const variant=V?'⚔️ desafío de '+V.n:ch?'✋ '+ch.name:R.song.k==='e'?'':(part?part+' · ':'')+DIFF[save.diff].name;
+    const variant=V?'⚔️ desafío de '+V.n:ch?'✋ '+ch.name:R.song.k==='e'||R.song.k==='s'?'':(part?part+' · ':'')+DIFF[save.diff].name;
     const rec={id:Date.now().toString(36)+uid(),at:Date.now(),song:retoSongName(R),variant,key:songKey(R.song)+'|'+R.t.length+':'+R.t.slice(0,5).join(),
       score,grade:R.g,acc:Math.round(acc*100),p:cnt.p,b:cnt.b,m:cnt.m,combo:maxCombo,win:!!win,c:charId(),r:R,ss,
       vs:V?clean({n:V.n,c:V.c,s:V.s,g:V.g,a:V.a,h:Array.isArray(V.h)?V.h:null,id:V.id}):null};
@@ -2016,6 +2097,7 @@ function retoFromCur(){
   const S=cur;let song;
   if(S.reto)song=S.reto.song;
   else if(S.stage!=null)song={k:'e',i:S.stage};
+  else if(S.special)song={k:'s',id:S.special};
   else if(pick&&pick.kind==='comp'){const c=pickComp();song={k:'c',id:c.id,name:c.name,bpm:c.bpm,drums:c.drums,notes:c.notes}}
   else if(lastFile)song={k:'f',name:lastFile.name,kind:lastFile.kind,fp:lastFile.fp,size:lastFile.size,dur:Math.round(lastFile.dur*10)/10,part:lastFile.kind==='midi'?lastFile.part:null};
   if(!song)return null;
@@ -2054,7 +2136,7 @@ $('dare').onclick=()=>{if(cur&&cur.reto&&cur.reto.id)shareSala(cur.reto.id,t=>{$
 $('nameOk').onclick=()=>{const n=($('nameIn').value||'').trim().slice(0,16);if(!n){$('nameIn').focus();return}save.name=n;persist();show('nameScr',false);const A=nameAsk||{from:'res',then:dare};nameAsk=null;show(A.from,true);A.then()};
 $('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
 $('nameBack').onclick=()=>{show('nameScr',false);show((nameAsk||{from:'res'}).from,true);nameAsk=null};
-function retoSongName(R){const g=R.song;return g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:niceName(g.name)}
+function retoSongName(R){const g=R.song;return g.k==='s'?((SPECIAL.find(x=>x.id===g.id)||{}).name||'Canción especial'):g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:niceName(g.name)}
 /* comparación al terminar un desafío */
 function showVs(win){
   const R=cur&&cur.reto;
@@ -2122,6 +2204,7 @@ $('retoGo').onclick=async()=>{
   try{
     let base;
     if(g.k==='e'){pick=null;base=stageSong(g.i)}
+    else if(g.k==='s'){pick=null;base=specialSong(g.id);if(!base)throw new Error('no-esta')}
     else if(g.k==='c'){ // la canción compuesta viaja entera: se agrega a Tus canciones si no la tenés igual
       let c=save.songs.find(x=>x.id===g.id&&JSON.stringify(x.notes)===JSON.stringify(g.notes));
       if(!c){c={id:save.songs.some(x=>x.id===g.id)?uid():g.id,name:(g.name+' ('+R.n+')').slice(0,24),bpm:g.bpm,drums:!!g.drums,notes:g.notes};save.songs.unshift(c);persist()}
@@ -2138,9 +2221,9 @@ $('retoGo').onclick=async()=>{
   }catch(err){$('retoStatus').textContent='😿 No pude abrir la canción. Probá elegirla de nuevo.';$('retoPickRow').hidden=false}
 };
 function retoSong(R,base,t){
-  const S=base;S.times=t.filter(x=>x>.3&&x<S.len);if(R.song.k!=='e')S.approach=DIFF[Math.max(0,Math.min(2,R.d|0))].approach;
+  const S=base;S.times=t.filter(x=>x>.3&&x<S.len);if(R.song.k!=='e'&&R.song.k!=='s')S.approach=DIFF[Math.max(0,Math.min(2,R.d|0))].approach;
   S.label='⚔️ Desafío de '+R.n;S.reto=R;S.custom=null;S.fileId=null;S.chart=null;
-  S.rebuild=()=>{const S2=retoSong(R,R.song.k==='e'?stageSong(R.song.i):pickComp()?compSong(pickComp()):fileSong(),t);S2.ghostRows=S.ghostRows;return S2};return S;
+  S.rebuild=()=>{const S2=retoSong(R,R.song.k==='s'?specialSong(R.song.id):R.song.k==='e'?stageSong(R.song.i):pickComp()?compSong(pickComp()):fileSong(),t);S2.ghostRows=S.ghostRows;return S2};return S;
 }
 async function storeFile(buf,name){ // guarda un archivo en Tus canciones y deja lastFile listo (lo usan "abrir archivo" y los desafíos)
   const id='arch:'+buf.byteLength+':'+name,old=files.find(x=>x.id===id);
@@ -2598,7 +2681,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io')&&!/\/prueba\//.test(location.pathname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba'||window.FORCE_SS)window.SS={set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba'||window.FORCE_SS)window.SS={specialSong,openEsp,SPECIAL,set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

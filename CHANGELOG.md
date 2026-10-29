@@ -1,5 +1,10 @@
 # Novedades
 
+## Versión 0.21 — octubre 2026: 🎃 música de Halloween
+- 🎵 **Música de Halloween** (botón en el menú mientras el tema es Halloween): cuatro canciones con la cajita del juego, hechas con código. Tres son de compositores de dominio público: *En la cueva del rey de la montaña* (Grieg, 1875; cada vuelta más rápido: 92 → 112 → 136 pulsos), *Tocata del castillo* (Bach, Tocata y fuga en re menor) y *Marcha de los fantasmitas* (Chopin, marcha fúnebre de la Sonata n.º 2); y *Baile de las calabazas*, original. Dan frutillas, guardan récord y nota, y se pueden desafiar (salas incluidas); no van al ranking.
+- 🎨 Botón **Temas** arriba a la izquierda del menú (🎃 en Halloween), además del de ⚙️ Ajustes.
+- 😺 El miau de Dina viene **apagado** (también se apagó una vez para quienes ya jugaban, porque venía prendido por defecto). Se prende en ⚙️ Ajustes.
+- En pantallas bajas (≤ 600 px) el menú se achica un poco para que entre todo.
 ## Versión 0.20 — octubre 2026: 🎃 Halloween y 🎨 temas
 - 🎨 Sección **Temas** (⚙️ Ajustes → 🎨 Temas): 📅 Según la fecha (por defecto; Halloween del 15/10 al 2/11, el resto del año Clásico), 🌸 Clásico o 🎃 Halloween fijo. Pensada para sumar más temas (Navidad, verano…).
 - 🎃 Halloween: la calabaza llena de golosinas del dibujo de Sofía (recortada de "Dina comiendo la calabaza") en vez de la torta, también en las vidas de arriba; murciélagos, luna naranja y calabacitas en el piso; cielos de atardecer violeta y naranja en cada etapa; golosinas de Dina Run en vez de pancitos (valen lo mismo); colores de la página en naranja y violeta; al perder, Dina comiendo la calabaza con "miau… ¡la calabaza era mía!"; textos con calabaza ("¡Calabaza a salvo!"). Las notas, los puntajes y los rankings no cambian.

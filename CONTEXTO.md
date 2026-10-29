@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 29/10/2026 · versión 0.20
+Última actualización: 29/10/2026 · versión 0.21
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v24; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v25; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -270,6 +270,15 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Créditos: calabaza y disfraces, de Sofía; golosinas y vestido de Alicia, con ayuda de IA sobre sus dibujos (como en Dina Run). Están en 🎨 Temas y en el README.
 - Pruebas: `juego.py` revisa fechas de la temporada, tema fijo clásico/Halloween (dibujos de las notas, foto, globito y título al perder), confeti al acertar, foto con el vestido de Alicia, guardado viejo de Dina Run (solo `outfit`) y Dina sin disfraces si no ganaste ninguno. `tamanos.py` revisa `temas` y que ⚙️ Ajustes siga sin deslizar con el botón nuevo en la misma fila (deja `pruebas/s_temas.png` y `s_temas_cfg.png`).
 - Ideas: música de Halloween en el menú o Tus canciones (en las etapas no, para no cambiar las notas del ranking); más temas (Navidad, verano) con dibujos de Sofía.
+
+## Versión 0.21 — 🎃 música de Halloween, botón de temas y miau apagado
+- Pedidos de Leandro (29/10): botón de temas más visible en el menú (elegí dónde), miau de Dina apagado por defecto ("muy molesto"), y músicas alternativas de Halloween, si se puede de dominio público.
+- **Botón `#temaI`** arriba a la izquierda, al lado de ⚙️ (pastilla como ☁️ Entrar): "🎨 Temas", o "🎃 Temas" en Halloween. Se muestra junto con ⚙️ (mismo `MutationObserver`). `openTemas(from)`: vuelve al menú o a Ajustes.
+- **Miau**: `save.set.meow` = 0 por defecto, y `save.mig20` lo apaga una vez para quienes ya jugaban (venía prendido por defecto y no se puede saber quién lo eligió). Se prende en ⚙️.
+- **Canciones de temporada** (`SPECIAL`, `specialSong(id)`, pantalla `#esp`, botón `#espB` "🎃 Música de Halloween" en el menú solo mientras el tema es el de su `season`): mismo formato que las etapas (64 corcheas, bajo por compás, `pick`), pero `bpms` por vuelta (Grieg se acelera 92 → 112 → 136). Grilla propia por pulso. Récord, estrellas y nota en `save.special[id]` (se junta en la nube por máximo). Desafíos con `song:{k:'s',id}` (salas incluidas; el historial usa `s:id`). No van al ranking. Si se cambian las notas de una, los desafíos viejos de esa canción quedan corridos.
+- Las cuatro: *En la cueva del rey de la montaña* (Grieg, 1875), *Tocata del castillo* (Tocata y fuga en re menor, atribuida a Bach), *Marcha de los fantasmitas* (Chopin, marcha fúnebre de la Sonata n.º 2, 1839) y *Baile de las calabazas* (original). Las obras son de dominio público; el arreglo para la cajita es propio y está escrito en el código (no se usa ninguna grabación). Otras de dominio público que se podrían sumar: *Danza macabra* (Saint-Saëns, 1874, en 3/4), *Marcha fúnebre de una marioneta* (Gounod, 1872, en 6/8), *Una noche en el monte pelado* (Mussorgsky). Ojo: la obra puede ser de dominio público pero las grabaciones y arreglos modernos no; por eso se escriben las notas acá.
+- Menú en pantallas de 600 px o menos: botones, Sofi y textos un poco más chicos para que entren las 6 filas (regla al final del CSS, para ganarle a la de ≤ 700 px).
+- Pruebas: `juego.py` juega *Baile de las calabazas* con el robot, revisa récord, desafío ida y vuelta, que el botón no aparezca sin Halloween y el miau (nuevo, viejo y si lo prendés). `tamanos.py` revisa el menú con Halloween (sin deslizar, botón de temas sin tapar cuenta ni título) y `#esp` (deja `s_menu_hw.png` y `s_esp.png`).
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
