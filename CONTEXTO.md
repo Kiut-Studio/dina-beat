@@ -251,7 +251,8 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - **Enlaces cortos** `#r=código` (`openRetoCode`: inicia sesión anónima si hace falta, lee `desafios/{código}` y su tabla `#retoTab`). Sin código (sin internet), el `#reto=` largo de siempre.
 - **Fantasmas**: `ghosts[]` (hasta 3) en vez de uno; `S.ghostRows` (de la sala o del ranking) o, si no, `S.reto.h`. Posiciones a la derecha de la torta (`slot` 0/1/2, los de atrás más chicos). Con más de uno, mini ranking en vivo arriba a la izquierda. Chip "👻 Fantasmas" en Ajustes (`save.set.ghost`).
 - **Ranking** `rankingBeat/e{i}/filas/{uid}` {n, c, s, g, a, h, at}, solo con Google, apodo (`save.name`) y sin `save.rankOff`. `rankSubmit` al terminar una etapa (no en desafíos) si mejoraste; puesto con `count` (puntajes mayores + 1); `save.rk[i] = {best, pos, at, down}`. `rankRefresh` (cada 10 min en el menú) marca ▼ si bajaste. `rankTop` (20 mejores, 10 min en memoria). `stageGhosts`: los 3 que están justo arriba tuyo. `rankBackfill` al entrar: tu mejor partida guardada de cada etapa. Pestaña 🌎 Ranking en 📜 Tus partidas. En ☁️ Cuenta: apodo y "🌎 Aparecer en los rankings" (al apagarlo se borran tus filas).
-- API de la nube: + `top`, `count`, `del` (y en la nube falsa de las pruebas).
+- API de la nube: + `top`, `count`, `del`, `since` (y en la nube falsa de las pruebas).
+- Partidas de otros teléfonos: cada vez que se abre el juego con cuenta, `since` baja solo las partidas con `at` posterior a `save.playsAt` (del aparato); la sincronización completa sigue cada 12 h o con 🔄. Antes, en la 0.18, una partida jugada en el teléfono no aparecía en la PC hasta 12 h después.
 - Pruebas: `nube.py` agrega ranking (dos cuentas, puesto ▼, fantasmas), sala con tres personas (dos sin cuenta), enlace corto, tabla y avisos.
 
 ## Spotify (pregunta de Leandro, 28/10)

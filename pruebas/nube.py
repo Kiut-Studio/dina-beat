@@ -12,6 +12,8 @@ def mock(op,path,data):
     if data.get('m') and isinstance(NUBE.get(path),dict): NUBE[path]={**NUBE[path],**d}
     else: NUBE[path]=d
     return True
+  if op=='since':
+    pre=path+'/';return [{'id':k[len(pre):],'data':v} for k,v in NUBE.items() if k.startswith(pre) and '/' not in k[len(pre):] and v.get(data['f'],0)>data['v']]
   if op in('list','top','count'):
     pre=path+'/';L=[{'id':k[len(pre):],'data':v} for k,v in NUBE.items() if k.startswith(pre) and '/' not in k[len(pre):]]
     if op=='top': return sorted(L,key=lambda r:-r['data'].get(data['f'],0))[:data['n']]
@@ -25,7 +27,7 @@ MOCK='''window.CLOUD_MOCK={
   anon:async()=>{const u={uid:'anon-'+Math.random().toString(36).slice(2,8),anon:true};localStorage.setItem('mockUser',JSON.stringify(u));return u},
   out:async()=>{localStorage.removeItem('mockUser')},
   get:p=>window.mockCloud('get',p,null),set:(p,d,m)=>window.mockCloud('set',p,{d,m:!!m}),list:p=>window.mockCloud('list',p,null),
-  top:(p,f,n)=>window.mockCloud('top',p,{f,n}),count:(p,f,v)=>window.mockCloud('count',p,{f,v}),del:p=>window.mockCloud('del',p,null)};'''
+  top:(p,f,n)=>window.mockCloud('top',p,{f,n}),count:(p,f,v)=>window.mockCloud('count',p,{f,v}),del:p=>window.mockCloud('del',p,null),since:(p,f,v)=>window.mockCloud('since',p,{f,v})};'''
 async def phone(b,uid,errs):
   ctx=await b.new_context(viewport={'width':360,'height':640})
   await ctx.expose_function('mockCloud',mock)
@@ -78,6 +80,11 @@ async def main():
     du=await bb.evaluate('()=>[...document.querySelectorAll("#histList .part")].map(e=>e.innerText.replace(/\\n/g," "))')
     await bb.screenshot(path=SP+'m_duelos_nube.png')
     print('B ve el resultado: aviso',av,'· duelos',du,'· aviso después',await bb.evaluate('()=>SS.save.newRes'))
+    # 📱 una partida jugada en B aparece en A al reabrir (sin esperar 12 horas)
+    await bb.evaluate('async()=>{SS.toMenu();SS.startStage(1);await new Promise(r=>setTimeout(r,300));for(const n of SS.notes){n.st=1;n.off=0.01}SS.cnt.p=SS.notes.length;SS.score=1234;SS.finish(true);await new Promise(r=>setTimeout(r,1500));SS.toMenu()}')
+    await a.reload();await a.wait_for_timeout(2500)
+    print('partida de B en A al reabrir:',await a.evaluate('async()=>{await SS.openHist("plays");return SS.histRows.some(x=>x.score===1234)}'))
+    await a.evaluate('()=>SS.toMenu()')
     # 🌎 ranking de la etapa 1 y fantasmas: A (Leandro, 5.000) y N (Nora, 6.000), los dos con cuenta
     PLAY='''async([i,sc])=>{SS.startStage(i);await new Promise(r=>setTimeout(r,300));for(const n of SS.notes){n.st=1;n.off=0.01}SS.cnt.p=SS.notes.length;SS.score=sc;SS.finish(true);await new Promise(r=>setTimeout(r,1500))}'''
     await a.evaluate('()=>SS.toMenu()');await a.evaluate(PLAY,[0,5000])

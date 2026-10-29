@@ -1492,6 +1492,7 @@ function cloudLoad(){ // carga Firebase una vez; si no hay internet, el juego si
         top:async(path,field,n)=>(await F.getDocs(F.query(F.collection(db,path),F.orderBy(field,'desc'),F.limit(n)))).docs.map(d=>({id:d.id,data:d.data()})),
         count:async(path,field,v)=>(await F.getCountFromServer(F.query(F.collection(db,path),F.where(field,'>',v)))).data().count,
         del:path=>F.deleteDoc(F.doc(db,path)),
+        since:async(path,field,v)=>(await F.getDocs(F.query(F.collection(db,path),F.where(field,'>',v)))).docs.map(d=>({id:d.id,data:d.data()})),
       };
     }
     await new Promise(res=>{let first=true;cloud.api.onUser(u=>{setUser(u);if(first){first=false;res()}})});
@@ -1513,7 +1514,7 @@ async function cloudUid(){ // con cuenta o, si no hay, con una sesión anónima 
   return cloud.user&&cloud.user.uid;
 }
 function cloudSoon(){if(typeof cloud==='undefined'||!cloud||!cloud.google||cloud.merging)return;clearTimeout(cloudT);cloudT=setTimeout(cloudPushSave,3000)}
-function saveForCloud(){const o=clean(save);for(const k of ['muted','seen','syncAt','newRes','sent'])delete o[k];if(o.set)for(const k of ['lat','smooth','fps'])delete o.set[k];return o}
+function saveForCloud(){const o=clean(save);for(const k of ['muted','seen','syncAt','playsAt','newRes','sent'])delete o[k];if(o.set)for(const k of ['lat','smooth','fps'])delete o.set[k];return o}
 async function cloudPushSave(){
   if(!cloud.google)return;
   try{await cloud.api.set('jugadores/'+cloud.user.uid,{beat:saveForCloud(),beatAt:Date.now(),nombre:save.name||cloud.user.name||'',personaje:charId()},true);cloud.lastSync=Date.now();cloud.err=''}
@@ -1549,6 +1550,9 @@ async function cloudSyncAll(force){
     const uid=cloud.user.uid,api=cloud.api,P='jugadores/'+uid;
     const d=await api.get(P);if(d&&d.beat)replaceSave(mergeSave(save,d.beat));
     await cloudPushSave();
+    // partidas jugadas en otros teléfonos desde la última vez (solo las nuevas: pocas lecturas), cada vez que se abre el juego
+    if(save.playsAt&&!force){const nw=await api.since(P+'/partidas','at',save.playsAt-60e3);
+      if(nw.length)await ftx(['plays'],'readwrite',st=>{nw.forEach(x=>st.plays.put(x.data))});save.playsAt=Date.now();persist()}
     if(force||Date.now()-(save.syncAt||0)>12*3600e3){
       const cl=await api.list(P+'/partidas'),loc=(await ftx(['plays'],'readonly',st=>st.plays.getAll()))||[];
       const cid=new Set(cl.map(x=>x.id)),lid=new Set(loc.map(x=>x.id));
@@ -1558,7 +1562,7 @@ async function cloudSyncAll(force){
       for(const c of ca){const m=files.find(x=>x.fp===c.data.fp);if(m)await fileRec(m.id,r=>{r.best=Math.max(r.best||0,c.data.best||0);r.grade=bestGrade(r.grade,c.data.grade);r.charts=mergeCharts(r.charts,c.data.charts);if(!r.part)r.part=c.data.part||null})}
       for(const m of files)if(m.fp&&!ca.some(c=>c.data.fp===m.fp))await api.set(P+'/archivos/'+m.fp,fileMeta(m));
       cloudFiles=ca.map(x=>x.data).filter(c=>!files.some(f=>f.fp===c.fp));
-      save.syncAt=Date.now();persist();
+      save.syncAt=save.playsAt=Date.now();persist();
     }
     cloud.lastSync=Date.now();cloud.err='';
   }catch(e){console.warn('nube',e);cloud.err='No se pudo sincronizar (¿sin internet?). Se reintenta solo.'}
