@@ -255,6 +255,14 @@ async def main():
     await pg4.evaluate("()=>{SS.save.set.theme='clasico';SS.themeTest=null;SS.toMenu()}")
     print('sin Halloween no aparece:',await pg4.evaluate("()=>!document.getElementById('espB')"))
     await ctx.close()
+    # 🌙 noche: avanza con la canción, estrellas fugaces en los combos, se apaga en Ajustes
+    ctx=await b.new_context(viewport={'width':390,'height':844});pg6=await ctx.new_page();pg6.on('pageerror',lambda e:errs.append(str(e)))
+    await pg6.goto('http://localhost:8766/#prueba');await pg6.wait_for_timeout(300)
+    n=await pg6.evaluate('''()=>{const nh=(()=>{const h=new Date().getHours();return h>=19||h<6})();SS.startStage(0);const k0=SS.nightK();
+      SS.nightTest=1;SS.shootingStar();const met=SS.meteors.length;SS.nightTest=null;SS.save.set.night=0;const off=SS.nightK();SS.save.set.night=1;
+      return {de_noche_por_la_hora:nh,al_empezar:+k0.toFixed(2),estrella_fugaz:met,apagado:off}}''')
+    await pg6.evaluate("()=>{SS.nightTest=1}");await pg6.wait_for_timeout(5000);await pg6.screenshot(path=SP+'n_juego.png')
+    print('noche',n);await ctx.close()
     # miau: jugador nuevo, apagado; quien ya jugaba con el miau prendido por defecto, apagado una vez
     ctx=await b.new_context();pg5=await ctx.new_page();await pg5.goto('http://localhost:8766/#prueba');await pg5.wait_for_timeout(300)
     nuevo=await pg5.evaluate("()=>SS.save.set.meow")

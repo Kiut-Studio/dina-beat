@@ -284,7 +284,7 @@ body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
     <label class="setRow"><span>🎵</span><span>Música</span><input type="range" id="setMusic" min="0" max="100" step="5"><span class="val" id="setMusicV"></span></label>
     <label class="setRow"><span>🔊</span><span>Efectos<small>silbato, rociador, miau</small></span><input type="range" id="setSfx" min="0" max="100" step="5"><span class="val" id="setSfxV"></span></label>
     <label class="setRow"><span>⏱️</span><span>Ajuste de ritmo<small>si te marca tarde con auriculares</small></span><input type="range" id="setLat" min="0" max="300" step="10"><span class="val" id="setLatV"></span></label>
-    <div class="hzRow"><span class="lbl">Ver al jugar</span><span class="chips"><button class="chip" id="vizT" aria-pressed="true">✨ Visualizador</button><button class="chip" id="ghostT" aria-pressed="true">👻 Fantasmas</button><button class="chip" id="fpsT" aria-pressed="false">📊 Contador</button></span></div>
+    <div class="hzRow"><span class="lbl">Ver al jugar</span><span class="chips"><button class="chip" id="vizT" aria-pressed="true">✨ Visualizador</button><button class="chip" id="ghostT" aria-pressed="true">👻 Fantasmas</button><button class="chip" id="nightT" aria-pressed="true">🌙 Noche</button><button class="chip" id="fpsT" aria-pressed="false">📊 Contador</button></span></div>
     <div class="lbl" id="hzLbl">Fluidez de la pantalla</div>
     <div class="seg" id="smoothSeg"><button data-s="1" aria-pressed="false">✨ Máxima</button><button data-s="0" aria-pressed="false">🔋 60 cuadros</button></div>
     <div class="row cfgBot"><button class="btn sec" id="calB">🎧 Calibrar</button><button class="btn sec" id="temasB">🎨 Temas</button><button class="btn" id="cfgOk">Listo</button></div>
@@ -875,7 +875,7 @@ function tap(){
 /* avisos de combo: 10, 25, 50, 75, 100 y después cada 50 */
 const comboMile=c=>[10,25,50,75,100].includes(c)||(c>100&&c%50===0);
 function comboParty(c){
-  pop('🔥 ¡'+c+' de combo!','#ff4f9a',48,30);sCombo(c);
+  pop('🔥 ¡'+c+' de combo!','#ff4f9a',48,30);sCombo(c);shootingStar();
   const g=geo(),cols=runTrail()||(HW()?['#ff8a1f','#8a5ae0','#ffd84d','#2b2140','#ff9a4d','#b48cf2']:['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d']);
   for(let k=0;k<28;k++){const a=k/28*Math.PI*2,v=5+Math.random()*4;fx.push({x:g.cx,y:g.hy-60*g.u,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1.4,c:cols[k%cols.length]})}
 }
@@ -951,7 +951,7 @@ function openCfg(from){cfgFrom=from;$('calB').hidden=$('newsB').hidden=$('acctB'
 function renderCfg(){
   $('acctB').textContent=cloudAcctLabel();
   document.querySelectorAll('#smoothSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===+save.set.smooth));
-  $('fpsT').setAttribute('aria-pressed',fpsOn());$('ghostT').setAttribute('aria-pressed',save.set.ghost!==0);$('vizT').setAttribute('aria-pressed',save.set.viz!==0);
+  $('fpsT').setAttribute('aria-pressed',fpsOn());$('ghostT').setAttribute('aria-pressed',save.set.ghost!==0);$('vizT').setAttribute('aria-pressed',save.set.viz!==0);$('nightT').setAttribute('aria-pressed',save.set.night!==0);
   $('hzLbl').textContent='Fluidez · tu pantalla: '+(HZ.hz?HZ.hz+' Hz':'midiendo…')+(HZ.hz>65&&!save.set.smooth?' (limitada a 60)':'');
   document.querySelectorAll('#toolSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===save.tool));
   document.querySelectorAll('#meowSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.m===+save.set.meow));
@@ -980,6 +980,7 @@ $('pauseCfg').onclick=()=>openCfg('pause');
 $('cfgOk').onclick=()=>{show('cfg',false);if(cfgFrom==='pause')show('pause',true);else{renderMenu();show('menu',true);$('cfgB').hidden=false}};
 document.querySelectorAll('#toolSeg button').forEach(b=>b.onclick=()=>{ac();save.tool=b.dataset.t;persist();renderCfg();toolSound(true);if(save.set.meow)sMeow(.16)});
 $('ghostT').onclick=()=>{save.set.ghost=save.set.ghost===0?1:0;persist();renderCfg()};
+$('nightT').onclick=()=>{save.set.night=save.set.night===0?1:0;persist();renderCfg()};
 $('vizT').onclick=()=>{save.set.viz=save.set.viz!==0?0:1;persist();renderCfg()};
 $('fpsT').onclick=()=>{save.set.fps=save.set.fps?0:1;persist();applyFps();renderCfg()};
 document.querySelectorAll('#smoothSeg button').forEach(b=>b.onclick=()=>{save.set.smooth=+b.dataset.s;persist();renderCfg()});
@@ -2458,6 +2459,7 @@ function draw(){
   else{const gr=ctx.createLinearGradient(0,0,0,H);gr.addColorStop(0,L.sky[0]);gr.addColorStop(1,L.sky[1]);ctx.fillStyle=gr;ctx.fillRect(0,0,W,H)}
   ctx.fillStyle=L.floor;ctx.fillRect(0,g.cy+40*u,W,H);
   ctx.fillStyle='rgba(255,255,255,.25)';for(let x=-stX;x<W;x+=40)ctx.fillRect(x,g.cy+40*u,20,6);
+  const nk=nightK();if(nk>.01)drawNight(g,u,pf,nk);
   if(HW())drawHalloween(g,u,pf,dt);
   if(state==='menu'||!cur)return;
 
@@ -2551,7 +2553,7 @@ function draw(){
     ctx.strokeText(s,g.cx,H*.32);ctx.fillStyle=L.acc;ctx.fillText(s,g.cx,H*.32);
     ctx.font=`700 ${Math.min(22*u,W/16)}px Fredoka`;ctx.strokeText(cur.label,g.cx,H*.2);ctx.fillStyle='#4a2a3f';ctx.fillText(cur.label,g.cx,H*.2)}
   const top=58;
-  ctx.textAlign='right';ctx.font=`700 22px Fredoka`;ctx.fillStyle='#4a2a3f';ctx.fillText(score.toLocaleString('es-AR'),W-64,32);
+  ctx.textAlign='right';ctx.font=`700 22px Fredoka`;if(nk>.45){ctx.lineWidth=4;ctx.strokeStyle='rgba(30,20,60,.55)';ctx.strokeText(score.toLocaleString('es-AR'),W-64,32)}ctx.fillStyle=nk>.45?'#fff':'#4a2a3f';ctx.fillText(score.toLocaleString('es-AR'),W-64,32);
   if(combo>=3){ctx.font=`700 ${15+Math.round(heat*5)}px Fredoka`;ctx.fillStyle='#ff4f9a';ctx.fillText('🔥 '+combo,W-64,52+heat*3)}
   ctx.textAlign='left';
   if(ok(CK)){ctx.font=`700 22px Fredoka`;const x0=80,sw=ctx.measureText(score.toLocaleString('es-AR')).width,sp=Math.max(11,Math.min(19,(W-64-sw-10-x0)/CAKE_MAX)),cs=sp-1;
@@ -2640,6 +2642,60 @@ function moonCv(){
   x.fillStyle='#F59B2E';for(const [a,b,r] of [[82,118,9],[118,84,7],[78,86,5],[116,120,5]]){x.beginPath();x.arc(a,b,r,0,7);x.fill()}
   return _moon=c;
 }
+/* ---------- 🌙 noche ----------
+   Durante la canción atardece y se hace de noche (desde el 40 % hasta el 85 % de la canción). Si en el teléfono ya es de noche
+   (de 19 a 6 h), la canción empieza al atardecer y el menú también se ve de noche. Encima: estrellas que titilan con el pulso,
+   luna (la naranja de Halloween ya está) y estrellas fugaces en los avisos de combo. Solo visual: no cambia notas ni puntajes.
+   Se apaga con 🌙 Noche en ⚙️ Ajustes (save.set.night). */
+const nightHour=()=>{const h=new Date().getHours();return h>=19||h<6};
+const smooth01=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+let nightTest=null; // solo para pruebas
+function nightK(){
+  if(nightTest!=null)return nightTest;
+  if(save.set.night===0)return 0;
+  const nh=nightHour();
+  if(state==='menu'||!cur)return nh?.75:0;
+  if(state!=='play'&&state!=='res')return 0;
+  const p=Math.max(0,Math.min(1,(now()-songStart)/Math.max(1,songEnd-1.2-songStart)));
+  return nh?.45+.55*smooth01(p/.6):smooth01((p-.4)/.45);
+}
+const STARS=Array.from({length:70},()=>({x:Math.random(),y:Math.pow(Math.random(),1.3)*.78,r:Math.random()<.15?2.6:.9+Math.random()*1.2,ph:Math.random()*7,big:Math.random()<.12}));
+let meteors=[],_cMoon=null;
+function shootingStar(){if(nightK()<.3||meteors.length>3)return;const g=geo();meteors.push({x:W*(.55+Math.random()*.4),y:g.hy*(.05+Math.random()*.25),vx:-(7+Math.random()*4)*g.u,vy:(2.4+Math.random()*1.6)*g.u,l:1})}
+function crescentCv(){ // luna finita amarilla (como la de Dina Run)
+  if(_cMoon)return _cMoon;const c=document.createElement('canvas');c.width=c.height=200;const x=c.getContext('2d');
+  const gl=x.createRadialGradient(100,100,40,100,100,100);gl.addColorStop(0,'rgba(255,240,170,.35)');gl.addColorStop(1,'rgba(255,240,170,0)');x.fillStyle=gl;x.fillRect(0,0,200,200);
+  const m=document.createElement('canvas');m.width=m.height=200;const y=m.getContext('2d');
+  y.fillStyle='#FFF0A0';y.beginPath();y.arc(100,100,50,0,7);y.fill();y.fillStyle='#F7D978';for(const [a,b,r] of [[82,122,8],[106,84,5],[74,92,5]]){y.beginPath();y.arc(a,b,r,0,7);y.fill()}
+  y.globalCompositeOperation='destination-out';y.beginPath();y.arc(132,80,48,0,7);y.fill();
+  x.drawImage(m,0,0);return _cMoon=c;
+}
+function drawNight(g,u,pf,k){
+  const fy=g.cy+40*u,hw=HW(),pk=beatNow.pk||0;
+  // cielo: azul profundo (violeta en Halloween) que va tapando el de la etapa; el piso se oscurece
+  const gr=ctx.createLinearGradient(0,0,0,fy);
+  if(hw){gr.addColorStop(0,`rgba(34,18,64,${.92*k})`);gr.addColorStop(.75,`rgba(74,40,120,${.85*k})`);gr.addColorStop(1,`rgba(150,70,110,${.7*k})`)}
+  else{gr.addColorStop(0,`rgba(22,22,64,${.92*k})`);gr.addColorStop(.75,`rgba(52,48,120,${.86*k})`);gr.addColorStop(1,`rgba(120,82,160,${.72*k})`)}
+  ctx.fillStyle=gr;ctx.fillRect(0,0,W,fy);
+  const ss=Math.sin(Math.PI*Math.min(1,k*1.25)); // atardecer: brillo naranja cerca del horizonte a mitad de camino
+  if(ss>.02){const sg=ctx.createLinearGradient(0,fy*.45,0,fy);sg.addColorStop(0,'rgba(255,150,90,0)');sg.addColorStop(1,`rgba(255,140,90,${.42*ss})`);ctx.fillStyle=sg;ctx.fillRect(0,fy*.45,W,fy*.55)}
+  ctx.fillStyle=`rgba(20,14,48,${.5*k})`;ctx.fillRect(0,fy,W,H-fy);
+  // estrellas: titilan solas y brillan un poco más en cada pulso
+  const sk=smooth01((k-.25)/.5);
+  if(sk>.01){const tw=calmMotion?.3:1;ctx.fillStyle='#fff';
+    for(const st of STARS){const x=((st.x*(W+40)-bgX*.15)%(W+40)+W+40)%(W+40)-20,y=st.y*fy;
+      const a=sk*(.5+.35*Math.sin(pf/600*tw+st.ph)+.3*pk);ctx.globalAlpha=Math.max(0,Math.min(1,a));
+      if(st.big){const r=(3.2+2.2*pk)*u;ctx.beginPath();ctx.moveTo(x,y-r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.quadraticCurveTo(x,y,x,y+r);ctx.quadraticCurveTo(x,y,x-r,y);ctx.quadraticCurveTo(x,y,x,y-r);ctx.fill()}
+      else{ctx.beginPath();ctx.arc(x,y,st.r*u*(1+.25*pk),0,7);ctx.fill()}}
+    ctx.globalAlpha=1}
+  if(!hw&&sk>.01){const ms=Math.min(140,120*u+20);ctx.globalAlpha=sk;ctx.drawImage(crescentCv(),W-ms*.95,Math.max(60,H*.13)-ms/2,ms,ms);ctx.globalAlpha=1}
+  // estrellas fugaces (avisos de combo)
+  for(const m of meteors){if(!paused){m.x+=m.vx;m.y+=m.vy;m.l-=.02}
+    const tl=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*9,m.y-m.vy*9);tl.addColorStop(0,`rgba(255,255,255,${m.l})`);tl.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.strokeStyle=tl;ctx.lineWidth=3*u;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*9,m.y-m.vy*9);ctx.stroke();
+    ctx.fillStyle=`rgba(255,250,220,${m.l})`;ctx.beginPath();ctx.arc(m.x,m.y,3.2*u,0,7);ctx.fill()}
+  meteors=meteors.filter(m=>m.l>0&&m.x>-80);
+}
 function drawHalloween(g,u,pf,dt){
   const m=moonCv(),ms=Math.min(150,130*u+20);ctx.globalAlpha=.95;ctx.drawImage(m,W-ms*.95,Math.max(60,H*.13)-ms/2,ms,ms);ctx.globalAlpha=1;
   const fl=calmMotion?.4:1,bw=W+120;
@@ -2681,7 +2737,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io')&&!/\/prueba\//.test(location.pathname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba'||window.FORCE_SS)window.SS={specialSong,openEsp,SPECIAL,set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba'||window.FORCE_SS)window.SS={set nightTest(v){nightTest=v},nightK,get meteors(){return meteors},shootingStar,specialSong,openEsp,SPECIAL,set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>
