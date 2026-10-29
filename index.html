@@ -1608,7 +1608,7 @@ if(save.sent&&save.sent.length){save.salas=save.salas||{};for(const x of save.se
    save.rk[i] = {best, pos, at, down}. Las reglas no dejan pasar puntajes imposibles (máximo de cada etapa). */
 const RANK_MAX=[7230,10170,18400],rankCache={};
 const rankPath=i=>'rankingBeat/e'+i+'/filas'; // "ranking" a secas es el de Dina Run
-const canRank=()=>cloud.google&&save.name&&!save.rankOff;
+function canRank(){return !!(cloud&&cloud.google&&save.name&&!save.rankOff)} // función (no const): el menú la usa antes de llegar acá
 async function rankSubmit(i,R){
   if(!canRank()||!cloud.api||R.s<=0||R.s>RANK_MAX[i])return null;
   save.rk=save.rk||[{},{},{}];const k=save.rk[i]||(save.rk[i]={}),uid=cloud.user.uid;

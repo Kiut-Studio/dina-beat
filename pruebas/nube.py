@@ -36,6 +36,11 @@ WIN='''async(i)=>{SS.startStage(i);await new Promise(r=>setTimeout(r,300));for(c
 async def main():
   async with async_playwright() as p:
     b=await p.chromium.launch(args=['--autoplay-policy=no-user-gesture-required']);errs=[]
+    # 📱 arranque con un guardado que ya usó la nube (ranking, salas): no tiene que haber errores (en la 0.19 de prueba, canRank se usaba antes de existir)
+    c0=await b.new_context();await c0.add_init_script('''if(!sessionStorage.x){sessionStorage.x=1;localStorage.setItem("sofiSilbato.v1",JSON.stringify({best:[5000,0,0],stars:[3,0,0],open:2,name:"Leandro",cloud:1,rk:[{best:5000,pos:2,down:1},{},{}],salas:{abc123:{song:"Etapa 1 · Tranqui",at:Date.now(),own:1,me:4000,pos:2,count:3,top:{n:"Deisy",s:7000}}},newRes:2,songs:[],set:{}}))}''')
+    p0=await c0.new_page();e0=[];p0.on('pageerror',lambda e:e0.append(str(e)))
+    await p0.goto('http://localhost:8766/');await p0.wait_for_timeout(1500);await p0.reload();await p0.wait_for_timeout(1500)
+    print('arranque con guardado de la nube: errores',e0,'· menú',await p0.evaluate('()=>document.querySelector(".st[data-i=\'0\'] span").innerText.replace(/\\n/g," ")'));await c0.close()
     # 📱 A: juega sin cuenta, compone una canción y después entra con Google
     ca,a=await phone(b,'G1',errs)
     await a.evaluate(WIN,0)
