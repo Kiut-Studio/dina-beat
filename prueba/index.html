@@ -86,7 +86,7 @@ a.btn{text-decoration:none;display:inline-block}
 .btn.verde{background:#2fb383;box-shadow:0 4px 0 #1d7d5a}
 button:focus-visible,input:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
-.row[hidden]{display:none}
+.row[hidden],.seg[hidden]{display:none}
 .how{font-size:15px;max-width:330px;margin:0;line-height:1.35}
 .cred{font-size:12px;opacity:.75;max-width:340px;margin:0}
 .ico{position:fixed;top:max(10px,env(safe-area-inset-top));border:0;background:#fff;border-radius:50%;width:42px;height:42px;font-size:20px;box-shadow:0 3px 0 var(--sombra);cursor:pointer;z-index:5}
@@ -1036,13 +1036,14 @@ renderMenu();
 
 /* ---------- tus canciones ---------- */
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const niceName=n=>String(n).replace(/[_]+/g,' ').replace(/\s*\((?:[^)]*\.)?(?:mp3|m4a|wav|ogg|mid|midi)(?:\.[a-z]*)?\)?\s*$/i,'').replace(/\s*-\s*/g,' - ').replace(/\s+/g,' ').trim()||n; // "ILLIT_-_It_s_Me_(mp3.pm)" → "ILLIT - It s Me"
 let delAsk=null;
 function openMine(){stopPreview();['menu','comp','res','parts'].forEach(id=>show(id,false));$('cfgB').hidden=true;renderMine();showFileReplay();show('mine',true)}
 function renderMine(){
   document.querySelectorAll('#diffSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.d===save.diff));
-  const L=save.songs,fl=files.map(f=>`<div class="song"><span class="n">${f.kind==='midi'?'🎼':'🎧'} ${esc(f.name)}<small>${f.kind==='midi'?'MIDI':'Música'} · ${mb(f.size)}${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}${f.grade?'<b class="gmini">'+f.grade+'</b>':''}</small></span>
+  const L=save.songs,fl=files.map(f=>`<div class="song"><span class="n">${f.kind==='midi'?'🎼':'🎧'} ${esc(niceName(f.name))}<small>${f.kind==='midi'?'MIDI':'Música'} · ${mb(f.size)}${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}${f.grade?'<b class="gmini">'+f.grade+'</b>':''}</small></span>
     <button class="mini" data-fp="${esc(f.id)}" aria-label="Jugar">▶</button><button class="mini ${delAsk===f.id?'rojo':''}" data-fx="${esc(f.id)}" aria-label="Borrar">${delAsk===f.id?'¿Sí?':'🗑'}</button></div>`).join('');
-  const cfl=cloudFiles.map(f=>`<div class="song" style="opacity:.75"><span class="n">☁️ ${esc(f.name)}<small>${f.kind==='midi'?'MIDI':'Música'} · está en tu cuenta: elegila con 📂 para jugarla acá${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}</small></span></div>`).join('');
+  const cfl=cloudFiles.map(f=>`<div class="song" style="opacity:.75"><span class="n">☁️ ${esc(niceName(f.name))}<small>${f.kind==='midi'?'MIDI':'Música'} · está en tu cuenta: elegila con 📂 para jugarla acá${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}</small></span></div>`).join('');
   $('songList').innerHTML=fl+cfl+(L.length?L.map(c=>`<div class="song"><span class="n">${esc(c.name)}<small>${c.bpm} pulsos · ${c.notes.filter(x=>x!=null).length} notas${c.best?' · 🏆 '+c.best.toLocaleString('es-AR'):''}${c.grade?'<b class="gmini">'+c.grade+'</b>':''}</small></span>
     <button class="mini" data-p="${c.id}" aria-label="Jugar">▶</button><button class="mini" data-e="${c.id}" aria-label="Editar">✏️</button><button class="mini ${delAsk===c.id?'rojo':''}" data-x="${c.id}" aria-label="Borrar">${delAsk===c.id?'¿Sí?':'🗑'}</button></div>`).join('')
     :(fl||cfl?'':'<p class="empty">Todavía no tenés canciones. ¡Componé una o abrí un archivo!</p>'));
@@ -1183,11 +1184,11 @@ function renderParts(){
   let html='';
   if(c){const S=compSong(c);$('partsSong').textContent='🎵 '+c.name+' · '+c.bpm+' pulsos por minuto';
     html+=`<button class="part" data-p="comp"><span class="em">✏️</span><span class="n">Tus notas<small>las del compositor · ${S.times.length} notas</small></span><span class="lv">${lvOf(S.times.length,S.len)}</span></button>`}
-  else if(F.kind==='midi'){$('partsSong').textContent='🎵 '+F.name+' · '+Math.round(F.data.bpm)+' pulsos por minuto';
+  else if(F.kind==='midi'){$('partsSong').textContent='🎵 '+niceName(F.name)+' · '+Math.round(F.data.bpm)+' pulsos por minuto';
     html+=F.parts.map(P=>{const n=chartPart(P,save.diff).length;
       return `<button class="part${F.part===P.id?' last':''}" data-p="${P.id}"><span class="em">${P.em}</span><span class="n">${esc(P.name)}<small>${esc(P.sub)} · ${n} notas</small></span><span class="lv">${lvOf(n,F.data.len)}</span></button>`}).join('')}
   else{if(!F.cands)F.cands=audioCands(F.an,F.data.duration);const n=chartPart({c:F.cands},save.diff).length;
-    $('partsSong').textContent='🎵 '+F.name+' · '+Math.round(F.an.bpm)+' pulsos por minuto';
+    $('partsSong').textContent='🎵 '+niceName(F.name)+' · '+Math.round(F.an.bpm)+' pulsos por minuto';
     html+=`<button class="part" data-p="auto"><span class="em">🤖</span><span class="n">Automática<small>sigue los golpes de la canción · ${n} notas</small></span><span class="lv">${lvOf(n,F.data.duration)}</span></button>`}
   const CH=chartsOf();
   if(CH.length)html+='<div class="sub">✋ Tus versiones</div>'+CH.map(ch=>`<div class="song"><span class="n">✋ ${esc(ch.name)}<small>${ch.t.length} notas${ch.best?' · 🏆 '+ch.best.toLocaleString('es-AR'):''}${ch.grade?'<b class="gmini">'+ch.grade+'</b>':''}</small></span>
@@ -1748,14 +1749,15 @@ function renderHist(){
     const S=Object.entries(save.salas||{}).sort((a,b)=>(b[1].upd||b[1].at||0)-(a[1].upd||a[1].at||0));
     const old=histRows.filter(x=>x.vs&&!x.vs.id&&!x.id.startsWith('res:')); // duelos de enlaces sin código (antes de las salas)
     if(!S.length&&!old.length){$('histList').innerHTML='<p class="empty">Todavía no hay desafíos. Al terminar una canción tocá ⚔️ Desafiar y mandale el enlace a tus amigos: acá vas a ver la tabla de cada desafío.</p>';return}
-    $('histList').innerHTML=S.map(([id,x])=>`<button class="part" data-s="${id}"><span class="em">${x.count>1?MEDAL(x.pos||1):'📤'}</span><span class="n">${esc(x.song||'Desafío')}<small>${x.count>1?x.count+' jugadores':'esperando a tus amigos'} · ${x.own?'tu desafío':'de '+esc(x.by||'alguien')} · ${when(x.upd||x.at)}</small></span><span class="lv"><b>${(x.me||0).toLocaleString('es-AR')}</b>${x.top&&x.count>1&&x.pos!==1?'1° '+esc(x.top.n):''}</span></button>`).join('')+
+    $('histList').innerHTML=S.map(([id,x])=>`<button class="part" data-s="${id}"><span class="em">${x.count>1?MEDAL(x.pos||1):'📤'}</span><span class="n">${esc(niceName(x.song||'Desafío'))}<small>${x.count>1?x.count+' jugadores':'esperando a tus amigos'} · ${x.own?'tu desafío':'de '+esc(x.by||'alguien')} · ${when(x.upd||x.at)}</small></span><span class="lv"><b>${(x.me||0).toLocaleString('es-AR')}</b>${x.top&&x.count>1&&x.pos!==1?'1° '+esc(x.top.n):''}</span></button>`).join('')+
       old.map(x=>{const d=x.score-x.vs.s,em=d>0?'🏆':d===0?'🤝':'😿';
-        return `<button class="part" data-h="${x.id}"><span class="em">${em}</span><span class="n">Vos vs ${esc(x.vs.n)}<small>${esc(x.song)} · ${when(x.at)} · <span class="${d>0?'win':d<0?'lose':''}">${d>0?'+':d<0?'−':''}${Math.abs(d).toLocaleString('es-AR')}</span></small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${x.vs.s.toLocaleString('es-AR')}</span></button>`}).join('');
+        return `<button class="part" data-h="${x.id}"><span class="em">${em}</span><span class="n">Vos vs ${esc(x.vs.n)}<small>${esc(niceName(x.song))} · ${when(x.at)} · <span class="${d>0?'win':d<0?'lose':''}">${d>0?'+':d<0?'−':''}${Math.abs(d).toLocaleString('es-AR')}</span></small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${x.vs.s.toLocaleString('es-AR')}</span></button>`}).join('');
     $('histList').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>openSala(b.dataset.s));
   }else{
-    if(!histRows.length){$('histList').innerHTML='<p class="empty">Todavía no hay partidas guardadas. ¡Jugá una canción y aparece acá!</p>';return}
-    $('histList').innerHTML=histRows.map(x=>{const g=x.grade;
-      return `<button class="part" data-h="${x.id}"><span class="em${g?' g':''}" style="${g?'background:'+GCOL[g]:''}">${g||(x.win?'🎵':'🍰')}</span><span class="n">${esc(x.song)}<small>${x.variant?esc(x.variant)+' · ':''}${when(x.at)}</small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${best[x.key]===x&&x.score>0?'🏆 mejor':x.acc+' %'}</span></button>`}).join('');
+    const P=histRows.filter(x=>!x.id.startsWith('res:')); // los "res:" de la 0.18 eran resultados de amigos: ahora están en las salas
+    if(!P.length){$('histList').innerHTML='<p class="empty">Todavía no hay partidas guardadas. ¡Jugá una canción y aparece acá!</p>';return}
+    $('histList').innerHTML=P.map(x=>{const g=x.grade;
+      return `<button class="part" data-h="${x.id}"><span class="em${g?' g':''}" style="${g?'background:'+GCOL[g]:''}">${g||(x.win?'🎵':'🍰')}</span><span class="n">${esc(niceName(x.song))}<small>${x.variant?esc(x.variant)+' · ':''}${when(x.at)}</small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${best[x.key]===x&&x.score>0?'🏆 mejor':x.acc+' %'}</span></button>`}).join('');
   }
   $('histList').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>openPlay(histRows.find(x=>x.id===b.dataset.h)));
 }
@@ -1779,7 +1781,7 @@ document.querySelectorAll('#rkSeg button').forEach(b=>b.onclick=()=>{rkStage=+b.
 let salaId=null,salaR=null;
 async function openSala(id){
   salaId=id;const x=(save.salas||{})[id]||{};show('hist',false);show('sala',true);$('saMsg').hidden=true;
-  $('saT').textContent=x.song||'Desafío';$('saWhen').textContent=when(x.at||Date.now());$('saSub').textContent=(x.own?'Tu desafío':'Desafío de '+(x.by||'alguien'))+' · ⏳ cargando la tabla…';
+  $('saT').textContent=niceName(x.song||'Desafío');$('saWhen').textContent=when(x.at||Date.now());$('saSub').textContent=(x.own?'Tu desafío':'Desafío de '+(x.by||'alguien'))+' · ⏳ cargando la tabla…';
   $('saList').innerHTML='';$('saRace').hidden=$('saRaceT').hidden=true;
   try{const uid=await withTimeout(cloudUid(),10000);if(!uid)throw 0;
     const [R,rows]=await Promise.all([cloud.api.get('desafios/'+id),cloud.api.list('desafios/'+id+'/resultados')]);if(salaId!==id)return;
@@ -1812,7 +1814,7 @@ function scoreSeries(h){let sc=0,c=0;const n=h.length;return h.map((o,i)=>{if(o=
 const hitStats=h=>{let p=0,b=0,m=0,c=0,mc=0;for(const o of h){if(o===999){m++;c=0}else{Math.abs(o)<=75?p++:b++;c++;mc=Math.max(mc,c)}}return {p,b,m,c:mc,a:Math.round((p+b*.5)/(h.length||1)*100)}};
 function openPlay(x){
   if(!x)return;playRec=x;show('hist',false);show('playScr',true);$('plMsg').hidden=true;
-  $('plT').textContent=x.song;$('plWhen').textContent=when(x.at);
+  $('plT').textContent=niceName(x.song);$('plWhen').textContent=when(x.at);
   $('plSub').textContent=(x.variant?x.variant+' · ':'')+(x.win?'¡Torta a salvo!':'Dina se comió la torta');
   const V=x.vs,o=V&&V.h?hitStats(V.h):null,row=(lab,a,b)=>`<span>${lab}</span><b>${a}</b>${V?'<b>'+(b==null?'—':b)+'</b>':''}`;
   $('plStats').innerHTML=(V?`<span class="h"></span><span class="h" style="text-align:right">Vos</span><span class="h" style="text-align:right">${esc(V.n)}</span>`:'')+
@@ -1915,7 +1917,7 @@ $('dare').onclick=()=>{if(cur&&cur.reto&&cur.reto.id)shareSala(cur.reto.id,t=>{$
 $('nameOk').onclick=()=>{const n=($('nameIn').value||'').trim().slice(0,16);if(!n){$('nameIn').focus();return}save.name=n;persist();show('nameScr',false);const A=nameAsk||{from:'res',then:dare};nameAsk=null;show(A.from,true);A.then()};
 $('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
 $('nameBack').onclick=()=>{show('nameScr',false);show((nameAsk||{from:'res'}).from,true);nameAsk=null};
-function retoSongName(R){const g=R.song;return g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:g.name}
+function retoSongName(R){const g=R.song;return g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:niceName(g.name)}
 /* comparación al terminar un desafío */
 function showVs(win){
   const R=cur&&cur.reto;
