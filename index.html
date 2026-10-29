@@ -802,8 +802,11 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.19';
+const VERSION='0.19.1';
 const NEWS=[
+  {v:'0.19.1',fecha:'octubre 2026',titulo:'Tu nombre y tu foto en ☁️ Cuenta',items:[
+    ['🙂','Si jugaste un desafío sin cuenta y después entraste con Google, ahora se ven bien tu nombre y tu foto en ☁️ Cuenta y arriba en el menú.'],
+  ]},
   {v:'0.19',fecha:'octubre 2026',titulo:'🏆 Salas y 🌎 rankings',items:[
     ['🏆','Cada desafío es una sala: el mismo enlace sirve para todo el grupo y cada uno ve la tabla con todos los que lo jugaron. En 📜 Tus partidas → ⚔️ Duelos, tu puesto en cada sala.'],
     ['👻','Varios fantasmas a la vez: jugás contra los mejores de la sala, con un mini ranking en vivo arriba.'],
@@ -1468,7 +1471,11 @@ const FBV='12.10.0';
 var cloud={ready:null,user:null,google:false,api:null,lastSync:0,err:'',syncing:false,checkedAt:0},cloudT=0,cloudFiles=[];
 const clean=x=>JSON.parse(JSON.stringify(x)); // la nube no acepta "undefined"
 const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('tiempo')),ms))]);
-const mapUser=u=>u?{uid:u.uid,anon:!!u.isAnonymous,name:u.displayName||'',email:u.email||'',photo:u.photoURL||''}:null;
+/* nombre y foto: si la cuenta empezó anónima (desafíos sin cuenta, ver el ranking de Dina Run) y después se unió a Google,
+   Firebase deja vacíos displayName y photoURL: están en el perfil de Google de la cuenta (providerData). Igual que Dina Run 0.9.3 */
+const gProf=u=>((u&&u.providerData)||[]).find(x=>x&&x.providerId==='google.com')||{};
+const mapUser=u=>{if(!u)return null;const g=gProf(u);
+  return {uid:u.uid,anon:!!u.isAnonymous,name:u.displayName||g.displayName||'',email:u.email||g.email||'',photo:u.photoURL||g.photoURL||''}};
 function cloudLoad(){ // carga Firebase una vez; si no hay internet, el juego sigue igual y se reintenta después
   if(cloud.ready)return cloud.ready;
   cloud.ready=withTimeout((async()=>{
@@ -1477,11 +1484,15 @@ function cloudLoad(){ // carga Firebase una vez; si no hay internet, el juego si
       const base='https://www.gstatic.com/firebasejs/'+FBV+'/';
       const [A,U,F]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
       const app=A.initializeApp(FB_CFG),auth=U.getAuth(app),db=F.getFirestore(app);
+      // copia el nombre y la foto de Google a la cuenta si faltan (así los ven bien los dos juegos)
+      const fixProfile=async u=>{if(!u||u.isAnonymous||(u.displayName&&u.photoURL))return;const g=gProf(u);
+        const d={};if(!u.displayName&&g.displayName)d.displayName=g.displayName;if(!u.photoURL&&g.photoURL)d.photoURL=g.photoURL;
+        if(Object.keys(d).length)try{await U.updateProfile(u,d)}catch(e){console.warn('perfil',e)}};
       cloud.api={
-        onUser:cb=>U.onAuthStateChanged(auth,u=>cb(mapUser(u))),
+        onUser:cb=>U.onAuthStateChanged(auth,u=>{fixProfile(u);cb(mapUser(u))}),
         google:async()=>{const p=new U.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});const cu=auth.currentUser;
           if(cu&&cu.isAnonymous){ // si ya jugaba desafíos sin cuenta, se conserva lo mismo
-            try{const r=await U.linkWithPopup(cu,p);return mapUser(r.user)}
+            try{const r=await U.linkWithPopup(cu,p);await fixProfile(r.user);return mapUser(r.user)}
             catch(e){const cr=U.GoogleAuthProvider.credentialFromError(e);if(cr&&/already-in-use/.test(e.code||'')){const r=await U.signInWithCredential(auth,cr);return mapUser(r.user)}throw e}}
           const r=await U.signInWithPopup(auth,p);return mapUser(r.user)},
         anon:async()=>mapUser((await U.signInAnonymously(auth)).user),

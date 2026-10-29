@@ -1,5 +1,8 @@
 # Novedades
 
+## Versión 0.19.1 — octubre 2026
+- 🙂 Cuentas que empezaron anónimas (un desafío jugado sin cuenta) y después entraron con Google: ahora se ven su nombre y su foto en ☁️ Cuenta y en el botón de arriba. Firebase los deja vacíos en la cuenta; se toman del perfil de Google (`providerData`) y se copian a la cuenta, igual que Dina Run desde la 0.9.3.
+
 ## Versión 0.19 — octubre 2026: 🏆 salas y 🌎 rankings
 - 🏆 Cada desafío es una sala con tabla: el mismo enlace sirve para un grupo; quien lo crea también está en la tabla, y todos los que lo juegan ven quién va primero. Al terminar: "Vas 2° de 5". En ⚔️ Duelos, una fila por sala con tu puesto; al abrirla, la tabla completa y la carrera de puntajes de todos. "🔗 Invitar a más" para sumar gente a la misma sala.
 - 👻 Hasta 3 fantasmas a la vez (los mejores de la sala), con un mini ranking en vivo arriba a la izquierda.

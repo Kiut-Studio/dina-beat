@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 28/10/2026 · versión 0.19
+Última actualización: 28/10/2026 · versión 0.19.1
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v22; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v23; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -254,6 +254,11 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - API de la nube: + `top`, `count`, `del`, `since` (y en la nube falsa de las pruebas).
 - Partidas de otros teléfonos: cada vez que se abre el juego con cuenta, `since` baja solo las partidas con `at` posterior a `save.playsAt` (del aparato); la sincronización completa sigue cada 12 h o con 🔄. Antes, en la 0.18, una partida jugada en el teléfono no aparecía en la PC hasta 12 h después.
 - Pruebas: `nube.py` agrega ranking (dos cuentas, puesto ▼, fantasmas), sala con tres personas (dos sin cuenta), enlace corto, tabla y avisos.
+
+## Versión 0.19.1 — nombre y foto de cuentas que empezaron anónimas
+- Si la cuenta empezó anónima (un desafío sin cuenta) y después se unió a Google con `linkWithPopup`, Firebase deja vacíos `displayName` y `photoURL`. Ahora `mapUser` los toma de `providerData` (`gProf`, el perfil `google.com`) y `fixProfile` los copia a la cuenta con `updateProfile` (al entrar y en cada cambio de sesión). Mismo código que Dina Run 0.9.3.
+- Se nota en ☁️ Cuenta, el botón de arriba (`#acctI`) y el `nombre` de respaldo en `jugadores/{uid}`. Los rankings no cambian: usan el apodo.
+- Prueba: `nube.py` revisa `mapUser` con una cuenta así.
 
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).

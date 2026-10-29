@@ -126,5 +126,8 @@ async def main():
     print('sala: enlace',url.split('#')[1],len(url),'letras · Sofi ve',c1[0],'fantasmas',c1[1],'termina',c1[2],'botón',c1[3])
     print('      Deisy ve',c2[0],'fantasmas',c2[1],'termina',c2[2])
     print('      A: aviso',av,'· duelos',du,'· sala',sa)
+    pd=await a.evaluate('()=>{const u=mapUser({uid:"x",isAnonymous:false,displayName:null,photoURL:null,email:null,providerData:[{providerId:"google.com",displayName:"Leandro Casco",email:"l@e.com",photoURL:"https://lh3.googleusercontent.com/a-/"+"x".repeat(600)}]});return [u.name,u.email,u.photo.length]}')
+    print('cuenta que empezó anónima: nombre',pd[0],'· correo',pd[1],'· foto',pd[2],'letras (sin cortar)')
+    assert pd[0]=='Leandro Casco' and pd[2]>600
     print(errs);await b.close()
 if __name__=="__main__": asyncio.run(main())
