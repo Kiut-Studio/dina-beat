@@ -85,7 +85,7 @@ a.btn{text-decoration:none;display:inline-block}
 .btn.verde{background:#2fb383;box-shadow:0 4px 0 #1d7d5a}
 button:focus-visible,input:focus-visible{outline:3px solid var(--vio);outline-offset:2px}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
-.row[hidden]{display:none}
+.row[hidden],.seg[hidden]{display:none}
 .how{font-size:15px;max-width:330px;margin:0;line-height:1.35}
 .cred{font-size:12px;opacity:.75;max-width:340px;margin:0}
 .ico{position:fixed;top:max(10px,env(safe-area-inset-top));border:0;background:#fff;border-radius:50%;width:42px;height:42px;font-size:20px;box-shadow:0 3px 0 var(--sombra);cursor:pointer;z-index:5}
@@ -162,8 +162,9 @@ label.btn{display:inline-block}
 .acctWho .n small{display:block;font-weight:500;font-size:12px;opacity:.7;overflow:hidden;text-overflow:ellipsis}
 #retoName{font:700 16px Fredoka,sans-serif;border:2px solid var(--rosa2);border-radius:12px;padding:6px 10px;color:var(--tinta);text-align:center;width:100%}
 /* historial */
+#histSeg button{font-size:14px;padding:7px 4px}#rkSeg button{font-size:13px;padding:5px 4px}
 .s5{background:#5b6bd6}
-#hist .card,#playScr .card{width:min(440px,100%);max-height:100%;min-height:0}
+#hist .card,#playScr .card,#sala .card{width:min(440px,100%);max-height:100%;min-height:0}
 #histList{max-height:none;flex:1 1 auto;min-height:0}
 .part .lv b{display:block;font-size:15px;text-align:right;font-variant-numeric:tabular-nums}
 .part .lv{text-align:right}
@@ -251,7 +252,7 @@ label.btn{display:inline-block}
     <label class="setRow"><span>🎵</span><span>Música</span><input type="range" id="setMusic" min="0" max="100" step="5"><span class="val" id="setMusicV"></span></label>
     <label class="setRow"><span>🔊</span><span>Efectos<small>silbato, rociador, miau</small></span><input type="range" id="setSfx" min="0" max="100" step="5"><span class="val" id="setSfxV"></span></label>
     <label class="setRow"><span>⏱️</span><span>Ajuste de ritmo<small>si te marca tarde con auriculares</small></span><input type="range" id="setLat" min="0" max="300" step="10"><span class="val" id="setLatV"></span></label>
-    <div class="hzRow"><span class="lbl">Ver al jugar</span><span class="chips"><button class="chip" id="vizT" aria-pressed="true">✨ Visualizador</button><button class="chip" id="fpsT" aria-pressed="false">📊 Contador</button></span></div>
+    <div class="hzRow"><span class="lbl">Ver al jugar</span><span class="chips"><button class="chip" id="vizT" aria-pressed="true">✨ Visualizador</button><button class="chip" id="ghostT" aria-pressed="true">👻 Fantasmas</button><button class="chip" id="fpsT" aria-pressed="false">📊 Contador</button></span></div>
     <div class="lbl" id="hzLbl">Fluidez de la pantalla</div>
     <div class="seg" id="smoothSeg"><button data-s="1" aria-pressed="false">✨ Máxima</button><button data-s="0" aria-pressed="false">🔋 60 cuadros</button></div>
     <div class="row"><button class="btn sec" id="calB">🎧 Calibrar</button><button class="btn" id="cfgOk">Listo</button></div>
@@ -309,6 +310,7 @@ label.btn{display:inline-block}
     <img id="retoImg" src="assets/sofi.webp" alt="">
     <p class="how" id="retoTxt" style="align-self:center"></p>
     <input id="retoName" maxlength="16" placeholder="Tu nombre" aria-label="Tu nombre (lo ve quien te desafió)" hidden>
+    <div class="vs" id="retoTab" hidden></div>
     <p class="nota" id="retoNeed" hidden></p>
     <div class="row" id="retoPickRow" hidden><label class="btn sec" id="retoPick" for="retoFile" role="button" tabindex="0">📂 Elegir la canción</label></div>
     <input type="file" id="retoFile" class="vh">
@@ -329,7 +331,8 @@ label.btn{display:inline-block}
 <section class="scr" id="hist" hidden>
   <div class="card">
     <h2>📜 Tus partidas</h2>
-    <div class="seg" id="histSeg"><button data-v="plays" aria-pressed="true">🎵 Partidas</button><button data-v="duels" aria-pressed="false">⚔️ Duelos</button></div>
+    <div class="seg" id="histSeg"><button data-v="plays" aria-pressed="true">🎵 Partidas</button><button data-v="duels" aria-pressed="false">⚔️ Duelos</button><button data-v="rank" aria-pressed="false">🌎 Ranking</button></div>
+    <div class="seg" id="rkSeg" hidden><button data-r="0">Tranqui</button><button data-r="1">Picante</button><button data-r="2">Miau-loca</button></div>
     <div class="songs" id="histList"></div>
     <div class="row"><button class="btn sec" id="histBack">← Volver</button></div>
   </div>
@@ -349,6 +352,20 @@ label.btn{display:inline-block}
     </div>
     <p class="nota" id="plMsg" style="text-align:center" hidden></p>
     <div class="row"><button class="btn" id="plDare">⚔️ Desafiar con esta</button><button class="btn sec" id="plBack">← Volver</button></div>
+  </div>
+</section>
+
+<section class="scr" id="sala" hidden>
+  <div class="card">
+    <div class="stHead"><h2 id="saT">Desafío</h2><small id="saWhen"></small></div>
+    <div class="playBody">
+      <p class="nota" id="saSub" style="margin:0"></p>
+      <div class="vsTab" id="saList"></div>
+      <div class="sub" id="saRaceT">📈 Puntaje a lo largo de la canción</div>
+      <canvas class="playCv" id="saRace" aria-label="Puntaje de cada uno a lo largo de la canción"></canvas>
+    </div>
+    <p class="nota" id="saMsg" style="text-align:center" hidden></p>
+    <div class="row"><button class="btn" id="saPlay">▶ Jugar</button><button class="btn sec" id="saShare">🔗 Invitar</button><button class="btn sec" id="saBack">←</button></div>
   </div>
 </section>
 
@@ -609,7 +626,7 @@ function thin(cand,gap){ // deja las notas más fuertes, separadas por al menos 
 let state='menu',paused=false,cur=null,stage=0;
 let meter=4,grid=[],ev=[],evI=0,notes=[],songStart=0,songEnd=0,beat=.5,bufSrc=null;
 let score=0,combo=0,maxCombo=0,cnt={p:0,b:0,m:0},cake=CAKE_MAX,goodHits=0,fru=0,heat=0,sparks=[];
-let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[],ghost=null;
+let fx=[],flyers=[],pops=[],shake=0,blow=0,crumbs=[],drops=[],ghosts=[];
 
 function startSong(S){
   ac();cur=S;state='play';paused=false;counting=null;resuming=false;stopPreview();
@@ -626,13 +643,15 @@ function startSong(S){
   notes=S.times.map((t,i)=>({t:t+songStart,type:(i===Math.floor(n*.85)&&n>8)?'pan':(i%9===8?'fru':'dina'),st:0,wob:Math.random()*6}));
   songEnd=songStart+S.len+1.2;sched();
   // 👻 fantasma: en un desafío que trae cómo tocó la otra persona (h: milésimas de cada nota, 999 = se le escapó)
-  const R=S.reto;ghost=R&&Array.isArray(R.h)&&R.h.length===notes.length?{h:R.h,i:0,score:0,combo:0,n:R.n,img:(CHARS.find(x=>x.id===R.c)||CHARS[0]).id,fl:0,txt:null}:null;
+  // 👻 fantasmas: de un desafío (quien lo creó y los mejores de la sala) o de los rankings de las etapas. h = milésimas de cada nota (999 = se le escapó)
+  ghosts=(S.ghostRows||(S.reto&&Array.isArray(S.reto.h)?[{n:S.reto.n,c:S.reto.c,h:S.reto.h}]:[])).filter(r=>Array.isArray(r.h)&&r.h.length===notes.length).slice(0,3)
+    .map((r,k)=>({h:r.h,i:0,score:0,combo:0,n:r.n||'Alguien',img:(CHARS.find(x=>x.id===r.c)||CHARS[0]).id,fl:0,txt:null,slot:k}));
   grid=(S.grid||[]).map(x=>({t:x.t+songStart,bar:x.bar}));for(let k=1;k<=4;k++)grid.unshift({t:songStart-k*beat,bar:k===4}); // con los 4 de la cuenta
   meter=Math.max(2,Math.min(7,S.meter||4));{let bi=0;for(const x of grid){if(x.bar)bi=0;x.bi=bi++}} // tiempo dentro del compás, para el metrónomo
-  ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr','hist','playScr','acct'].forEach(id=>show(id,false));
+  ['menu','res','pause','mine','comp','cfg','parts','studio','reto','nameScr','hist','playScr','acct','sala'].forEach(id=>show(id,false));
   $('pauseB').hidden=false;$('cfgB').hidden=true;
 }
-function startStage(i){stage=i;startSong(stageSong(i))}
+function startStage(i){stage=i;const S=stageSong(i),G=stageGhosts(i);if(G)S.ghostRows=G;startSong(S)}
 function sched(){
   if(!AC||paused||!songBus||state!=='play')return;const lim=AC.currentTime+.25; // solo suena la canción que se está jugando
   while(evI<ev.length&&ev[evI].t<lim){const v=ev[evI++],t=Math.max(v.t,AC.currentTime);
@@ -687,8 +706,8 @@ function comboParty(c){
   for(let k=0;k<28;k++){const a=k/28*Math.PI*2,v=5+Math.random()*4;fx.push({x:g.cx,y:g.hy-60*g.u,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1.4,c:cols[k%cols.length]})}
 }
 /* el fantasma suma con las mismas reglas que vos: perfecto ±75 ms = 100, bien = 50, pancito ×3 y extra por combo */
-function ghostStep(n,o){
-  const G=ghost;if(o===999){G.combo=0;G.txt={s:'😿',l:1};return}
+function ghostStep(G,n,o){
+  if(o===999){G.combo=0;G.txt={s:'😿',l:1};return}
   const p=Math.abs(o)<=75;G.combo++;G.score+=Math.round((p?100:50)*(n.type==='pan'?3:1)*(1+Math.min(1,Math.floor(G.combo/10)*.1)));
   G.fl=1;G.txt={s:p?'¡Perfecto!':'¡Bien!',l:1};
 }
@@ -758,7 +777,7 @@ function openCfg(from){cfgFrom=from;$('calB').hidden=$('newsB').hidden=$('acctB'
 function renderCfg(){
   $('acctB').textContent=cloudAcctLabel();
   document.querySelectorAll('#smoothSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===+save.set.smooth));
-  $('fpsT').setAttribute('aria-pressed',fpsOn());$('vizT').setAttribute('aria-pressed',save.set.viz!==0);
+  $('fpsT').setAttribute('aria-pressed',fpsOn());$('ghostT').setAttribute('aria-pressed',save.set.ghost!==0);$('vizT').setAttribute('aria-pressed',save.set.viz!==0);
   $('hzLbl').textContent='Fluidez · tu pantalla: '+(HZ.hz?HZ.hz+' Hz':'midiendo…')+(HZ.hz>65&&!save.set.smooth?' (limitada a 60)':'');
   document.querySelectorAll('#toolSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===save.tool));
   document.querySelectorAll('#meowSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.m===+save.set.meow));
@@ -770,6 +789,7 @@ $('cfgB').onclick=()=>openCfg('menu');
 $('pauseCfg').onclick=()=>openCfg('pause');
 $('cfgOk').onclick=()=>{show('cfg',false);if(cfgFrom==='pause')show('pause',true);else{renderMenu();show('menu',true);$('cfgB').hidden=false}};
 document.querySelectorAll('#toolSeg button').forEach(b=>b.onclick=()=>{ac();save.tool=b.dataset.t;persist();renderCfg();toolSound(true);if(save.set.meow)sMeow(.16)});
+$('ghostT').onclick=()=>{save.set.ghost=save.set.ghost===0?1:0;persist();renderCfg()};
 $('vizT').onclick=()=>{save.set.viz=save.set.viz!==0?0:1;persist();renderCfg()};
 $('fpsT').onclick=()=>{save.set.fps=save.set.fps?0:1;persist();applyFps();renderCfg()};
 document.querySelectorAll('#smoothSeg button').forEach(b=>b.onclick=()=>{save.set.smooth=+b.dataset.s;persist();renderCfg()});
@@ -782,8 +802,15 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.18';
+const VERSION='0.19';
 const NEWS=[
+  {v:'0.19',fecha:'octubre 2026',titulo:'🏆 Salas y 🌎 rankings',items:[
+    ['🏆','Cada desafío es una sala: el mismo enlace sirve para todo el grupo y cada uno ve la tabla con todos los que lo jugaron. En 📜 Tus partidas → ⚔️ Duelos, tu puesto en cada sala.'],
+    ['👻','Varios fantasmas a la vez: jugás contra los mejores de la sala, con un mini ranking en vivo arriba.'],
+    ['🌎','Ranking de cada etapa (Tranqui, Picante y ¡Miau-loca!) para quienes entraron con Google: tu puesto aparece en el menú y jugás contra los fantasmas de los que están justo arriba tuyo.'],
+    ['🔗','Enlaces de desafío cortitos.'],
+    ['🏷️','En los rankings se ve solo tu apodo (lo elegís en ☁️ Cuenta), nunca tu nombre ni tu foto. Podés no aparecer.'],
+  ]},
   {v:'0.18',fecha:'octubre 2026',titulo:'☁️ Tu cuenta de Google',items:[
     ['☁️','Tocá ☁️ Entrar (arriba, al lado del sonido) y entrá con Google: tu progreso queda guardado en la nube: estrellas, récords, canciones compuestas, versiones del Estudio, partidas y duelos.'],
     ['📱','En otro teléfono entrás con la misma cuenta y está todo. Lo que ya tenías en cada teléfono se junta: queda lo mejor de cada uno.'],
@@ -960,7 +987,7 @@ function finish(win){
   $('stars').innerHTML=win?'🍓'.repeat(stars)+'<span style="opacity:.25;filter:grayscale(1)">🍓</span>'.repeat(3-stars):'🍰💨';
   $('resScore').innerHTML=score.toLocaleString('es-AR')+(nb&&score>0?'<span class="new">¡Récord!</span>':'');
   $('stats').innerHTML=`<div>✨ Perfectos<b>${cnt.p}</b></div><div>👍 Bien<b>${cnt.b}</b></div><div>😿 Fallos<b>${cnt.m}</b></div><div>🔥 Combo<b>${maxCombo}</b></div><div>🎯 Precisión<b>${Math.round(acc*100)}%</b></div><div>🍓 Frutillas<b>${fru}</b></div>`;
-  showVs(win);acctUi();$('dareMsg').hidden=true;$('dare').textContent=cur.reto?'⚔️ Devolver':'⚔️ Desafiar';
+  showVs(win);acctUi();$('dareMsg').hidden=true;$('dare').textContent=cur.reto?(cur.reto.id?'🔗 Invitar a más':'⚔️ Devolver'):'⚔️ Desafiar';
   $('grade').hidden=!grade;$('grade').textContent=grade;$('grade').className='grade g'+grade;
   $('resFc').hidden=!(win&&cnt.m===0&&notes.length>0);
   savePlay(win,acc);
@@ -974,18 +1001,19 @@ function bestGrade(a,b){const o='SABCD';if(!a)return b||'';if(!b)return a;return
 $('next').onclick=()=>startStage(cur.stage+1);
 $('again').onclick=()=>{if(cur.stage!=null)startStage(cur.stage);else startSong(cur.rebuild?cur.rebuild():cur)};
 $('home').onclick=()=>{if(cur&&cur.stage==null){state='menu';show('res',false);if(pick)openParts();else openMine()}else toMenu()};
-function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
+function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct','sala'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
 function renderMenu(){
   const sp=save.tool==='spray';
   $('tagline').textContent=sp?'¡Psst! que Dina no se coma la torta':'¡Piii! que Dina no se coma la torta';
   $('howTxt').innerHTML=`👆 Tocá la pantalla <b>justo</b> cuando Dina llega al círculo, al ritmo de la música, para espantarla con ${sp?'el rociador':'el silbato'}. ¡Si te atrasás, le da un mordisco a la torta!`;
   $('stages').innerHTML=STAGES.map((S,i)=>{
     const lock=i+1>save.open;
-    return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):S.sub)}</span></button>`}).join('')
+    return `<button class="st ${S.cls}" data-i="${i}" ${lock?'disabled':''}>${lock?'🔒':i+1+'.'} ${S.name}<span>${lock?'Pasá la etapa '+i:(save.stars[i]?'🍓'.repeat(save.stars[i])+(save.grade[i]?'<b class="gmini">'+save.grade[i]+'</b>':'')+'<br>':'')+(save.best[i]?'🏆 '+save.best[i].toLocaleString('es-AR'):S.sub)+(((save.rk||[])[i]||{}).pos&&canRank()?` · 🌎 #${save.rk[i].pos}${save.rk[i].down?' ▼':''}`:'')}</span></button>`}).join('')
     +`<button class="st s4" id="mineB">🎵 Tus canciones<span>componé o abrí música</span></button>`
-    +`<button class="st s5" id="histB">📜 Tus partidas<span>${save.newRes?'⚔️ '+save.newRes+(save.newRes>1?' resultados nuevos':' resultado nuevo'):'historial y duelos'}</span></button>`;
-  document.querySelectorAll('.st[data-i]').forEach(b=>b.onclick=()=>startStage(+b.dataset.i));
-  $('mineB').onclick=openMine;$('histB').onclick=()=>openHist('plays');
+    +`<button class="st s5" id="histB">📜 Tus partidas<span>${save.newRes?'⚔️ '+save.newRes+(save.newRes>1?' novedades en tus desafíos':' novedad en tus desafíos'):'historial y duelos'}</span></button>`;
+  document.querySelectorAll('.st[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(save.rk&&save.rk[i]&&save.rk[i].down){save.rk[i].down=0;persist()}startStage(i)});
+  $('mineB').onclick=openMine;$('histB').onclick=()=>openHist(save.newRes?'duels':'plays');
+  if(cloud&&cloud.google)rankRefresh();
   renderWho(true);
 }
 let viewCh=null; // personaje que se está mirando en el menú (puede ser uno que todavía no tenés)
@@ -1006,13 +1034,14 @@ renderMenu();
 
 /* ---------- tus canciones ---------- */
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const niceName=n=>String(n).replace(/[_]+/g,' ').replace(/\s*\((?:[^)]*\.)?(?:mp3|m4a|wav|ogg|mid|midi)(?:\.[a-z]*)?\)?\s*$/i,'').replace(/\s*-\s*/g,' - ').replace(/\s+/g,' ').trim()||n; // "ILLIT_-_It_s_Me_(mp3.pm)" → "ILLIT - It s Me"
 let delAsk=null;
 function openMine(){stopPreview();['menu','comp','res','parts'].forEach(id=>show(id,false));$('cfgB').hidden=true;renderMine();showFileReplay();show('mine',true)}
 function renderMine(){
   document.querySelectorAll('#diffSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.d===save.diff));
-  const L=save.songs,fl=files.map(f=>`<div class="song"><span class="n">${f.kind==='midi'?'🎼':'🎧'} ${esc(f.name)}<small>${f.kind==='midi'?'MIDI':'Música'} · ${mb(f.size)}${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}${f.grade?'<b class="gmini">'+f.grade+'</b>':''}</small></span>
+  const L=save.songs,fl=files.map(f=>`<div class="song"><span class="n">${f.kind==='midi'?'🎼':'🎧'} ${esc(niceName(f.name))}<small>${f.kind==='midi'?'MIDI':'Música'} · ${mb(f.size)}${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}${f.grade?'<b class="gmini">'+f.grade+'</b>':''}</small></span>
     <button class="mini" data-fp="${esc(f.id)}" aria-label="Jugar">▶</button><button class="mini ${delAsk===f.id?'rojo':''}" data-fx="${esc(f.id)}" aria-label="Borrar">${delAsk===f.id?'¿Sí?':'🗑'}</button></div>`).join('');
-  const cfl=cloudFiles.map(f=>`<div class="song" style="opacity:.75"><span class="n">☁️ ${esc(f.name)}<small>${f.kind==='midi'?'MIDI':'Música'} · está en tu cuenta: elegila con 📂 para jugarla acá${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}</small></span></div>`).join('');
+  const cfl=cloudFiles.map(f=>`<div class="song" style="opacity:.75"><span class="n">☁️ ${esc(niceName(f.name))}<small>${f.kind==='midi'?'MIDI':'Música'} · está en tu cuenta: elegila con 📂 para jugarla acá${f.best?' · 🏆 '+f.best.toLocaleString('es-AR'):''}</small></span></div>`).join('');
   $('songList').innerHTML=fl+cfl+(L.length?L.map(c=>`<div class="song"><span class="n">${esc(c.name)}<small>${c.bpm} pulsos · ${c.notes.filter(x=>x!=null).length} notas${c.best?' · 🏆 '+c.best.toLocaleString('es-AR'):''}${c.grade?'<b class="gmini">'+c.grade+'</b>':''}</small></span>
     <button class="mini" data-p="${c.id}" aria-label="Jugar">▶</button><button class="mini" data-e="${c.id}" aria-label="Editar">✏️</button><button class="mini ${delAsk===c.id?'rojo':''}" data-x="${c.id}" aria-label="Borrar">${delAsk===c.id?'¿Sí?':'🗑'}</button></div>`).join('')
     :(fl||cfl?'':'<p class="empty">Todavía no tenés canciones. ¡Componé una o abrí un archivo!</p>'));
@@ -1153,11 +1182,11 @@ function renderParts(){
   let html='';
   if(c){const S=compSong(c);$('partsSong').textContent='🎵 '+c.name+' · '+c.bpm+' pulsos por minuto';
     html+=`<button class="part" data-p="comp"><span class="em">✏️</span><span class="n">Tus notas<small>las del compositor · ${S.times.length} notas</small></span><span class="lv">${lvOf(S.times.length,S.len)}</span></button>`}
-  else if(F.kind==='midi'){$('partsSong').textContent='🎵 '+F.name+' · '+Math.round(F.data.bpm)+' pulsos por minuto';
+  else if(F.kind==='midi'){$('partsSong').textContent='🎵 '+niceName(F.name)+' · '+Math.round(F.data.bpm)+' pulsos por minuto';
     html+=F.parts.map(P=>{const n=chartPart(P,save.diff).length;
       return `<button class="part${F.part===P.id?' last':''}" data-p="${P.id}"><span class="em">${P.em}</span><span class="n">${esc(P.name)}<small>${esc(P.sub)} · ${n} notas</small></span><span class="lv">${lvOf(n,F.data.len)}</span></button>`}).join('')}
   else{if(!F.cands)F.cands=audioCands(F.an,F.data.duration);const n=chartPart({c:F.cands},save.diff).length;
-    $('partsSong').textContent='🎵 '+F.name+' · '+Math.round(F.an.bpm)+' pulsos por minuto';
+    $('partsSong').textContent='🎵 '+niceName(F.name)+' · '+Math.round(F.an.bpm)+' pulsos por minuto';
     html+=`<button class="part" data-p="auto"><span class="em">🤖</span><span class="n">Automática<small>sigue los golpes de la canción · ${n} notas</small></span><span class="lv">${lvOf(n,F.data.duration)}</span></button>`}
   const CH=chartsOf();
   if(CH.length)html+='<div class="sub">✋ Tus versiones</div>'+CH.map(ch=>`<div class="song"><span class="n">✋ ${esc(ch.name)}<small>${ch.t.length} notas${ch.best?' · 🏆 '+ch.best.toLocaleString('es-AR'):''}${ch.grade?'<b class="gmini">'+ch.grade+'</b>':''}</small></span>
@@ -1460,6 +1489,10 @@ function cloudLoad(){ // carga Firebase una vez; si no hay internet, el juego si
         get:async path=>{const d=await F.getDoc(F.doc(db,path));return d.exists()?d.data():null},
         set:(path,data,merge)=>F.setDoc(F.doc(db,path),data,merge?{merge:true}:{}),
         list:async path=>(await F.getDocs(F.collection(db,path))).docs.map(d=>({id:d.id,data:d.data()})),
+        top:async(path,field,n)=>(await F.getDocs(F.query(F.collection(db,path),F.orderBy(field,'desc'),F.limit(n)))).docs.map(d=>({id:d.id,data:d.data()})),
+        count:async(path,field,v)=>(await F.getCountFromServer(F.query(F.collection(db,path),F.where(field,'>',v)))).data().count,
+        del:path=>F.deleteDoc(F.doc(db,path)),
+        since:async(path,field,v)=>(await F.getDocs(F.query(F.collection(db,path),F.where(field,'>',v)))).docs.map(d=>({id:d.id,data:d.data()})),
       };
     }
     await new Promise(res=>{let first=true;cloud.api.onUser(u=>{setUser(u);if(first){first=false;res()}})});
@@ -1481,7 +1514,7 @@ async function cloudUid(){ // con cuenta o, si no hay, con una sesión anónima 
   return cloud.user&&cloud.user.uid;
 }
 function cloudSoon(){if(typeof cloud==='undefined'||!cloud||!cloud.google||cloud.merging)return;clearTimeout(cloudT);cloudT=setTimeout(cloudPushSave,3000)}
-function saveForCloud(){const o=clean(save);for(const k of ['muted','seen','syncAt','newRes'])delete o[k];if(o.set)for(const k of ['lat','smooth','fps'])delete o.set[k];return o}
+function saveForCloud(){const o=clean(save);for(const k of ['muted','seen','syncAt','playsAt','newRes','sent'])delete o[k];if(o.set)for(const k of ['lat','smooth','fps'])delete o.set[k];return o}
 async function cloudPushSave(){
   if(!cloud.google)return;
   try{await cloud.api.set('jugadores/'+cloud.user.uid,{beat:saveForCloud(),beatAt:Date.now(),nombre:save.name||cloud.user.name||'',personaje:charId()},true);cloud.lastSync=Date.now();cloud.err=''}
@@ -1504,6 +1537,9 @@ function mergeSave(L,C){
   if(newer){for(const k of ['tool','diff','char','name'])if(C[k]!=null&&C[k]!=='')o[k]=C[k];o.set=Object.assign({},o.set,C.set||{});for(const k of ['lat','smooth','fps'])o.set[k]=(L.set||{})[k]}
   if(!o.name&&C.name)o.name=C.name;
   const sent=(L.sent||[]).slice();for(const x of C.sent||[])if(!sent.some(y=>y.id===x.id))sent.push(x);o.sent=sent.sort((a,b)=>b.at-a.at).slice(0,40);
+  o.salas=Object.assign({},C.salas||{},L.salas||{});for(const id in C.salas||{})if(L.salas&&L.salas[id]&&(C.salas[id].upd||0)>(L.salas[id].upd||0))o.salas[id]=C.salas[id];
+  o.rk=[0,1,2].map(i=>{const a=(L.rk||[])[i]||{},b=(C.rk||[])[i]||{};return (b.best||0)>(a.best||0)?b:a});
+  if(C.rankOff&&newer)o.rankOff=C.rankOff;
   o.mod=Math.max(L.mod||0,C.mod||0);return o;
 }
 function replaceSave(o){cloud.merging=true;for(const k of Object.keys(save))delete save[k];Object.assign(save,o);persist();cloud.merging=false}
@@ -1514,6 +1550,9 @@ async function cloudSyncAll(force){
     const uid=cloud.user.uid,api=cloud.api,P='jugadores/'+uid;
     const d=await api.get(P);if(d&&d.beat)replaceSave(mergeSave(save,d.beat));
     await cloudPushSave();
+    // partidas jugadas en otros teléfonos desde la última vez (solo las nuevas: pocas lecturas), cada vez que se abre el juego
+    if(save.playsAt&&!force){const nw=await api.since(P+'/partidas','at',save.playsAt-60e3);
+      if(nw.length)await ftx(['plays'],'readwrite',st=>{nw.forEach(x=>st.plays.put(x.data))});save.playsAt=Date.now();persist()}
     if(force||Date.now()-(save.syncAt||0)>12*3600e3){
       const cl=await api.list(P+'/partidas'),loc=(await ftx(['plays'],'readonly',st=>st.plays.getAll()))||[];
       const cid=new Set(cl.map(x=>x.id)),lid=new Set(loc.map(x=>x.id));
@@ -1523,11 +1562,12 @@ async function cloudSyncAll(force){
       for(const c of ca){const m=files.find(x=>x.fp===c.data.fp);if(m)await fileRec(m.id,r=>{r.best=Math.max(r.best||0,c.data.best||0);r.grade=bestGrade(r.grade,c.data.grade);r.charts=mergeCharts(r.charts,c.data.charts);if(!r.part)r.part=c.data.part||null})}
       for(const m of files)if(m.fp&&!ca.some(c=>c.data.fp===m.fp))await api.set(P+'/archivos/'+m.fp,fileMeta(m));
       cloudFiles=ca.map(x=>x.data).filter(c=>!files.some(f=>f.fp===c.fp));
-      save.syncAt=Date.now();persist();
+      save.syncAt=save.playsAt=Date.now();persist();
     }
     cloud.lastSync=Date.now();cloud.err='';
   }catch(e){console.warn('nube',e);cloud.err='No se pudo sincronizar (¿sin internet?). Se reintenta solo.'}
   cloud.syncing=false;renderAcct();
+  if(cloud.google){await rankBackfill();rankRefresh(true)}
   if(state==='menu'){if(!$('menu').hidden)renderMenu();if(!$('mine').hidden)renderMine();if(!$('hist').hidden)openHist()}
   checkResults();
 }
@@ -1536,35 +1576,85 @@ async function cloudChallenge(R){
   const uid=await withTimeout(cloudUid(),8000).catch(()=>null);if(!uid)return null;
   const id=Array.from(crypto.getRandomValues(new Uint8Array(9)),b=>'abcdefghijkmnpqrstuvwxyz23456789'[b&31]).join('');
   await withTimeout(cloud.api.set('desafios/'+id,clean(Object.assign({},R,{de:uid,at:Date.now()}))),8000);
-  save.sent=save.sent||[];save.sent.unshift({id,at:Date.now(),song:retoSongName(R),s:R.s});save.sent=save.sent.slice(0,40);persist();
+  await withTimeout(cloud.api.set('desafios/'+id+'/resultados/'+uid,clean({n:R.n,c:R.c,s:R.s,g:R.g||'',a:R.a,h:R.h||[],at:Date.now()})),8000).catch(()=>{}); // vos también en la tabla
+  salaSet(id,{song:retoSongName(R),at:Date.now(),own:1,me:R.s,pos:1,count:1,top:{n:R.n,s:R.s},by:R.n});
   return id;
 }
 async function cloudResult(V,R){ // terminaste un desafío con código: tu mejor resultado queda para quien te desafió
   try{const uid=await cloudUid();if(!uid)return;const path='desafios/'+V.id+'/resultados/'+uid;
-    const prev=await cloud.api.get(path).catch(()=>null);if(prev&&prev.s>=R.s)return;
-    await cloud.api.set(path,clean({n:save.name||'Alguien',c:charId(),s:R.s,g:R.g||'',a:R.a,h:R.h||[],at:Date.now()}));
-  }catch(e){console.warn('nube',e)}
+    const prev=await cloud.api.get(path).catch(()=>null);
+    if(!prev||prev.s<R.s)await cloud.api.set(path,clean({n:save.name||'Alguien',c:charId(),s:R.s,g:R.g||'',a:R.a,h:R.h||[],at:Date.now()}));
+    const rows=await cloud.api.list('desafios/'+V.id+'/resultados');salaFromRows(V.id,rows,{song:retoSongName(V),by:V.n});return rows;
+  }catch(e){console.warn('nube',e);return null}
 }
-async function checkResults(force){ // ¿alguien jugó tus desafíos? cada resultado nuevo queda como duelo en 📜 Tus partidas
+/* ---------- 🏆 salas: cada desafío con código tiene su tabla (todos los que lo jugaron) ----------
+   save.salas[id] = {song, at, own (lo creaste vos), by (quién lo creó), me (tu puntaje), pos, count, top:{n,s}, upd}. Viaja con la cuenta. */
+function showSala(V,rows){ // al terminar un desafío con código: tu puesto en la tabla
+  if(state!=='res'||!cur||cur.reto!==V)return;
+  if(!rows){$('resVs').innerHTML=`⚔️ ${esc(V.n)}: <b>${V.s.toLocaleString('es-AR')}</b> · Vos: <b>${score.toLocaleString('es-AR')}</b> (sin internet para ver la tabla)`;return}
+  const L=salaRows(rows),uid=cloud.user&&cloud.user.uid,i=L.findIndex(r=>r.uid===uid);
+  $('resVs').innerHTML=`🏆 Vas <b>${i+1}° de ${L.length}</b> en el desafío de ${esc(V.n)}<br>`+L.slice(0,3).map((r,k)=>`${MEDAL(k+1)} ${esc(r.uid===uid?'Vos':r.n)} ${r.s.toLocaleString('es-AR')}`).join(' · ');
+}
+function salaSet(id,o){save.salas=save.salas||{};save.salas[id]=Object.assign(save.salas[id]||{},o,{upd:Date.now()});persist()}
+function salaRows(rows){return rows.map(r=>Object.assign({uid:r.id},r.data)).sort((a,b)=>b.s-a.s||a.at-b.at)}
+function salaFromRows(id,rows,base){ // ordena la tabla, ubica tu puesto y avisa si hay novedades
+  const L=salaRows(rows),uid=cloud.user&&cloud.user.uid,old=(save.salas||{})[id]||{};let me=L.findIndex(r=>r.uid===uid);
+  if(me<0&&old.me!=null){me=L.filter(r=>r.s>old.me).length;L.splice(me,0,{uid,n:save.name||'Vos',s:old.me,me:1})} // desafíos viejos: tu puntaje no estaba en la tabla
+  const pos=me+1,count=L.length,top=L[0]?{n:L[0].n,s:L[0].s}:null;let news=0;
+  if(old.count!=null&&count>old.count)news+=count-old.count;if(old.pos!=null&&pos>old.pos)news++;
+  salaSet(id,Object.assign({},base||{},{me:L[me]?L[me].s:old.me,pos,count,top,at:old.at||Date.now()}));
+  return {L,pos,count,news};
+}
+const MEDAL=p=>p===1?'🥇':p===2?'🥈':p===3?'🥉':p+'°';
+// desafíos mandados antes de las salas (0.18): pasan a ser salas
+if(save.sent&&save.sent.length){save.salas=save.salas||{};for(const x of save.sent)if(!save.salas[x.id])save.salas[x.id]={song:x.song,at:x.at,own:1,me:x.s,pos:1,count:1,top:{n:save.name||'Vos',s:x.s},by:save.name||''};delete save.sent;persist()}
+/* ---------- 🌎 ranking de cada etapa (solo con cuenta de Google, con tu apodo) ----------
+   rankingBeat/e{i}/filas/{uid} = {n, c, s, g, a, h, at} ("ranking" y "semanas" son de Dina Run): tu mejor partida de la etapa, con cómo tocaste cada nota (para los fantasmas).
+   save.rk[i] = {best, pos, at, down}. Las reglas no dejan pasar puntajes imposibles (máximo de cada etapa). */
+const RANK_MAX=[7230,10170,18400],rankCache={};
+const rankPath=i=>'rankingBeat/e'+i+'/filas'; // "ranking" a secas es el de Dina Run
+function canRank(){return !!(cloud&&cloud.google&&save.name&&!save.rankOff)} // función (no const): el menú la usa antes de llegar acá
+async function rankSubmit(i,R){
+  if(!canRank()||!cloud.api||R.s<=0||R.s>RANK_MAX[i])return null;
+  save.rk=save.rk||[{},{},{}];const k=save.rk[i]||(save.rk[i]={}),uid=cloud.user.uid;
+  try{
+    if(R.s>(k.best||0)){const prev=await cloud.api.get(rankPath(i)+'/'+uid).catch(()=>null);
+      if(!prev||prev.s<R.s)await cloud.api.set(rankPath(i)+'/'+uid,clean({n:save.name,c:charId(),s:R.s,g:R.g||'',a:R.a,h:R.h||[],at:Date.now()}));
+      k.best=Math.max(R.s,prev?prev.s:0);delete rankCache[i]}
+    k.pos=(await cloud.api.count(rankPath(i),'s',k.best))+1;k.at=Date.now();k.down=0;persist();return k;
+  }catch(e){console.warn('ranking',e);return null}
+}
+async function rankTop(i,force){ // los 20 mejores (se guarda 10 minutos)
+  const c=rankCache[i];if(c&&!force&&Date.now()-c.at<600e3)return c.rows;
+  const api=await cloudLoad();if(!api)return c?c.rows:null;
+  try{const rows=(await api.top(rankPath(i),'s',20)).map(r=>Object.assign({uid:r.id},r.data));rankCache[i]={at:Date.now(),rows};return rows}catch(e){console.warn('ranking',e);return c?c.rows:null}
+}
+async function rankRefresh(force){ // tu puesto en cada etapa; si alguien te pasó, ▼ en el menú
+  if(!cloud.google||!cloud.api||(!force&&Date.now()-(cloud.rkAt||0)<600e3))return;cloud.rkAt=Date.now();
+  let ch=false;
+  for(let i=0;i<3;i++){const k=(save.rk||[])[i];if(!k||!k.best)continue;
+    try{const p=(await cloud.api.count(rankPath(i),'s',k.best))+1;if(p!==k.pos){if(k.pos&&p>k.pos)k.down=1;k.pos=p;ch=true}}catch(e){}
+    rankTop(i)}
+  if(ch){persist();if(state==='menu'&&!$('menu').hidden)renderMenu()}
+}
+async function rankBackfill(){ // al entrar: tu mejor partida guardada de cada etapa va al ranking
+  if(!canRank())return;
+  try{const all=(await ftx(['plays'],'readonly',st=>st.plays.getAll()))||[];
+    for(let i=0;i<3;i++){const n=stageSong(i).times.length,b=all.filter(x=>x.r&&x.r.song&&x.r.song.k==='e'&&x.r.song.i===i&&!x.vs&&Array.isArray(x.r.h)&&x.r.h.length===n).sort((a,b)=>b.score-a.score)[0];
+      if(b)await rankSubmit(i,Object.assign({},b.r,{s:b.score}))}}catch(e){console.warn('ranking',e)}
+}
+function stageGhosts(i){ // los que están justo arriba tuyo (o los 3 primeros si todavía no estás)
+  const c=rankCache[i];if(!c||save.set.ghost===0)return null;const uid=cloud.user&&cloud.user.uid,best=((save.rk||[])[i]||{}).best||0;
+  const n=stageSong(i).times.length,rows=c.rows.filter(r=>r.uid!==uid&&Array.isArray(r.h)&&r.h.length===n);
+  let up=rows.filter(r=>r.s>best).sort((a,b)=>a.s-b.s).slice(0,3);if(up.length<3)up=up.concat(rows.filter(r=>!up.includes(r)).slice(0,3-up.length));
+  return up.length?up.sort((a,b)=>b.s-a.s):null;
+}
+async function checkResults(force){ // ¿alguien jugó tus desafíos o te pasó en una sala? (sala nueva para quien la creó, o puesto que bajó)
   if(!cloud.user||!cloud.api||(!force&&Date.now()-cloud.checkedAt<180e3))return;cloud.checkedAt=Date.now();
-  const uid=cloud.user.uid,sent=(save.sent||[]).filter(x=>Date.now()-x.at<30*864e5).slice(0,25);let nuevos=0;
-  for(const x of sent){
-    try{
-      const rs=(await cloud.api.list('desafios/'+x.id+'/resultados')).filter(r=>r.id!==uid);if(!rs.length)continue;
-      let R=null;
-      for(const r of rs){
-        const rid='res:'+x.id+':'+r.id,old=await ftx(['plays'],'readonly',st=>st.plays.get(rid)).catch(()=>null);
-        if(old&&old.vs&&old.vs.s===r.data.s)continue;
-        R=R||await cloud.api.get('desafios/'+x.id);if(!R)break;
-        const st=hitStats(R.h||[]),rec={id:rid,at:r.data.at||Date.now(),song:retoSongName(R),variant:'📤 tu desafío',key:songKey(R.song)+'|'+R.t.length+':'+R.t.slice(0,5).join(),
-          score:R.s,grade:R.g||'',acc:R.a||0,p:st.p,b:st.b,m:st.m,combo:st.c,win:true,c:R.c,sent:true,
-          r:clean({v:1,n:R.n,c:R.c,s:R.s,g:R.g,a:R.a,d:R.d,ln:R.ln,song:R.song,t:R.t,h:R.h}),ss:scoreSeries(R.h||[]),
-          vs:{n:r.data.n||'Alguien',c:r.data.c,s:r.data.s,g:r.data.g,a:r.data.a,h:Array.isArray(r.data.h)?r.data.h:null}};
-        await ftx(['plays'],'readwrite',s2=>{s2.plays.put(rec)});cloudPut('partidas/'+rec.id,rec);nuevos++;
-      }
-    }catch(e){console.warn('nube',e)}
-  }
-  if(nuevos){save.newRes=(save.newRes||0)+nuevos;persist();if(state==='menu'&&!$('menu').hidden)renderMenu();if(!$('hist').hidden){const v=histView;openHist(v)}}
+  const L=Object.entries(save.salas||{}).filter(([id,x])=>Date.now()-(x.at||0)<30*864e5).sort((a,b)=>(b[1].upd||0)-(a[1].upd||0)).slice(0,25);let nuevos=0;
+  for(const [id,x] of L){try{const r=salaFromRows(id,await cloud.api.list('desafios/'+id+'/resultados'));nuevos+=r.news}catch(e){console.warn('nube',e)}}
+  if(nuevos){save.newRes=(save.newRes||0)+nuevos;persist()}
+  if(state==='menu'&&!$('menu').hidden)renderMenu();if(!$('hist').hidden&&histView==='duels')renderHist();
 }
 /* pantalla de cuenta */
 const G_LOGO='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.7 6c4.5-4.2 6.9-10.3 6.9-17.7z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.7-6c-2.1 1.4-4.9 2.3-8.2 2.3-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
@@ -1579,9 +1669,16 @@ function renderAcct(){
     const ago=cloud.lastSync?Math.max(0,Math.round((Date.now()-cloud.lastSync)/60000)):null;
     $('acctBody').innerHTML=`<div class="acctWho">${u.photo?`<img src="${esc(u.photo)}" alt="" referrerpolicy="no-referrer">`:'<span style="font-size:32px">🙂</span>'}<span class="n">${esc(u.name||'Tu cuenta')}<small>${esc(u.email)}</small></span></div>
       <p class="nota" style="text-align:center">${cloud.syncing?'🔄 Sincronizando…':cloud.err?'⚠️ '+esc(cloud.err):ago==null?'☁️ Conectado':'✔️ Guardado en la nube'+(ago<1?' recién':' hace '+ago+' min')}</p>
+      <label class="setRow" style="grid-template-columns:auto 1fr"><span>🏷️ Apodo</span><input id="acNick" maxlength="16" placeholder="Cómo te ven en los rankings" value="${esc(save.name||'')}" style="font:700 15px Fredoka,sans-serif;border:2px solid var(--rosa2);border-radius:10px;padding:5px 8px;min-width:0;color:var(--tinta)"></label>
+      <div class="row"><button class="chip" id="acRank" aria-pressed="${!save.rankOff}">🌎 Aparecer en los rankings</button></div>
       <div class="row"><button class="btn sec sm" id="acctSync">🔄 Sincronizar ahora</button><button class="btn sec sm" id="acctOut">Salir</button></div>
-      <p class="nota">Se guardan tus estrellas, récords, canciones compuestas, versiones del 🎙️ Estudio, 📜 partidas y duelos. La música de tus archivos no se sube: en otro teléfono la elegís de nuevo y se le pegan tus récords y versiones.</p>`;
+      <p class="nota">Se guardan tus estrellas, récords, canciones compuestas, versiones del 🎙️ Estudio, 📜 partidas y desafíos. En los rankings se ve solo tu apodo (nunca tu nombre ni tu foto de Google). La música de tus archivos no se sube.</p>`;
     $('acctSync').onclick=()=>{acctMsg('');cloudSyncAll(true)};
+    $('acNick').onchange=async e=>{const n=(e.target.value||'').trim().slice(0,16);if(!n){e.target.value=save.name||'';return}save.name=n;persist();acctMsg('✔️ Apodo guardado');
+      for(let i=0;i<3;i++)if(((save.rk||[])[i]||{}).best)cloud.api.set(rankPath(i)+'/'+cloud.user.uid,{n},true).catch(()=>{});rankBackfill()};
+    $('acRank').onclick=async()=>{save.rankOff=save.rankOff?0:1;persist();renderAcct();
+      if(save.rankOff){for(let i=0;i<3;i++)cloud.api.del(rankPath(i)+'/'+cloud.user.uid).catch(()=>{});save.rk=[{},{},{}];persist();acctMsg('Ya no aparecés en los rankings.')}
+      else{acctMsg('🌎 Volviste a los rankings.');await rankBackfill();rankRefresh(true)}};
     $('acctOut').onclick=async()=>{try{await cloud.api.out()}catch(e){}cloud.user=null;cloud.google=false;delete save.cloud;persist();acctMsg('Saliste de tu cuenta. Tu progreso sigue guardado en este teléfono.');renderAcct()};
   }else{
     $('acctBody').innerHTML=`<p class="nota">Entrá con tu cuenta de Google para guardar tu progreso en la nube: estrellas, récords, canciones compuestas, versiones del 🎙️ Estudio, 📜 partidas y duelos. Así no se pierde si cambiás de teléfono o se borra el navegador, y lo ves igual en todos tus aparatos.</p>
@@ -1589,7 +1686,7 @@ function renderAcct(){
       <div class="row"><button class="btn gbtn" id="gIn">${G_LOGO}Entrar con Google</button></div>
       ${cloud.err?'<p class="nota" style="text-align:center">⚠️ '+esc(cloud.err)+'</p>':''}`;
     $('gIn').onclick=async()=>{acctMsg('⏳ Abriendo Google…');const api=await cloudLoad();if(!api){acctMsg('😿 No se pudo conectar. Revisá tu internet y probá de nuevo.');return}
-      try{setUser(await api.google());acctMsg('');cloudSyncAll(true)}
+      try{setUser(await api.google());acctMsg(save.name?'':'🏷️ Elegí tu apodo: es el nombre que ven los demás en los rankings.');cloudSyncAll(true)}
       catch(e){console.warn(e);acctMsg(/popup-closed|cancelled/.test(e.code||'')?'':/popup-blocked/.test(e.code||'')?'😿 El navegador bloqueó la ventana de Google. Permití las ventanas emergentes y probá de nuevo.':'😿 No se pudo entrar ('+(e.code||e.message||'error')+').')}};
   }
 }
@@ -1621,10 +1718,11 @@ async function savePlay(win,acc){
     const variant=V?'⚔️ desafío de '+V.n:ch?'✋ '+ch.name:R.song.k==='e'?'':(part?part+' · ':'')+DIFF[save.diff].name;
     const rec={id:Date.now().toString(36)+uid(),at:Date.now(),song:retoSongName(R),variant,key:songKey(R.song)+'|'+R.t.length+':'+R.t.slice(0,5).join(),
       score,grade:R.g,acc:Math.round(acc*100),p:cnt.p,b:cnt.b,m:cnt.m,combo:maxCombo,win:!!win,c:charId(),r:R,ss,
-      vs:V?{n:V.n,c:V.c,s:V.s,g:V.g,a:V.a,h:Array.isArray(V.h)?V.h:null}:null};
+      vs:V?clean({n:V.n,c:V.c,s:V.s,g:V.g,a:V.a,h:Array.isArray(V.h)?V.h:null,id:V.id}):null};
     await ftx(['plays'],'readwrite',st=>{st.plays.put(rec)});
     cloudPut('partidas/'+rec.id,rec);
-    if(V&&V.id)cloudResult(V,R);
+    if(V&&V.id)cloudResult(V,R).then(x=>showSala(V,x));
+    else if(cur.stage!=null&&!V)rankSubmit(cur.stage,R).then(k=>{if(state!=='res'||!k)return;$('resVs').innerHTML=`🌎 Ranking de ${esc(STAGES[cur.stage].name)}: <b>#${k.pos}</b>${R.s>=k.best?' · ¡tu mejor!':''}`});
     const all=(await ftx(['plays'],'readonly',st=>st.plays.getAll()))||[];
     if(all.length>HIST_MAX){ // se borran las más viejas, salvo la mejor de cada canción y los duelos
       const best={};for(const x of all)if(!best[x.key]||x.score>best[x.key].score)best[x.key]=x;
@@ -1646,19 +1744,71 @@ async function openHist(view){
 }
 function renderHist(){
   document.querySelectorAll('#histSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===histView));
+  $('rkSeg').hidden=histView!=='rank';if(histView==='rank'){renderRank();return}
   const best={};for(const x of histRows)if(!best[x.key]||x.score>best[x.key].score)best[x.key]=x;
-  const L=histView==='duels'?histRows.filter(x=>x.vs):histRows;
-  if(histView==='duels'&&save.newRes){save.newRes=0;persist()}
-  const wait=histView==='duels'?(save.sent||[]).filter(x=>!histRows.some(r=>r.id.startsWith('res:'+x.id+':'))).slice(0,10):[];
-  const waitHtml=wait.map(x=>`<div class="part" style="cursor:default"><span class="em">📤</span><span class="n">Enviado · esperando<small>${esc(x.song||'')} · ${when(x.at)}</small></span><span class="lv"><b>${(x.s||0).toLocaleString('es-AR')}</b></span></div>`).join('');
-  if(!L.length&&!wait.length){$('histList').innerHTML=`<p class="empty">${histView==='duels'?'Todavía no jugaste ningún desafío. Cuando un amigo te mande uno, acá vas a ver quién ganó.':'Todavía no hay partidas guardadas. ¡Jugá una canción y aparece acá!'}</p>`;return}
-  $('histList').innerHTML=L.map(x=>{
-    if(histView==='duels'){const d=x.score-x.vs.s,em=d>0?'🏆':d===0?'🤝':'😿';
-      return `<button class="part" data-h="${x.id}"><span class="em">${em}</span><span class="n">Vos vs ${esc(x.vs.n)}<small>${esc(x.song)} · ${when(x.at)} · <span class="${d>0?'win':d<0?'lose':''}">${d>0?'+':d<0?'−':''}${Math.abs(d).toLocaleString('es-AR')}</span></small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${x.vs.s.toLocaleString('es-AR')}</span></button>`}
-    const g=x.grade;
-    return `<button class="part" data-h="${x.id}"><span class="em${g?' g':''}" style="${g?'background:'+GCOL[g]:''}">${g||(x.win?'🎵':'🍰')}</span><span class="n">${esc(x.song)}<small>${x.variant?esc(x.variant)+' · ':''}${when(x.at)}</small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${best[x.key]===x&&x.score>0?'🏆 mejor':x.acc+' %'}</span></button>`}).join('')+waitHtml;
+  if(histView==='duels'){
+    if(save.newRes){save.newRes=0;persist()}
+    const S=Object.entries(save.salas||{}).sort((a,b)=>(b[1].upd||b[1].at||0)-(a[1].upd||a[1].at||0));
+    const old=histRows.filter(x=>x.vs&&!x.vs.id&&!x.id.startsWith('res:')); // duelos de enlaces sin código (antes de las salas)
+    if(!S.length&&!old.length){$('histList').innerHTML='<p class="empty">Todavía no hay desafíos. Al terminar una canción tocá ⚔️ Desafiar y mandale el enlace a tus amigos: acá vas a ver la tabla de cada desafío.</p>';return}
+    $('histList').innerHTML=S.map(([id,x])=>`<button class="part" data-s="${id}"><span class="em">${x.count>1?MEDAL(x.pos||1):'📤'}</span><span class="n">${esc(niceName(x.song||'Desafío'))}<small>${x.count>1?x.count+' jugadores':'esperando a tus amigos'} · ${x.own?'tu desafío':'de '+esc(x.by||'alguien')} · ${when(x.upd||x.at)}</small></span><span class="lv"><b>${(x.me||0).toLocaleString('es-AR')}</b>${x.top&&x.count>1&&x.pos!==1?'1° '+esc(x.top.n):''}</span></button>`).join('')+
+      old.map(x=>{const d=x.score-x.vs.s,em=d>0?'🏆':d===0?'🤝':'😿';
+        return `<button class="part" data-h="${x.id}"><span class="em">${em}</span><span class="n">Vos vs ${esc(x.vs.n)}<small>${esc(niceName(x.song))} · ${when(x.at)} · <span class="${d>0?'win':d<0?'lose':''}">${d>0?'+':d<0?'−':''}${Math.abs(d).toLocaleString('es-AR')}</span></small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${x.vs.s.toLocaleString('es-AR')}</span></button>`}).join('');
+    $('histList').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>openSala(b.dataset.s));
+  }else{
+    const P=histRows.filter(x=>!x.id.startsWith('res:')); // los "res:" de la 0.18 eran resultados de amigos: ahora están en las salas
+    if(!P.length){$('histList').innerHTML='<p class="empty">Todavía no hay partidas guardadas. ¡Jugá una canción y aparece acá!</p>';return}
+    $('histList').innerHTML=P.map(x=>{const g=x.grade;
+      return `<button class="part" data-h="${x.id}"><span class="em${g?' g':''}" style="${g?'background:'+GCOL[g]:''}">${g||(x.win?'🎵':'🍰')}</span><span class="n">${esc(niceName(x.song))}<small>${x.variant?esc(x.variant)+' · ':''}${when(x.at)}</small></span><span class="lv"><b>${x.score.toLocaleString('es-AR')}</b>${best[x.key]===x&&x.score>0?'🏆 mejor':x.acc+' %'}</span></button>`}).join('');
+  }
   $('histList').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>openPlay(histRows.find(x=>x.id===b.dataset.h)));
 }
+/* 🌎 ranking de una etapa: los 20 mejores, y tu puesto si no estás entre ellos */
+let rkStage=0;
+async function renderRank(){
+  document.querySelectorAll('#rkSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.r===rkStage));
+  const i=rkStage;$('histList').innerHTML='<p class="empty">⏳ Cargando el ranking…</p>';
+  const rows=await rankTop(i);if(histView!=='rank'||rkStage!==i)return;
+  if(!rows){$('histList').innerHTML='<p class="empty">😿 No pude cargar el ranking. Revisá tu internet.</p>';return}
+  const uid=cloud.user&&cloud.user.uid,k=(save.rk||[])[i]||{};
+  let html=rows.length?rows.map((r,j)=>rankRow(j+1,r,r.uid===uid)).join(''):'<p class="empty">Todavía nadie entró al ranking de esta etapa. ¡Podés ser la primera persona!</p>';
+  if(uid&&k.best&&!rows.some(r=>r.uid===uid))html+=rankRow(k.pos||'—',{n:save.name,c:charId(),s:k.best,g:''},true);
+  if(!canRank())html+=`<p class="nota" style="text-align:center">${cloud.google?(save.rankOff?'Elegiste no aparecer en el ranking (☁️ Cuenta).':'Poné tu apodo en ☁️ Cuenta para aparecer.'):'Para aparecer en el ranking, tocá ☁️ Entrar y entrá con Google.'}</p>`;
+  $('histList').innerHTML=html;
+}
+function rankRow(p,r,me){const ch=CHARS.find(x=>x.id===r.c)||CHARS[0];
+  return `<div class="part" style="cursor:default${me?';box-shadow:inset 0 0 0 2px var(--rosa)':''}"><span class="em">${typeof p==='number'?MEDAL(p):p}</span><span class="n">${esc(r.n||'Alguien')}${me?' (vos)':''}<small>con ${esc(ch.name)}${r.a!=null?' · '+r.a+' %':''}</small></span><span class="lv"><b>${(r.s||0).toLocaleString('es-AR')}</b>${r.g?'<b class="gmini">'+esc(r.g)+'</b>':''}</span></div>`}
+document.querySelectorAll('#rkSeg button').forEach(b=>b.onclick=()=>{rkStage=+b.dataset.r;renderRank()});
+/* 🏆 una sala: la tabla completa y la carrera de puntajes de todos */
+let salaId=null,salaR=null;
+async function openSala(id){
+  salaId=id;const x=(save.salas||{})[id]||{};show('hist',false);show('sala',true);$('saMsg').hidden=true;
+  $('saT').textContent=niceName(x.song||'Desafío');$('saWhen').textContent=when(x.at||Date.now());$('saSub').textContent=(x.own?'Tu desafío':'Desafío de '+(x.by||'alguien'))+' · ⏳ cargando la tabla…';
+  $('saList').innerHTML='';$('saRace').hidden=$('saRaceT').hidden=true;
+  try{const uid=await withTimeout(cloudUid(),10000);if(!uid)throw 0;
+    const [R,rows]=await Promise.all([cloud.api.get('desafios/'+id),cloud.api.list('desafios/'+id+'/resultados')]);if(salaId!==id)return;
+    salaR=R?Object.assign({},R,{id}):null;const r=salaFromRows(id,rows,R?{song:retoSongName(R),by:R.n}:{}),L=r.L;
+    $('saSub').textContent=(x.own?'Tu desafío':'Desafío de '+((R&&R.n)||x.by||'alguien'))+' · '+L.length+(L.length>1?' jugadores':' jugador')+(L.length>1?' · vas '+r.pos+'°':'');
+    $('saList').innerHTML='<span class="h"></span><span class="h" style="text-align:right">Puntaje</span><span class="h" style="text-align:right">Nota</span>'+
+      L.map((p,k)=>`<span>${MEDAL(k+1)} ${esc(p.uid===uid?'Vos':p.n)}</span><b>${(p.s||0).toLocaleString('es-AR')}</b><b>${esc(p.g||'—')}</b>`).join('');
+    const t=R?decT(R.t):[],ser=L.filter(p=>Array.isArray(p.h)&&p.h.length===t.length).slice(0,6).map(p=>({n:p.uid===uid?'Vos':p.n,ss:scoreSeries(p.h),me:p.uid===uid}));
+    if(ser.length&&t.length){$('saRace').hidden=$('saRaceT').hidden=false;requestAnimationFrame(()=>drawRaceN($('saRace'),t,ser))}
+  }catch(e){$('saSub').textContent='😿 No pude cargar la tabla. Revisá tu internet.'}
+}
+const RACE_COL=['#ff4f9a','#7a4fd0','#2fb383','#ff9a4d','#3a8de0','#b9a3b0'];
+function drawRaceN(cv,t,ser){ // una línea por jugador (vos en rosa y más gruesa)
+  const [c,W2,H2]=cvPrep(cv),n=t.length,T=t[n-1]||1,mx=Math.max(1,...ser.map(x=>x.ss[n-1]||0)),L=34,B=H2-16,X=v=>L+v/T*(W2-L-8),Y=v=>B-v/mx*(B-22);
+  c.strokeStyle='rgba(74,42,63,.12)';c.lineWidth=1;c.fillStyle='rgba(74,42,63,.6)';c.font='600 10px Fredoka,sans-serif';
+  for(const f of [0,.5,1]){const y=Y(mx*f);c.beginPath();c.moveTo(L,y);c.lineTo(W2-8,y);c.stroke();c.fillText(Math.round(mx*f/100)/10+'k',2,y+3)}
+  c.fillText('0:00',L,H2-3);c.textAlign='right';c.fillText(mmss(T),W2-8,H2-3);c.textAlign='left';
+  let lx=L+4;const others=ser.filter(x=>!x.me),order=others.concat(ser.filter(x=>x.me));
+  order.forEach(x=>{const col=x.me?RACE_COL[0]:RACE_COL[1+others.indexOf(x)%5];c.strokeStyle=col;c.lineWidth=x.me?3:2;c.beginPath();c.moveTo(X(0),Y(0));x.ss.forEach((v,i)=>{c.lineTo(X(t[i]),Y(i?x.ss[i-1]:0));c.lineTo(X(t[i]),Y(v))});c.stroke();
+    c.font='700 10px Fredoka,sans-serif';c.fillStyle=col;const lab='— '+x.n;if(lx+c.measureText(lab).width<W2){c.fillText(lab,lx,11);lx+=c.measureText(lab).width+8}});
+}
+$('saBack').onclick=()=>{show('sala',false);openHist('duels')};
+$('saShare').onclick=()=>shareSala(salaId,t=>{$('saMsg').textContent=t;$('saMsg').hidden=false});
+$('saPlay').onclick=async()=>{if(!salaR)return;show('sala',false);reto=clean(salaR);retoRows=null;['menu','hist'].forEach(x=>show(x,false));$('cfgB').hidden=true;show('reto',true);renderReto();
+  retoRows=await cloud.api.list('desafios/'+salaId+'/resultados').catch(()=>null);renderRetoTab()};
 document.querySelectorAll('#histSeg button').forEach(b=>b.onclick=()=>{histView=b.dataset.v;renderHist()});
 $('histBack').onclick=()=>{show('hist',false);toMenu()};
 /* puntaje acumulado de alguien a partir de cómo tocó cada nota (mismas reglas que el juego y el fantasma) */
@@ -1666,7 +1816,7 @@ function scoreSeries(h){let sc=0,c=0;const n=h.length;return h.map((o,i)=>{if(o=
 const hitStats=h=>{let p=0,b=0,m=0,c=0,mc=0;for(const o of h){if(o===999){m++;c=0}else{Math.abs(o)<=75?p++:b++;c++;mc=Math.max(mc,c)}}return {p,b,m,c:mc,a:Math.round((p+b*.5)/(h.length||1)*100)}};
 function openPlay(x){
   if(!x)return;playRec=x;show('hist',false);show('playScr',true);$('plMsg').hidden=true;
-  $('plT').textContent=x.song;$('plWhen').textContent=when(x.at);
+  $('plT').textContent=niceName(x.song);$('plWhen').textContent=when(x.at);
   $('plSub').textContent=(x.variant?x.variant+' · ':'')+(x.win?'¡Torta a salvo!':'Dina se comió la torta');
   const V=x.vs,o=V&&V.h?hitStats(V.h):null,row=(lab,a,b)=>`<span>${lab}</span><b>${a}</b>${V?'<b>'+(b==null?'—':b)+'</b>':''}`;
   $('plStats').innerHTML=(V?`<span class="h"></span><span class="h" style="text-align:right">Vos</span><span class="h" style="text-align:right">${esc(V.n)}</span>`:'')+
@@ -1749,28 +1899,55 @@ async function dare(){
 async function shareReto(R,msg){
   msg('⏳ Armando el desafío…');try{const id=await cloudChallenge(R);if(id)R.id=id}catch(e){} // con código, el resultado de tu amigo te llega solo
   // el enlace apunta al juego publicado (en una copia de prueba en otro sitio, el enlace no abriría el desafío)
-  const here=/github\.io$|^localhost$|^127\./.test(location.hostname),base=here?location.origin+location.pathname:'https://kiut-studio.github.io/dina-beat/';
-  const url=base+'#reto='+await packReto(R),name=retoSongName(R);
+  const base=linkBase();
+  const url=base+(R.id?'#r='+R.id:'#reto='+await packReto(R)),name=retoSongName(R); // con código, enlace corto
   const text=`⚔️ ¡Te desafío en Dina Beat! Saqué ${R.s.toLocaleString('es-AR')}${R.g?' ('+R.g+')':''} en «${name}». ¿Me superás? 🎂`;
+  await shareText(text,url,msg);
+}
+const linkBase=()=>/github\.io$|^localhost$|^127\./.test(location.hostname)?location.origin+location.pathname:'https://kiut-studio.github.io/dina-beat/';
+async function shareSala(id,msg){ // invitar a más gente a la misma sala
+  const x=(save.salas||{})[id]||{};
+  const text=`⚔️ ¡Sumate al desafío de Dina Beat en «${x.song||'una canción'}»!${x.top?' Va ganando '+x.top.n+' con '+x.top.s.toLocaleString('es-AR')+'.':''} 🎂`;
+  await shareText(text,linkBase()+'#r='+id,msg);
+}
+async function shareText(text,url,msg){
   try{if(navigator.share){await navigator.share({title:'Desafío de Dina Beat',text,url});msg('⚔️ ¡Desafío enviado!');return}}catch(e){if(e&&e.name==='AbortError')return}
   try{await navigator.clipboard.writeText(text+'\n'+url);msg('🔗 ¡Enlace copiado! Pegalo en WhatsApp o donde quieras.')}
   catch(e){window.lastDare=url;msg('No pude copiarlo solo. Mantené apretado para copiar: '+url)}
 }
-$('dare').onclick=()=>dare();
+$('dare').onclick=()=>{if(cur&&cur.reto&&cur.reto.id)shareSala(cur.reto.id,t=>{$('dareMsg').textContent=t;$('dareMsg').hidden=false});else dare()};
 $('nameOk').onclick=()=>{const n=($('nameIn').value||'').trim().slice(0,16);if(!n){$('nameIn').focus();return}save.name=n;persist();show('nameScr',false);const A=nameAsk||{from:'res',then:dare};nameAsk=null;show(A.from,true);A.then()};
 $('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('nameOk').click()});
 $('nameBack').onclick=()=>{show('nameScr',false);show((nameAsk||{from:'res'}).from,true);nameAsk=null};
-function retoSongName(R){const g=R.song;return g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:g.name}
+function retoSongName(R){const g=R.song;return g.k==='e'?'Etapa '+(g.i+1)+' · '+(STAGES[g.i]||{}).name:niceName(g.name)}
 /* comparación al terminar un desafío */
 function showVs(win){
-  const R=cur&&cur.reto;$('resVs').hidden=!R;if(!R)return;
+  const R=cur&&cur.reto;
+  if(!R&&cur&&cur.stage!=null&&canRank()){$('resVs').hidden=false;$('resVs').innerHTML='🌎 Ranking de '+esc(STAGES[cur.stage].name)+': ⏳';return}
+  $('resVs').hidden=!R;if(!R)return;
+  if(R.id){$('resVs').innerHTML=`⚔️ Desafío de ${esc(R.n)} · ⏳ mirando la tabla…`;return}
   const d=score-R.s,nm=esc(R.n);
   $('resVs').innerHTML=`⚔️ ${nm}: <b>${R.s.toLocaleString('es-AR')}</b>${R.g?' ('+R.g+')':''} · Vos: <b>${score.toLocaleString('es-AR')}</b><br>`+
     (d>0?`🏆 ¡Le ganaste a ${nm}! Devolvele el desafío.`:d===0?'🤝 ¡Empate exacto!':`😿 Te faltaron ${(-d).toLocaleString('es-AR')}. ¡Otra vez!`);
 }
 /* recibir un desafío */
 let reto=null,retoFileId=null;
+let retoRows=null;
+async function openRetoCode(id){ // enlace corto #r=código: el desafío se busca en la nube
+  ['menu','mine','parts','cfg','news'].forEach(x=>show(x,false));$('cfgB').hidden=true;show('reto',true);
+  $('retoT').textContent='⚔️ Desafío';$('retoTxt').textContent='⏳ Buscando el desafío…';$('retoGo').hidden=true;$('retoNeed').hidden=$('retoPickRow').hidden=$('retoTab').hidden=true;$('retoStatus').textContent='';
+  try{const uid=await withTimeout(cloudUid(),12000);if(!uid)throw new Error('nube');const R=await cloud.api.get('desafios/'+id);if(!R)throw new Error('no');
+    R.id=id;delete R.de;delete R.at;reto=R;renderReto();
+    retoRows=await cloud.api.list('desafios/'+id+'/resultados').catch(()=>null);if(reto===R)renderRetoTab();
+  }catch(e){reto=null;$('retoTxt').textContent=e.message==='no'?'😿 Ese desafío no existe (o se borró).':'😿 No pude abrir el desafío. Revisá tu internet y volvé a abrir el enlace.';$('retoNo').textContent='← Al menú'}
+}
+function renderRetoTab(){
+  if(!retoRows||!retoRows.length){$('retoTab').hidden=true;return}
+  const L=salaRows(retoRows);$('retoTab').hidden=false;
+  $('retoTab').innerHTML='🏆 '+L.length+(L.length>1?' ya lo jugaron':' lo jugó')+'<br>'+L.slice(0,4).map((r,k)=>`${MEDAL(k+1)} ${esc(r.n)} <b>${r.s.toLocaleString('es-AR')}</b>`).join(' · ');
+}
 async function openRetoLink(str){
+  retoRows=null;$('retoTab').hidden=true;
   try{reto=await unpackReto(str)}catch(e){reto=null}
   ['menu','mine','parts','cfg','news'].forEach(id=>show(id,false));$('cfgB').hidden=true;show('reto',true);
   if(!reto){$('retoT').textContent='⚔️ Desafío';$('retoTxt').textContent='😿 No pude leer ese desafío. Puede que el enlace se haya cortado al copiarlo.';
@@ -1779,7 +1956,8 @@ async function openRetoLink(str){
 }
 function renderReto(){
   const R=reto,g=R.song,ch=CHARS.find(x=>x.id===R.c)||CHARS[0];
-  $('retoT').textContent='⚔️ ¡'+R.n+' te desafía!';$('retoImg').src='assets/'+(ch.id)+'.webp';$('retoImg').alt=ch.name;
+  const mine=R.id&&save.salas&&save.salas[R.id]&&save.salas[R.id].own;
+  $('retoT').textContent=mine?'⚔️ Tu desafío':'⚔️ ¡'+R.n+' te desafía!';$('retoImg').src='assets/'+(ch.id)+'.webp';$('retoImg').alt=ch.name;
   $('retoTxt').innerHTML=`Sacó <b>${R.s.toLocaleString('es-AR')}</b>${R.g?' <b class="gmini">'+esc(R.g)+'</b>':''} en «${esc(retoSongName(R))}»${R.ln?' · ✋ '+esc(R.ln):''}. ¿La superás?`;
   $('retoGo').hidden=false;$('retoNo').textContent='Ahora no';$('retoStatus').textContent='';
   $('retoName').hidden=!!save.name;$('retoName').value='';
@@ -1817,13 +1995,17 @@ $('retoGo').onclick=async()=>{
       if(lastFile.kind==='midi'&&g.part&&lastFile.parts.some(p=>p.id===g.part))lastFile.part=g.part;pick={kind:'file',id:retoFileId};base=fileSong()}
     // las notas del desafío quedan como versión para practicar (archivos y compuestas)
     if(pick){const key=R.n+':'+R.t.length+':'+R.t.slice(0,6).join();editCharts(L=>{if(!L.some(x=>x.key===key))L.push({id:uid(),name:('⚔️ '+R.n+(R.ln?' · '+R.ln:'')).slice(0,24),t:t.map(x=>Math.round(x*1000)/1000),made:Date.now(),key})})}
-    startSong(retoSong(R,base,t));
+    const S=retoSong(R,base,t);
+    if(R.id&&save.set.ghost!==0){ // sala: los mejores de la tabla (sin vos), hasta 3
+      if(!retoRows)retoRows=await withTimeout(cloud.api?cloud.api.list('desafios/'+R.id+'/resultados'):Promise.reject(),4000).catch(()=>null);
+      const uid=cloud.user&&cloud.user.uid,L=retoRows?salaRows(retoRows).filter(r=>r.uid!==uid):[];if(!L.length&&R.h)L.push({n:R.n,c:R.c,h:R.h,s:R.s});S.ghostRows=L}
+    startSong(S);
   }catch(err){$('retoStatus').textContent='😿 No pude abrir la canción. Probá elegirla de nuevo.';$('retoPickRow').hidden=false}
 };
 function retoSong(R,base,t){
   const S=base;S.times=t.filter(x=>x>.3&&x<S.len);if(R.song.k!=='e')S.approach=DIFF[Math.max(0,Math.min(2,R.d|0))].approach;
   S.label='⚔️ Desafío de '+R.n;S.reto=R;S.custom=null;S.fileId=null;S.chart=null;
-  S.rebuild=()=>retoSong(R,R.song.k==='e'?stageSong(R.song.i):pickComp()?compSong(pickComp()):fileSong(),t);return S;
+  S.rebuild=()=>{const S2=retoSong(R,R.song.k==='e'?stageSong(R.song.i):pickComp()?compSong(pickComp()):fileSong(),t);S2.ghostRows=S.ghostRows;return S2};return S;
 }
 async function storeFile(buf,name){ // guarda un archivo en Tus canciones y deja lastFile listo (lo usan "abrir archivo" y los desafíos)
   const id='arch:'+buf.byteLength+':'+name,old=files.find(x=>x.id===id);
@@ -2046,7 +2228,7 @@ function draw(){
   const g=geo(),u=g.u,t=judgeNow(),L=state==='menu'||!cur?STAGES[0]:cur.look;
   if(state==='play'&&!paused){
     for(const n of notes)if(!n.st&&t>n.t+WIN_B)miss(n);
-    if(ghost)while(ghost.i<notes.length){const n=notes[ghost.i],o=ghost.h[ghost.i];if(t<n.t+(o===999?WIN_B:o/1000))break;ghostStep(n,o);ghost.i++}
+    for(const G of ghosts)while(G.i<notes.length){const n=notes[G.i],o=G.h[G.i];if(t<n.t+(o===999?WIN_B:o/1000))break;ghostStep(G,n,o);G.i++}
     if(state==='play'&&now()>songEnd)finish(true);
   }
   // racha: cuanto más combo, más rápido corre el fondo, más brilla y más chispitas (baja rápido al fallar)
@@ -2111,8 +2293,8 @@ function draw(){
     ctx.drawImage(PJ,sx-w/2,sy,w,h);
     if(save.tool==='spray')drawSpray(sx+34*u,sy+h*.55,u,blow);else drawWhistle(sx-2*u,sy+h*.44,u,blow);
   }
-  if(ghost){const G=ghost,im=IMG[G.img];G.fl=Math.max(0,G.fl-.05*dt);
-    if(ok(im)){const h=118*u,w=h*im.width/im.height,gx=g.cx+132*u,gy=g.cy+40*u-h-G.fl*8*u+Math.sin(beatPh*Math.PI*2)*1.5;
+  for(const G of ghosts){const im=IMG[G.img];G.fl=Math.max(0,G.fl-.05*dt);
+    if(ok(im)){const sc=[1,.72,.72][G.slot],h=118*u*sc,w=h*im.width/im.height,gx=Math.min(W-34,g.cx+[132,154,92][G.slot]*u),gy=g.cy+40*u-h-[0,104,92][G.slot]*u-G.fl*8*u+Math.sin(beatPh*Math.PI*2)*1.5;
       ctx.save();ctx.globalAlpha=.42+.35*G.fl;ctx.translate(gx,gy);ctx.scale(-1,1);ctx.drawImage(im,-w/2,0,w,h);ctx.restore(); // mirando hacia la torta
       ctx.globalAlpha=.85;ctx.textAlign='center';ctx.font=`700 ${12*u+2}px Fredoka`;ctx.lineWidth=4;ctx.strokeStyle='#fff';ctx.strokeText('👻 '+G.n,gx,gy-6*u);ctx.fillStyle='#7a4fd0';ctx.fillText('👻 '+G.n,gx,gy-6*u);
       if(G.txt&&G.txt.l>0){G.txt.l-=.03*dt;ctx.globalAlpha=Math.max(0,G.txt.l)*.85;ctx.font=`700 ${15*u+2}px Fredoka`;const ty=gy-24*u-(1-G.txt.l)*14;ctx.strokeText(G.txt.s,gx,ty);ctx.fillStyle='#7a4fd0';ctx.fillText(G.txt.s,gx,ty)}
@@ -2150,8 +2332,12 @@ function draw(){
   ctx.textAlign='left';
   if(ok(IMG.torta)){ctx.font=`700 22px Fredoka`;const x0=80,sw=ctx.measureText(score.toLocaleString('es-AR')).width,sp=Math.max(11,Math.min(19,(W-64-sw-10-x0)/CAKE_MAX)),cs=sp-1;
     for(let i=0;i<CAKE_MAX;i++){ctx.globalAlpha=i<cake?1:.2;ctx.drawImage(IMG.torta,x0+i*sp,26-cs*.53,cs,cs*1.05)}}ctx.globalAlpha=1;
-  if(ghost){const d=score-ghost.score;ctx.textAlign='left';ctx.font='700 14px Fredoka';ctx.fillStyle='#7a4fd0';const tx='👻 '+ghost.n+' '+ghost.score.toLocaleString('es-AR');ctx.fillText(tx,80,58);
+  if(ghosts.length===1){const G=ghosts[0],d=score-G.score;ctx.textAlign='left';ctx.font='700 14px Fredoka';ctx.fillStyle='#7a4fd0';const tx='👻 '+G.n+' '+G.score.toLocaleString('es-AR');ctx.fillText(tx,80,58);
     if(d){ctx.fillStyle=d>0?'#1d8c64':'#e0405e';ctx.fillText((d>0?' ▲ +':' ▼ −')+Math.abs(d).toLocaleString('es-AR'),80+ctx.measureText(tx).width,58)}}
+  else if(ghosts.length>1){ // ranking en vivo: vos y los fantasmas, ordenados por puntaje
+    const L=ghosts.map(G=>({n:G.n,s:G.score,me:false})).concat([{n:'Vos',s:score,me:true}]).sort((a,b)=>b.s-a.s||(a.me?-1:1));
+    ctx.textAlign='left';L.forEach((r,k)=>{const y=112+k*17;ctx.font=`700 ${r.me?14:13}px Fredoka`;ctx.lineWidth=4;ctx.strokeStyle='rgba(255,255,255,.85)';const tx=(k+1)+'. '+(r.me?'':'👻 ')+r.n+'  '+r.s.toLocaleString('es-AR');
+      ctx.strokeText(tx,16,y);ctx.fillStyle=r.me?'#ff4f9a':'#7a4fd0';ctx.fillText(tx,16,y)})}
   const prog=Math.max(0,Math.min(1,(now()-songStart)/(songEnd-1.2-songStart)));
   ctx.fillStyle='rgba(255,255,255,.6)';ctx.beginPath();ctx.roundRect(16,top+18,W-32,8,4);ctx.fill();
   ctx.fillStyle=L.acc;ctx.beginPath();ctx.roundRect(16,top+18,(W-32)*prog,8,4);ctx.fill();
@@ -2190,13 +2376,13 @@ function drawNote(n,x,y,u,k){
 applyFps();
 requestAnimationFrame(draw);
 // al abrir una versión nueva por primera vez se muestran las novedades
-const retoLink=/[#&]reto=([A-Za-z0-9_-]+)/.exec(location.hash); // ⚔️ se abrió un enlace de desafío
-if(retoLink){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}loadFiles().then(()=>openRetoLink(retoLink[1]))}
+const retoLink=/[#&]reto=([A-Za-z0-9_-]+)/.exec(location.hash)||/[#&]r=([a-z0-9]{6,20})\b/.exec(location.hash); // ⚔️ se abrió un enlace de desafío (largo o corto)
+if(retoLink){const short=!/reto=/.test(retoLink[0]);try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}loadFiles().then(()=>short?openRetoCode(retoLink[1]):openRetoLink(retoLink[1]))}
 if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(state==='menu'&&!$('menu').hidden)openNews('menu')},400);
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io')&&!/\/prueba\//.test(location.pathname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba'||window.FORCE_SS)window.SS={get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghost(){return ghost},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba'||window.FORCE_SS)window.SS={openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

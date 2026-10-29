@@ -1,5 +1,13 @@
 # Novedades
 
+## Versión 0.19 — octubre 2026: 🏆 salas y 🌎 rankings
+- 🏆 Cada desafío es una sala con tabla: el mismo enlace sirve para un grupo; quien lo crea también está en la tabla, y todos los que lo juegan ven quién va primero. Al terminar: "Vas 2° de 5". En ⚔️ Duelos, una fila por sala con tu puesto; al abrirla, la tabla completa y la carrera de puntajes de todos. "🔗 Invitar a más" para sumar gente a la misma sala.
+- 👻 Hasta 3 fantasmas a la vez (los mejores de la sala), con un mini ranking en vivo arriba a la izquierda.
+- 🌎 Ranking global de cada etapa para quienes entraron con Google, con su apodo: tu puesto en el menú (▼ si alguien te pasó), pestaña 🌎 Ranking en 📜 Tus partidas con los 20 mejores, y fantasmas de los que están justo arriba tuyo al jugar la etapa. 👻 Fantasmas se puede apagar en ⚙️ Ajustes.
+- 🏷️ Apodo y "🌎 Aparecer en los rankings" en ☁️ Cuenta. Al entrar con Google, tu mejor partida guardada de cada etapa entra sola al ranking.
+- 🔗 Enlaces cortos (`…/dina-beat/#r=código`) cuando hay internet; sin internet, el enlace largo de siempre.
+- Avisos en el menú cuando alguien juega tu desafío o te pasa en una sala.
+
 ## Versión 0.18 — octubre 2026: ☁️ cuenta de Google
 - ☁️ Entrar con Google (botón ☁️ Entrar arriba en el menú, al lado del sonido, o ⚙️ Ajustes → ☁️ Cuenta; después de entrar, ahí aparece tu foto; y un aviso en resultados si no entraste): el progreso se guarda en la nube de Kiut Studio Games (Firebase): estrellas, récords, notas, canciones compuestas, versiones del 🎙️ Estudio, 📜 partidas y duelos, nombre y personaje.
 - 📱 En otro teléfono, con la misma cuenta, está todo. Al entrar se junta lo de cada teléfono con lo de la nube: queda lo mejor de cada uno, sin perder nada. El ajuste de ritmo, la fluidez y el contador quedan propios de cada teléfono.
