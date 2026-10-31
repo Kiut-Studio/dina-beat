@@ -254,6 +254,17 @@ async def main():
     print('música de Halloween: botón',m,'· partida',r,'· desafío',rt)
     await pg4.evaluate("()=>{SS.save.set.theme='clasico';SS.themeTest=null;SS.toMenu()}")
     print('sin Halloween no aparece:',await pg4.evaluate("()=>!document.getElementById('espB')"))
+    # 🫧 Frutiger Aero: tema fijo, sus colores, su botón de música, campanita y acordes, y una canción jugada con el robot
+    await pg4.evaluate("()=>{SS.save.set.theme='aero';SS.themeTest=null;SS.toMenu()}")
+    m=await pg4.evaluate("()=>[document.body.dataset.theme,!!document.getElementById('espB')&&document.getElementById('espB').textContent,document.getElementById('temaI').textContent,SS.aeroTile().width,SS.aeroIcon().slice(0,15)]")
+    await pg4.evaluate("()=>{document.getElementById('espB').click();document.querySelector('#espList [data-sp=burbujas]').click();const f=()=>{const t=SS.now();for(const n of SS.notes){if(!n.st&&Math.abs(n.t-t)<.02){SS.tap();break}}if(SS.state==='play')requestAnimationFrame(f)};f()}")
+    snd=await pg4.evaluate("()=>[SS.notes.length,SS.cur.ev.filter(v=>v.k==='bell').length,SS.cur.ev.filter(v=>v.k==='pad').length,SS.noteKey(SS.notes.find(n=>n.type==='dina'))]")
+    await pg4.wait_for_timeout(80000)
+    r=await pg4.evaluate("()=>[SS.state,SS.cnt,JSON.stringify((SS.save.special||{}).burbujas),document.getElementById('resT').textContent]")
+    rt=await pg4.evaluate("async()=>{const R=SS.retoFromCur();const R2=await SS.unpackReto(await SS.packReto(R));document.getElementById('home').click();return R2.song}")
+    n4=await pg4.evaluate("()=>['acuario','aurora','lluvia'].map(id=>{const S=SS.specialSong(id);return id+':'+S.times.length+' notas/'+Math.round(S.len)+'s'}).join(' ')")
+    print('🫧 aero: menú',m,'· sonidos',snd,'· partida',r,'· desafío',rt,'·',n4)
+    await pg4.evaluate("()=>{SS.save.set.theme='clasico';SS.themeTest=null;SS.toMenu()}")
     await ctx.close()
     # 🌙 noche: avanza con la canción, estrellas fugaces en los combos, se apaga en Ajustes
     ctx=await b.new_context(viewport={'width':390,'height':844});pg6=await ctx.new_page();pg6.on('pageerror',lambda e:errs.append(str(e)))

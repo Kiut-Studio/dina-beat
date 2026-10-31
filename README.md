@@ -45,7 +45,7 @@ Dina Beat es hermano de [Dina Run](https://github.com/Kiut-Studio/dina-run). Com
 - Lo que tenés puesto allá (ropa, sombreros, confeti) y los disfraces de Dina del Pase de Halloween se ven también acá.
 
 ## Temas
-En ⚙️ Ajustes → 🎨 Temas: según la fecha (Halloween del 15/10 al 2/11), Clásico o Halloween. En Halloween la torta es la calabaza con golosinas de Sofía y hay murciélagos, golosinas y disfraces.
+En ⚙️ Ajustes → 🎨 Temas: según la fecha (Halloween del 15/10 al 2/11), Clásico, Halloween o 🫧 Frutiger Aero. En Halloween la torta es la calabaza con golosinas de Sofía y hay murciélagos, golosinas y disfraces. Frutiger Aero trae cielo celeste, burbujas de vidrio, pasto brillante y cuatro canciones propias con campanitas.
 
 El progreso se guarda solo en el dispositivo y navegador donde jugás.
 
@@ -53,7 +53,7 @@ Se puede instalar como app desde el menú del navegador ("Agregar a pantalla de 
 
 ## Créditos
 - Dibujos: **Sofía** © (Sofi, Deisy, Leandro, Nora, Cinthia, Dina, la torta, frutilla, pancito, el fondo de nubes, los disfraces de Dina, Dina comiendo la calabaza y la calabaza con golosinas, que es un recorte de ese dibujo).
-- Con ayuda de IA sobre dibujos de Sofía (como en Dina Run): el vestido de Alicia y las golosinas de Halloween. Los murciélagos, la luna y las calabacitas del fondo están hechos con código.
+- Con ayuda de IA sobre dibujos de Sofía (como en Dina Run): el vestido de Alicia y las golosinas de Halloween. Los murciélagos, la luna y las calabacitas del fondo, y las burbujas, el sol y las cintas de luz de Frutiger Aero están hechos con código.
 - El silbato y el rociador son dibujos provisorios hechos con código; la música, el rocío y el miau también se hacen con código.
 - Código: Leandro, con asistencia de IA. Licencia MIT solo para el código (ver [LICENSE](LICENSE)); los dibujos no se pueden reutilizar sin permiso de Sofía.
 - Inspirado en la idea de juego de ritmo de *Break Whistle*. Antes se llamaba *Sofi Silbato*.
