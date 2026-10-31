@@ -44,6 +44,18 @@ async def main():
       r=await pg.evaluate("()=>{const s=document.getElementById('esp');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}")
       if any(r): print(w,h,'esp','desliza/ancho/oculta',r)
       if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_esp.png')
+      # 🫧 Frutiger Aero: menú, temas (una fila más) y su música
+      await pg.evaluate("()=>{document.getElementById('espBack').click();document.getElementById('temaI').click();document.querySelector('#themeList [data-th=aero]').click()}");await pg.wait_for_timeout(150)
+      r=await pg.evaluate("()=>{const s=document.getElementById('temas');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}")
+      if any(r): print(w,h,'temas con aero','desliza/ancho/oculta',r)
+      await pg.evaluate("()=>document.getElementById('temasOk').click()");await pg.wait_for_timeout(150)
+      r=await pg.evaluate("()=>{const m=document.getElementById('menu'),a=document.getElementById('temaI').getBoundingClientRect(),c=document.getElementById('acctI').getBoundingClientRect();return [m.scrollHeight>m.clientHeight+1,m.hidden,a.right>c.left-4,!document.getElementById('espB')]}")
+      if any(r): print(w,h,'menú con aero','desliza/oculto/temas tapa cuenta/sin botón de música',r)
+      if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_menu_aero.png')
+      await pg.evaluate("()=>document.getElementById('espB').click()");await pg.wait_for_timeout(150)
+      r=await pg.evaluate("()=>{const s=document.getElementById('esp');return [s.scrollHeight>s.clientHeight+1,document.documentElement.scrollWidth>innerWidth,s.hidden]}")
+      if any(r): print(w,h,'esp aero','desliza/ancho/oculta',r)
+      if (w,h)==(320,568): await pg.screenshot(path='pruebas/s_esp_aero.png')
       await pg.evaluate("()=>{document.getElementById('espBack').click();document.getElementById('temaI').click();document.querySelector('#themeList [data-th=auto]').click();document.getElementById('temasOk').click();document.getElementById('cfgB').click()}")
       if (w,h)==(360,640):  # captura de las novedades
         await pg.evaluate("()=>{document.getElementById('newsB').click()}");await pg.wait_for_timeout(100)

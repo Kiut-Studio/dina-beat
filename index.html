@@ -226,6 +226,7 @@ label.btn{display:inline-block}
 .cred2{font-size:11px;opacity:.6;text-align:center}
 #temas .card{gap:8px}
 @media (max-height:640px){.themeList .part{padding:5px 10px}.themeList .part img{height:32px}.look img{height:36px}#temas .card{gap:6px;padding:12px 14px}}
+@media (max-height:600px){.themeList{gap:4px}.themeList .part{padding:3px 10px;font-size:15px}.themeList .part small{font-size:11px;line-height:1.15}.themeList .part img{height:28px}.look img{height:30px}#temas .nota{margin:0;font-size:12px}#temas .nota.cred2{font-size:10.5px;line-height:1.2}#temas .lbl small{font-size:11px}}
 /* Halloween: naranja y violeta (como en Dina Run) */
 body[data-theme=halloween]{--rosa:#f0781e;--rosa2:#ffe0c4;--sombra:#e9b78c;--crema:#fff3e6}
 html:has(body[data-theme=halloween]),body[data-theme=halloween]{background:#ffe0c4}
@@ -236,6 +237,19 @@ body[data-theme=halloween] .btn:active{box-shadow:0 1px 0 #b9560f}
 body[data-theme=halloween] .btn.sec{box-shadow:0 4px 0 var(--sombra)}
 body[data-theme=halloween] .btn.verde{box-shadow:0 4px 0 #1d7d5a}
 body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
+/* 🫧 Frutiger Aero: celeste, vidrio brillante (mitad de arriba más clara) y verde pasto */
+body[data-theme=aero]{--rosa:#1fa3df;--rosa2:#d3f0ff;--sombra:#9ccfe8;--crema:#f3fbff;--tinta:#163d5c}
+html:has(body[data-theme=aero]),body[data-theme=aero]{background:#d3f0ff}
+body[data-theme=aero] .scr{background:linear-gradient(rgba(214,242,255,.62),rgba(232,250,240,.72));backdrop-filter:blur(5px)}
+body[data-theme=aero] h1{text-shadow:0 3px 0 #34b8ef,0 6px 0 #0d79b8,0 8px 16px rgba(10,90,150,.35)}
+body[data-theme=aero] .btn{background:linear-gradient(#8fe0ff,#3cbcf2 48%,#1594d6 52%,#41c6f7);box-shadow:0 4px 0 #0b6c9f,inset 0 1px 0 rgba(255,255,255,.9),inset 0 -2px 6px rgba(255,255,255,.35);text-shadow:0 1px 2px rgba(0,60,110,.35)}
+body[data-theme=aero] .btn:active{box-shadow:0 1px 0 #0b6c9f,inset 0 1px 0 rgba(255,255,255,.9)}
+body[data-theme=aero] .btn.sec{background:linear-gradient(#fff,#f2fbff 48%,#dff3fd 52%,#f4fcff);color:var(--tinta);text-shadow:none;box-shadow:0 4px 0 var(--sombra),inset 0 1px 0 #fff}
+body[data-theme=aero] .btn.verde{background:linear-gradient(#b9f28a,#6fd34b 48%,#3fb22c 52%,#79dc55);box-shadow:0 4px 0 #2a7f1d,inset 0 1px 0 rgba(255,255,255,.9)}
+body[data-theme=aero] .st{background-image:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.14) 48%,rgba(255,255,255,0) 52%,rgba(255,255,255,.12));box-shadow:0 4px 0 rgba(0,60,100,.2),inset 0 1px 0 rgba(255,255,255,.8)}
+body[data-theme=aero] .st.s6{background:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.14) 48%,rgba(255,255,255,0) 52%),linear-gradient(90deg,#1fa3df,#3fbf6a)}
+body[data-theme=aero] #pauseB{background:linear-gradient(#8fe0ff,#3cbcf2 48%,#1594d6 52%,#41c6f7);box-shadow:0 4px 0 #0b6c9f,0 0 0 3px #fff}
+body[data-theme=aero] .card{box-shadow:0 8px 26px rgba(20,110,170,.18),inset 0 1px 0 #fff}
 /* novedades */
 #news .card{width:min(420px,100%);max-height:100%;min-height:0}
 #newsList{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;padding-right:2px}
@@ -298,7 +312,7 @@ body[data-theme=halloween] #pauseB{box-shadow:0 4px 0 #b9560f,0 0 0 3px #fff}
     <div class="lbl">🐱 Disfraces de Dina <small>· se ganan en el Pase de Halloween de Dina Run</small></div>
     <div class="looks" id="lookList"></div>
     <p class="nota" id="themeNote">La ropa, los sombreros y el confeti se eligen en Dina Run; acá se ven igual.</p>
-    <p class="nota cred2">Calabaza y disfraces: dibujos de Sofía · golosinas y vestido de Alicia con ayuda de IA sobre sus dibujos.</p>
+    <p class="nota cred2">Calabaza y disfraces: dibujos de Sofía · golosinas y vestido de Alicia con ayuda de IA sobre sus dibujos · burbujas de Frutiger Aero hechas con código.</p>
     <div class="row"><button class="btn" id="temasOk">Listo</button></div>
   </div>
 </section>
@@ -545,6 +559,7 @@ const dinaLooksOwned=()=>DINA_LOOKS.filter(l=>run&&Array.isArray(run.dinaLooks)&
 const THEMES=[
   {id:'clasico',name:'Clásico',em:'🌸',img:'torta',sub:'la torta de Sofía'},
   {id:'halloween',name:'Halloween',em:'🎃',img:'calabaza',desde:[15,10],hasta:[2,11],sub:'calabaza con golosinas, murciélagos y disfraces'},
+  {id:'aero',name:'Frutiger Aero',em:'🫧',img:'aero',sub:'cielo celeste, burbujas de vidrio, pasto brillante y su música'},
 ];
 let themeTest=null; // solo para pruebas
 function seasonOf(d=new Date()){
@@ -557,14 +572,17 @@ function themeId(){
   if(s&&s!=='auto'&&THEMES.some(t=>t.id===s))return s;
   const t=seasonOf();return t?t.id:'clasico';
 }
-const HW=()=>themeId()==='halloween';
+const HW=()=>themeId()==='halloween',AERO=()=>themeId()==='aero';
 const cakeKey=()=>HW()?'calabaza':'torta';
 const cakeWord=()=>HW()?'calabaza':'torta';
 const seasonFmt=t=>`del ${t.desde[0]}/${t.desde[1]} al ${t.hasta[0]}/${t.hasta[1]}`;
 // colores de cada etapa con el tema puesto (el color de la etapa, el de los anillos, no cambia)
 const THEME_LOOK={halloween:{
   s1:{sky:['#e6cff9','#ffe2c6'],floor:'#f39a4e'},s2:{sky:['#d6b6f4','#ffcd9b'],floor:'#e3742a'},
-  s3:{sky:['#a587e4','#f6c39b'],floor:'#5b2fb0'},s4:{sky:['#dcebc9','#f3e2ff'],floor:'#6faa52'}}};
+  s3:{sky:['#a587e4','#f6c39b'],floor:'#5b2fb0'},s4:{sky:['#dcebc9','#f3e2ff'],floor:'#6faa52'}},
+ aero:{
+  s1:{sky:['#6fd0ff','#eafcff'],floor:'#58c43c'},s2:{sky:['#45bdf7','#d9f6ff'],floor:'#3eb24a'},
+  s3:{sky:['#2a8fe0','#aeeaff'],floor:'#2a9a58'},s4:{sky:['#7fe0ff','#effff3'],floor:'#79cf45'}}};
 const lookOf=L=>{const T=THEME_LOOK[themeId()],o=T&&T[L.cls];return o?Object.assign({},L,o):L};
 let dinaLookN=0,candyN=0;
 const HW_CANDY=['hw_caramelo_verde','hw_chupetin','hw_candy_corn','hw_gomita','hw_bombon','hw_caramelo_violeta'];
@@ -578,7 +596,7 @@ function noteKey(n){
 }
 function applyTheme(){
   const id=themeId();document.body.dataset.theme=id;
-  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=id==='halloween'?'#ffe0c4':'#ffb3d1';
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=id==='halloween'?'#ffe0c4':id==='aero'?'#bfeaff':'#ffb3d1';
   const L=dinaLooksOwned(),d=document.querySelector('.hero img.d');
   if(d){d.src='assets/'+(id==='halloween'&&L.length?L[(Date.now()/4e3|0)%L.length].img:'dina_corre')+'.webp';d.alt=id==='halloween'&&L.length?'Dina disfrazada':'Dina'}
 }
@@ -639,6 +657,19 @@ function box(f,t,dur,vol,out,type='triangle'){ // cajita musical
   o.type=type;o.frequency.value=f;o2.type='sine';o2.frequency.value=f*2;g2.gain.value=.3;
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(.001,t+dur);
   o.connect(g);o2.connect(g2);g2.connect(g);g.connect(out);o.start(t);o2.start(t);o.stop(t+dur+.05);o2.stop(t+dur+.05);
+}
+function bell(f,t,dur,vol,out){ // campanita de vidrio (Frutiger Aero): fundamental + parcial agudo que se apaga rápido
+  const o=AC.createOscillator(),o2=AC.createOscillator(),g=AC.createGain(),g2=AC.createGain();
+  o.type='sine';o.frequency.value=f;o2.type='sine';o2.frequency.value=f*3.01;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.004);g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(vol*.45,t+.003);g2.gain.exponentialRampToValueAtTime(.001,t+Math.min(dur,.35));
+  o.connect(g);o2.connect(g2);g.connect(out);g2.connect(out);o.start(t);o2.start(t);o.stop(t+dur+.05);o2.stop(t+dur+.05);
+}
+function pad(fs,t,dur,vol,out){ // colchón de acordes: entra despacio y se va despacio, un poco desafinado para que "flote"
+  const g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1800;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.35,dur*.25));g.gain.setValueAtTime(vol,t+dur*.7);g.gain.linearRampToValueAtTime(0,t+dur);
+  lp.connect(g);g.connect(out);
+  for(const f of fs)for(const d of[-5,5]){const o=AC.createOscillator();o.type='triangle';o.frequency.value=f;o.detune.value=d;o.connect(lp);o.start(t);o.stop(t+dur+.05)}
 }
 let noiseBuf=null;
 function noise(t,dur,vol,out,type='highpass',fq=6000,q=.7){
@@ -758,6 +789,39 @@ const SPECIAL=[
        'A4','C5','E5','A5','G#5','A5','E5','C5','D5','F5','A5','','G#5','','E5','',
        'A5','G#5','F5','E5','D5','C5','B4','G#4','A4','','E4','','A4','','',''],
   bass:['A2','A2','G2','G2','A2','D3','E2','A2'],pick:(s,m)=>!!m&&(s%2===0||s%8===5)},
+ // 🫧 Frutiger Aero: las cuatro son originales de Dina Beat (campanita de vidrio + colchón de acordes suaves, como la música de las computadoras de los 2000)
+ {id:'burbujas',season:'aero',name:'Burbujas de cristal',by:'Original de Dina Beat · campanitas y acordes suaves',em:'🫧',cls:'s1',acc:'#1fa3df',approach:1.6,bpms:[100,100],drums:1,inst:'bell',
+  mel:['E5','','G5','','B5','','A5','G5',     'E5','','C5','','D5','E5','','',
+       'A5','','G5','','E5','','C5','D5',     'E5','','D5','','B4','','','',
+       'E5','G5','B5','','C6','','B5','A5',   'G5','','E5','','A5','','G5','E5',
+       'F5','','A5','','C6','','A5','G5',     'G5','','E5','D5','C5','','',''],
+  bass:['C3','A2','F2','G2','C3','A2','F2','G2'],
+  chords:[['C4','E4','G4','B4'],['A3','C4','E4','G4'],['F3','A3','C4','E4'],['G3','B3','D4','E4'],['C4','E4','G4','B4'],['A3','C4','E4','G4'],['F3','A3','C4','E4'],['G3','B3','D4','F4']],
+  pick:(s,m)=>!!m&&s%2===0},
+ {id:'acuario',season:'aero',name:'Acuario digital',by:'Original de Dina Beat · peces, agua y teclados',em:'🐠',cls:'s4',acc:'#1d8c64',approach:1.5,bpms:[92,92],drums:2,inst:'bell',
+  mel:['A4','','C5','F5','','E5','C5','',     'D5','','F5','A5','','G5','F5','',
+       'A#4','','D5','F5','','A5','G5','F5',  'E5','','G5','','C5','','',''],
+  mel2:['F5','','A5','C6','','A5','G5','F5',  'D5','','F5','A5','','C6','A5','',
+       'A#4','D5','F5','A#5','A5','','F5','D5','E5','','C5','','F5','','',''],
+  bass:['F2','D3','A#2','C3','F2','D3','A#2','C3'],
+  chords:[['F3','A3','C4','E4','G4'],['D3','F3','A3','C4','E4'],['A#3','D4','F4','A4'],['C4','E4','G4','A#4'],['F3','A3','C4','E4','G4'],['D3','F3','A3','C4','E4'],['A#3','D4','F4','A4'],['C4','E4','G4','D4']],
+  pick:(s,m)=>!!m&&(s%2===0||s%8===3)},
+ {id:'aurora',season:'aero',name:'Aurora verde',by:'Original de Dina Beat · cada vuelta un poquito más rápido',em:'🌿',cls:'s2',acc:'#3fb22c',approach:1.35,bpms:[112,120,128],drums:2,inst:'bell',
+  mel:['D5','','F#5','A5','','F#5','E5','D5', 'B4','','D5','','E5','','F#5','',
+       'G5','','F#5','E5','','D5','B4','',    'A4','','D5','','E5','','','',
+       'D5','F#5','A5','D6','','C#6','A5','', 'B5','','A5','F#5','','E5','D5','',
+       'G5','','B5','','A5','','F#5','E5',    'D5','','A4','','D5','','',''],
+  bass:['D3','B2','G2','A2','D3','B2','G2','A2'],
+  chords:[['D4','F#4','A4','C#5'],['B3','D4','F#4','A4'],['G3','B3','D4','F#4'],['A3','C#4','E4','G4'],['D4','F#4','A4','E5'],['B3','D4','F#4','A4'],['G3','B3','D4','F#4'],['A3','C#4','E4','A4']],
+  pick:(s,m)=>!!m&&s%2===0},
+ {id:'lluvia',season:'aero',name:'Lluvia en la ventana',by:'Original de Dina Beat · tranquila, para relajarse',em:'💧',cls:'s1',acc:'#1fa3df',approach:1.8,bpms:[80,80],drums:0,inst:'bell',
+  mel:['E5','','','B4','C#5','','E5','',     'F#5','','','E5','C#5','','B4','',
+       'A4','','','C#5','E5','','A5','',     'G#5','','F#5','','E5','','','',
+       'E5','','','B4','C#5','','E5','',     'F#5','','','A5','G#5','','E5','',
+       'D5','','F#5','','E5','','C#5','B4',  'A4','','','','','','',''],
+  bass:['A2','F#2','D2','E2','A2','F#2','D2','E2'],
+  chords:[['A3','C#4','E4','G#4'],['F#3','A3','C#4','E4'],['D3','F#3','A3','C#4'],['E3','G#3','B3','D4'],['A3','C#4','E4','G#4'],['F#3','A3','C#4','E4'],['D3','F#3','A3','C#4'],['E3','G#3','B3','E4']],
+  pick:(s,m)=>!!m&&(s%4===0||s%8===4||s%8===3)},
 ];
 const seasonTheme=()=>THEMES.find(t=>t.id===themeId())||THEMES[0];
 const seasonSongs=()=>SPECIAL.filter(x=>x.season===themeId());
@@ -765,9 +829,11 @@ function specialSong(id){
   const S=SPECIAL.find(x=>x.id===id);if(!S)return null;
   const ev=[],times=[],grid=[];let t0=0;
   S.bpms.forEach((bpm,L)=>{const e=60/bpm/2;
-    for(let s=0;s<64;s++){const t=t0+s*e,m=S.mel[s];
+    const MEL=S.mel2?S.mel.concat(S.mel2):S.mel; // mel2: la segunda mitad, si la primera tiene 32 pasos
+    for(let s=0;s<64;s++){const t=t0+s*e,m=MEL[s];
       if(s%2===0)grid.push({t,bar:s%8===0});
-      if(m)ev.push({t,k:'tone',f:noteF(m),d:e*2.2,v:.13});
+      if(m)ev.push(S.inst==='bell'?{t,k:'bell',f:noteF(m),d:e*3.2,v:.12}:{t,k:'tone',f:noteF(m),d:e*2.2,v:.13});
+      if(S.chords&&s%8===0)ev.push({t,k:'pad',fs:S.chords[s>>3].map(noteF),d:e*8.4,v:.035});
       if(s%8===0)ev.push({t,k:'tone',f:noteF(S.bass[s>>3]),d:e*7,v:.11});
       if(S.drums&&s%4===0)ev.push({t,k:'kick'});
       if(S.drums>1&&s%2===1)ev.push({t,k:'hat'});
@@ -825,13 +891,19 @@ function startSong(S){
   $('pauseB').hidden=false;$('cfgB').hidden=true;
 }
 function startStage(i){stage=i;const S=stageSong(i),G=stageGhosts(i);if(G)S.ghostRows=G;startSong(S)}
+function playEv(v,t,out){ // un sonido de la canción (cajita, campanita, acordes, batería)
+  if(v.k==='tone')box(v.f,t,v.d,v.v,out);
+  else if(v.k==='bell')bell(v.f,t,v.d,v.v,out);
+  else if(v.k==='pad')pad(v.fs,t,v.d,v.v,out);
+  else if(v.k==='kick')kick(t,.22,out);
+  else if(v.k==='hat')noise(t,.04,.035,out);
+  else if(v.k==='snare')noise(t,.12,.08,out,'bandpass',1800,.6);
+  else return false;return true;
+}
 function sched(){
   if(!AC||paused||!songBus||state!=='play')return;const lim=AC.currentTime+.25; // solo suena la canción que se está jugando
   while(evI<ev.length&&ev[evI].t<lim){const v=ev[evI++],t=Math.max(v.t,AC.currentTime);
-    if(v.k==='tone')box(v.f,t,v.d,v.v,songBus);
-    else if(v.k==='kick')kick(t,.22,songBus);
-    else if(v.k==='hat')noise(t,.04,.035,songBus);
-    else if(v.k==='snare')noise(t,.12,.08,songBus,'bandpass',1800,.6);
+    if(playEv(v,t,songBus)){}
     else if(v.k==='click')box(v.n===3?1568:1046,t,.12,.12,songBus,'sine');
     else if(v.k==='buf'&&cur.buf){bufSrc=AC.createBufferSource();bufSrc.buffer=cur.buf;bufSrc.connect(songBus);bufSrc.start(v.t,v.off||0)}
   }
@@ -876,7 +948,7 @@ function tap(){
 const comboMile=c=>[10,25,50,75,100].includes(c)||(c>100&&c%50===0);
 function comboParty(c){
   pop('🔥 ¡'+c+' de combo!','#ff4f9a',48,30);sCombo(c);shootingStar();
-  const g=geo(),cols=runTrail()||(HW()?['#ff8a1f','#8a5ae0','#ffd84d','#2b2140','#ff9a4d','#b48cf2']:['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d']);
+  const g=geo(),cols=runTrail()||(HW()?['#ff8a1f','#8a5ae0','#ffd84d','#2b2140','#ff9a4d','#b48cf2']:AERO()?['#29b6f6','#7ed957','#ffffff','#00c2a8','#a5e4ff','#ffe066']:['#ff4f9a','#ffd84d','#7cc8ff','#2fb383','#8a5ae0','#ff9a4d']);
   for(let k=0;k<28;k++){const a=k/28*Math.PI*2,v=5+Math.random()*4;fx.push({x:g.cx,y:g.hy-60*g.u,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,l:1.4,c:cols[k%cols.length]})}
 }
 /* el fantasma suma con las mismas reglas que vos: perfecto ±75 ms = 100, bien = 50, pancito ×3 y extra por combo */
@@ -963,7 +1035,7 @@ $('cfgB').onclick=()=>openCfg('menu');
 /* 🎨 pantalla de temas (desde ⚙️ Ajustes) */
 function renderTemas(){
   const now=seasonOf(),sel=save.set.theme||'auto',autoId=now?now.id:'clasico',A=THEMES.find(t=>t.id===autoId);
-  const row=(id,img,em,name,sub)=>`<button class="part" data-th="${id}" aria-pressed="${sel===id}"><img src="assets/${img}.webp" alt=""><span class="n">${em} ${name}<small>${sub}</small></span><span class="lv">${sel===id?'✔️':''}</span></button>`;
+  const row=(id,img,em,name,sub)=>`<button class="part" data-th="${id}" aria-pressed="${sel===id}"><img src="${img==='aero'?aeroIcon():'assets/'+img+'.webp'}" alt=""><span class="n">${em} ${name}<small>${sub}</small></span><span class="lv">${sel===id?'✔️':''}</span></button>`;
   $('themeList').innerHTML=row('auto',A.img,'📅','Según la fecha',`hoy: ${A.em} ${A.name}`+(now?', hasta el '+now.hasta[0]+'/'+now.hasta[1]:'')+' · cambia solo')
     +THEMES.map(t=>row(t.id,t.img,t.em,t.name,t.sub+(t.desde?' · '+seasonFmt(t):''))).join('');
   document.querySelectorAll('#themeList [data-th]').forEach(b=>b.onclick=()=>{save.set.theme=b.dataset.th;persist();applyTheme();renderTemas()});
@@ -993,8 +1065,12 @@ $('setLat').oninput=e=>{save.set.lat=+e.target.value;persist();renderCfg()};
 /* ---------- novedades: lo que ven los jugadores de cada versión, la más nueva primero ----------
    Igual que en Dina Run. Al abrir una versión nueva por primera vez se muestran solas (save.seen);
    quien juega por primera vez no las ve. Mantener en sintonía con CHANGELOG.md. */
-const VERSION='0.22.1';
+const VERSION='0.23';
 const NEWS=[
+  {v:'0.23',fecha:'octubre 2026',titulo:'🫧 Tema Frutiger Aero',items:[
+    ['🫧','Tema nuevo en 🎨 Temas: Frutiger Aero, con cielo celeste, burbujas de vidrio que suben, cintas de luz, sol con destellos, pasto brillante y botones de cristal.'],
+    ['🎵','Con el tema puesto aparece 🫧 Música de Frutiger Aero: cuatro canciones nuevas con campanitas y acordes suaves (Burbujas de cristal, Acuario digital, Aurora verde y Lluvia en la ventana). Dan frutillas, guardan récord y se pueden desafiar.'],
+  ]},
   {v:'0.22',fecha:'octubre 2026',titulo:'🌙 De noche',items:[
     ['🕒','En ⚔️ Duelos, cada desafío muestra cuándo lo jugó alguien por última vez (antes mostraba la hora en que abriste la lista).'],
     ['🌙','De 19 a 6 h el juego se pone de noche: cada canción arranca al atardecer y termina con cielo estrellado, con estrellas que brillan con la música y estrellas fugaces en los combos. Se apaga con 🌙 Noche en ⚙️ Ajustes.'],
@@ -1215,7 +1291,7 @@ $('home').onclick=()=>{if(cur&&cur.special&&!cur.reto){state='menu';openEsp()}el
 function toMenu(){state='menu';pick=null;['res','pause','mine','comp','cfg','parts','news','studio','reto','nameScr','hist','playScr','acct','sala','temas','esp'].forEach(id=>show(id,false));$('pauseB').hidden=true;$('cfgB').hidden=false;renderMenu();show('menu',true)}
 function renderMenu(){
   const sp=save.tool==='spray';
-  applyTheme();$('temaI').textContent=(HW()?'🎃':'🎨')+' Temas';
+  applyTheme();$('temaI').textContent=(HW()?'🎃':AERO()?'🫧':'🎨')+' Temas';
   $('tagline').textContent=(sp?'¡Psst!':'¡Piii!')+' que Dina no se coma la '+cakeWord();
   $('howTxt').innerHTML=`👆 Tocá la pantalla <b>justo</b> cuando Dina llega al círculo, al ritmo de la música, para espantarla con ${sp?'el rociador':'el silbato'}. ¡Si te atrasás, le da un mordisco a la ${cakeWord()}!`;
   $('stages').innerHTML=STAGES.map((S,i)=>{
@@ -2281,7 +2357,7 @@ function stStart(rec){
 function stSched(P){
   if(!AC||ST.play!==P)return;const lim=AC.currentTime+.25,S=ST.S;
   while(P.evI<S.ev.length&&P.t0+S.ev[P.evI].t<lim){const v=S.ev[P.evI++],t=Math.max(P.t0+v.t,AC.currentTime);
-    if(v.k==='tone')box(v.f,t,v.d,v.v,P.bus);else if(v.k==='kick')kick(t,.22,P.bus);else if(v.k==='hat')noise(t,.04,.035,P.bus);else if(v.k==='snare')noise(t,.12,.08,P.bus,'bandpass',1800,.6)}
+    playEv(v,t,P.bus)}
   // un clic en cada nota (al grabar, solo antes del punto desde donde se graba)
   while(P.nI<ST.times.length&&P.t0+ST.times[P.nI]<lim){const t=ST.times[P.nI++];if(P.rec&&t>=P.recFrom)continue;box(1568,Math.max(P.t0+t,AC.currentTime),.07,.1,P.bus,'square')}
   if(now()-P.t0>S.len+.3)stStop();
@@ -2423,7 +2499,7 @@ let bgC=null,bgKey='';
 /* Fondo de cada tema: el clásico es el de nubes de Sofía; Halloween tiene uno propio hecho con código, del mismo estilo
    (trazo negro grueso, rellenos pastel), provisorio hasta que Sofía dibuje el suyo (guardarlo como assets/fondo_halloween.webp
    de 1024×1024 que se repita, y devolverlo acá en lugar de hwTile()). */
-function themeTile(){return HW()?hwTile():IMG.nubes}
+function themeTile(){return HW()?hwTile():AERO()?aeroTile():IMG.nubes}
 let _hwTile=null;
 function hwTile(){
   if(_hwTile)return _hwTile;
@@ -2462,7 +2538,8 @@ function bgLayer(L){
     bgKey=key;bgC=bgC||document.createElement('canvas');bgC.width=Math.round((W+256)*DPR);bgC.height=Math.round(H*DPR);
     const c=bgC.getContext('2d');c.setTransform(DPR,0,0,DPR,0,0);
     const gr=c.createLinearGradient(0,0,0,H);gr.addColorStop(0,L.sky[0]);gr.addColorStop(1,L.sky[1]);c.fillStyle=gr;c.fillRect(0,0,W+256,H);
-    c.globalAlpha=(L.cls==='s3'?.1:.16)*(HW()?1.15:1);c.scale(.25,.25);c.fillStyle=c.createPattern(tile,'repeat');c.fillRect(0,0,(W+256)*4,H*4);
+    c.globalAlpha=AERO()?.42:(L.cls==='s3'?.1:.16)*(HW()?1.15:1);c.scale(.25,.25);c.fillStyle=c.createPattern(tile,'repeat');c.fillRect(0,0,(W+256)*4,H*4);
+    if(AERO()){c.setTransform(DPR,0,0,DPR,0,0);c.globalAlpha=1;aeroSwoosh(c,W+256,H)}
   }
   return bgC;
 }
@@ -2502,6 +2579,7 @@ function draw(){
   ctx.fillStyle='rgba(255,255,255,.25)';for(let x=-stX;x<W;x+=40)ctx.fillRect(x,g.cy+40*u,20,6);
   const nk=nightK();if(nk>.01)drawNight(g,u,pf,nk);
   if(HW())drawHalloween(g,u,pf,dt);
+  else if(AERO())drawAero(g,u,pf,dt,nk);
   if(state==='menu'||!cur)return;
 
   // pulso actual según la grilla de la canción (sigue cambios de tempo y el pulso detectado en los mp3)
@@ -2716,6 +2794,7 @@ function drawNight(g,u,pf,k){
   // cielo: azul profundo (violeta en Halloween) que va tapando el de la etapa; el piso se oscurece
   const gr=ctx.createLinearGradient(0,0,0,fy);
   if(hw){gr.addColorStop(0,`rgba(34,18,64,${.92*k})`);gr.addColorStop(.75,`rgba(74,40,120,${.85*k})`);gr.addColorStop(1,`rgba(150,70,110,${.7*k})`)}
+  else if(AERO()){gr.addColorStop(0,`rgba(6,28,62,${.9*k})`);gr.addColorStop(.7,`rgba(14,70,120,${.82*k})`);gr.addColorStop(1,`rgba(30,140,150,${.66*k})`)}
   else{gr.addColorStop(0,`rgba(22,22,64,${.92*k})`);gr.addColorStop(.75,`rgba(52,48,120,${.86*k})`);gr.addColorStop(1,`rgba(120,82,160,${.72*k})`)}
   ctx.fillStyle=gr;ctx.fillRect(0,0,W,fy);
   const ss=Math.sin(Math.PI*Math.min(1,k*1.25)); // atardecer: brillo naranja cerca del horizonte a mitad de camino
@@ -2743,6 +2822,77 @@ function drawHalloween(g,u,pf,dt){
   for(const b of BATS){const x=((b.x*bw-pf*.035*b.v*fl)%bw+bw)%bw-60,y=b.y*g.hy+Math.sin(pf/700+b.ph)*10*u;bat(x,y,b.s*Math.max(.7,u),pf/90*fl+b.ph)}
   const pk=pumpkinCv(),sz=34*u,fy=g.cy+40*u-sz*.78,step=Math.max(170,W/3);
   for(let x=-((bgX*2.2)%step)+step*.3;x<W+sz;x+=step)ctx.drawImage(pk,x-sz/2,fy,sz,sz);
+}
+/* ---------- 🫧 Frutiger Aero (todo hecho con código) ----------
+   Fondo que se repite con burbujas de vidrio, gotitas, hojitas y destellos; cintas de luz que ondulan (se repiten
+   cada 256 px, como el fondo, para que deslice sin cortes); sol con destellos de lente, burbujas que suben y pasto brillante. */
+let _aeroTile=null,_bubble=null,_aeroIco=null;
+function aeroTile(){
+  if(_aeroTile)return _aeroTile;
+  const N=1024,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d');
+  let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const shapes={
+    bubble(r){const g=x.createRadialGradient(-r*.3,-r*.35,r*.1,0,0,r);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.45,'rgba(200,240,255,.35)');g.addColorStop(.9,'rgba(120,210,255,.45)');g.addColorStop(1,'rgba(255,255,255,.9)');
+      x.fillStyle=g;x.beginPath();x.arc(0,0,r,0,7);x.fill();x.strokeStyle='rgba(255,255,255,.95)';x.lineWidth=3;x.stroke();
+      x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.ellipse(-r*.35,-r*.45,r*.32,r*.16,-.6,0,7);x.fill();x.beginPath();x.arc(r*.42,r*.38,r*.08,0,7);x.fill()},
+    drop(r){const g=x.createLinearGradient(-r,-r,r,r);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(1,'rgba(60,180,240,.7)');x.fillStyle=g;
+      x.beginPath();x.moveTo(0,-r*1.2);x.bezierCurveTo(r*.9,-r*.1,r*.8,r*.8,0,r*.8);x.bezierCurveTo(-r*.8,r*.8,-r*.9,-r*.1,0,-r*1.2);x.fill();
+      x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.ellipse(-r*.25,r*.05,r*.14,r*.3,.3,0,7);x.fill()},
+    leaf(r){const g=x.createLinearGradient(0,-r,0,r);g.addColorStop(0,'#c8f59a');g.addColorStop(1,'#3fb22c');x.fillStyle=g;
+      x.beginPath();x.moveTo(0,-r);x.quadraticCurveTo(r*.9,0,0,r);x.quadraticCurveTo(-r*.9,0,0,-r);x.fill();
+      x.strokeStyle='rgba(255,255,255,.75)';x.lineWidth=3;x.beginPath();x.moveTo(0,-r*.8);x.lineTo(0,r*.8);x.stroke()},
+    spark(r){x.fillStyle='rgba(255,255,255,.95)';x.beginPath();x.moveTo(0,-r);x.quadraticCurveTo(0,0,r*.5,0);x.quadraticCurveTo(0,0,0,r);x.quadraticCurveTo(0,0,-r*.5,0);x.quadraticCurveTo(0,0,0,-r);x.fill()}};
+  const kinds=['bubble','bubble','drop','bubble','leaf','bubble','drop','leaf'],placed=[];
+  const put=(kind,r)=>{for(let t=0;t<60;t++){const px=rnd()*N,py=rnd()*N;
+      if(placed.every(p=>{let dx=Math.abs(p.x-px),dy=Math.abs(p.y-py);dx=Math.min(dx,N-dx);dy=Math.min(dy,N-dy);return Math.hypot(dx,dy)>p.r+r+14})){placed.push({x:px,y:py,r,kind,a:(rnd()-.5)*1.2});return}}};
+  for(let i=0;i<26;i++)put(kinds[i%kinds.length],30+rnd()*46);
+  for(let i=0;i<46;i++)put('spark',8+rnd()*12);
+  for(const p of placed)for(const ox of[-N,0,N])for(const oy of[-N,0,N]){
+    if(p.x+ox<-p.r*1.6||p.x+ox>N+p.r*1.6||p.y+oy<-p.r*1.6||p.y+oy>N+p.r*1.6)continue;
+    x.save();x.translate(p.x+ox,p.y+oy);x.rotate(p.kind==='bubble'?0:p.a);shapes[p.kind](p.r);x.restore()}
+  return _aeroTile=c;
+}
+function aeroSwoosh(c,w,h){ // cintas de luz (como las de las pantallas de los 2000), periodo 256 px
+  const P=256;
+  for(const [y0,A,ph,th,col] of [[.30,26,0,34,'rgba(255,255,255,.34)'],[.38,20,1.7,18,'rgba(190,255,170,.32)'],[.46,30,3.1,46,'rgba(255,255,255,.22)'],[.52,14,4.4,10,'rgba(255,255,255,.5)']]){
+    c.beginPath();for(let x=0;x<=w;x+=8){const y=h*y0+A*Math.sin(x/P*Math.PI*2+ph);if(x)c.lineTo(x,y);else c.moveTo(x,y)}
+    for(let x=w;x>=0;x-=8){const y=h*y0+A*Math.sin(x/P*Math.PI*2+ph)+th*(.6+.4*Math.sin(x/P*Math.PI*2+ph+1.3));c.lineTo(x,y)}
+    c.closePath();c.fillStyle=col;c.fill()}
+}
+function bubbleCv(){
+  if(_bubble)return _bubble;const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),r=58;x.translate(64,64);
+  const g=x.createRadialGradient(-r*.3,-r*.35,r*.08,0,0,r);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.5,'rgba(210,245,255,.18)');g.addColorStop(.88,'rgba(140,220,255,.35)');g.addColorStop(1,'rgba(255,255,255,.85)');
+  x.fillStyle=g;x.beginPath();x.arc(0,0,r,0,7);x.fill();x.strokeStyle='rgba(255,255,255,.9)';x.lineWidth=2.5;x.stroke();
+  x.fillStyle='rgba(255,255,255,.92)';x.beginPath();x.ellipse(-r*.34,-r*.44,r*.3,r*.14,-.6,0,7);x.fill();
+  x.fillStyle='rgba(180,255,200,.5)';x.beginPath();x.arc(r*.4,r*.4,r*.12,0,7);x.fill();return _bubble=c;
+}
+function aeroIcon(){ // foto del tema en 🎨 Temas: la torta de Sofía dentro de una burbuja de vidrio
+  if(_aeroIco)return _aeroIco;const c=document.createElement('canvas');c.width=c.height=120;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,120);g.addColorStop(0,'#6fd0ff');g.addColorStop(.62,'#dff7ff');g.addColorStop(.63,'#7ed957');g.addColorStop(1,'#3fb22c');
+  x.fillStyle=g;x.beginPath();x.arc(60,60,58,0,7);x.fill();
+  const T=IMG.torta;const okT=ok(T);if(okT){const w=70,h=w*T.height/T.width;x.drawImage(T,60-w/2,74-h,w,h)}
+  x.drawImage(bubbleCv(),0,0,120,120);const d=c.toDataURL('image/png');if(okT)_aeroIco=d;return d;
+}
+const AERO_B=Array.from({length:14},()=>({x:Math.random(),y:Math.random(),r:.5+Math.random()*.8,v:.6+Math.random()*.7,ph:Math.random()*7}));
+function drawAero(g,u,pf,dt,nk){
+  const fy=g.cy+40*u,pk=beatNow.pk||0,fl=calmMotion?.4:1,day=1-Math.min(1,nk*1.4);
+  // sol con destellos de lente (se apaga de noche)
+  if(day>.02){const sx=W*.86,sy=Math.max(56,H*.11),R=Math.min(110,90*u+20)*(1+.05*pk);
+    ctx.globalAlpha=day;const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,R*1.8);sg.addColorStop(0,'rgba(255,255,255,1)');sg.addColorStop(.18,'rgba(255,255,240,.9)');sg.addColorStop(.4,'rgba(255,255,220,.28)');sg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,R*1.8,0,7);ctx.fill();
+    const dx=g.cx-sx,dy=g.cy-sy;
+    for(const [k,r,a,col] of [[.35,14,.35,'150,230,255'],[.55,26,.18,'190,255,190'],[.8,9,.4,'255,255,255'],[1.15,40,.12,'120,210,255']]){
+      ctx.fillStyle=`rgba(${col},${a})`;ctx.beginPath();ctx.arc(sx+dx*k,sy+dy*k,r*u,0,7);ctx.fill()}
+    ctx.globalAlpha=1}
+  // pasto brillante: reflejo blanco arriba y una línea de luz
+  const gg=ctx.createLinearGradient(0,fy,0,fy+46*u);gg.addColorStop(0,`rgba(255,255,255,${.5-.25*nk})`);gg.addColorStop(.35,'rgba(255,255,255,.12)');gg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=gg;ctx.fillRect(0,fy,W,46*u);ctx.fillStyle=`rgba(255,255,255,${.75-.35*nk})`;ctx.fillRect(0,fy,W,2*u);
+  // burbujas que suben desde el pasto y laten un poquito con el pulso
+  const B=bubbleCv(),hy=fy;
+  for(const b of AERO_B){if(!paused)b.y-=.0011*b.v*fl*dt;if(b.y<-.08){b.y=1.02;b.x=Math.random()}
+    const r=(14+18*b.r)*u*(1+.08*pk),x=b.x*W+Math.sin(pf/900*fl+b.ph)*14*u,y=b.y*hy;
+    ctx.globalAlpha=.85*(b.y<.12?Math.max(0,b.y/.12):1);ctx.drawImage(B,x-r,y-r,r*2,r*2)}
+  ctx.globalAlpha=1;
 }
 function drawWhistle(wx,wy,u,b){ // silbato provisorio (hecho con código)
   ctx.save();ctx.translate(wx,wy);ctx.rotate(-.25);ctx.fillStyle='#ffd23f';ctx.strokeStyle='#4a2a3f';ctx.lineWidth=2;
@@ -2778,7 +2928,7 @@ if(save.seen!==VERSION&&location.hash!=='#prueba'&&!retoLink)setTimeout(()=>{if(
 if('serviceWorker' in navigator&&location.protocol==='https:'&&location.hostname.endsWith('github.io')&&!/\/prueba\//.test(location.pathname))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* acceso para pruebas */
-if(location.hash==='#prueba'||window.FORCE_SS)window.SS={hwTile,set nightTest(v){nightTest=v},nightK,get meteors(){return meteors},shootingStar,specialSong,openEsp,SPECIAL,set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
+if(location.hash==='#prueba'||window.FORCE_SS)window.SS={aeroTile,aeroIcon,drawAero,playEv,set nightTest(v){nightTest=v},nightK,get meteors(){return meteors},shootingStar,specialSong,openEsp,SPECIAL,set themeTest(v){themeTest=v;applyTheme()},themeId,noteKey,charPic,charHat,runAcc,runTrail,get conf(){return conf},openTemas,openSala,openRetoCode,rankSubmit,rankTop,rankRefresh,stageGhosts,get rankCache(){return rankCache},set score(v){score=v},get salaRows(){return salaRows},get cloud(){return cloud},mergeSave,cloudLoad,checkResults,cloudSyncAll,get cloudFiles(){return cloudFiles},openHist,openPlay,scoreSeries,get histRows(){return histRows},ftx,get ghosts(){return ghosts},get ghost(){return ghosts[0]||null},toMenu,packReto,unpackReto,openRetoLink,retoFromCur,fingerprint,get reto(){return reto},get ST(){return ST},stTap,stStop,snapTimes,openStudio,chartsOf,get pick(){return pick},get combo(){return combo},get files(){return files},loadFiles,get lastFile(){return lastFile},gradeOf,comboMile,get heat(){return heat},get sparks(){return sparks},get eqLv(){return eqLv},get beatNow(){return beatNow},get grid(){return grid},audioGrid,audioCands,midiParts,chartPart,parseMidi,metricW,get counting(){return counting},doPause,get paused(){return paused},get songStart(){return songStart},get ev(){return ev},get evI(){return evI},get HZ(){return HZ},makeSmooth,get cal(){return cal},calTap,get calVal(){return calVal},finish,runGive,runRead,charId,charImg,stepCh,runRefresh,get notes(){return notes},now:judgeNow,tap,startStage,startSong,analyze,parseMidi,compSong,stageSong,get state(){return state},get cnt(){return cnt},get cake(){return cake},get score(){return score},get save(){return save},get lastFile(){return lastFile},get cur(){return cur},get AC(){return AC}};
 </script>
 </body>
 </html>

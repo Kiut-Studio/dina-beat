@@ -1,5 +1,9 @@
 # Novedades
 
+## Versión 0.23 — octubre 2026: 🫧 tema Frutiger Aero
+- 🫧 Tema **Frutiger Aero** en 🎨 Temas (no es de temporada: se elige a mano): cielos celestes por etapa, fondo que se repite con burbujas de vidrio, gotitas, hojitas y destellos; cintas de luz que ondulan; sol con destellos de lente (de día); burbujas que suben y laten con el pulso; pasto verde con reflejo; botones de cristal (mitad de arriba más clara) en celeste y verde; confeti celeste, verde y blanco. De noche, cielo azul petróleo con estrellas. Todo hecho con código; la torta, Dina y los personajes son los dibujos de Sofía de siempre. Las notas, puntajes y rankings de las etapas no cambian.
+- 🎵 **Música de Frutiger Aero** (botón en el menú con el tema puesto): cuatro canciones originales de Dina Beat con dos sonidos nuevos, campanita de vidrio y colchón de acordes suaves: *Burbujas de cristal* (100 pulsos), *Acuario digital* (92), *Aurora verde* (112 → 120 → 128) y *Lluvia en la ventana* (80, tranquila). Como las de Halloween: récord, estrellas, nota y desafíos; no van al ranking.
+
 ## Versión 0.22.1 — octubre 2026
 - 🕒 En 📜 Tus partidas → ⚔️ Duelos, la hora de cada sala era la de la última vez que el juego revisó la tabla (`upd`, que se pone en cada revisión), así que todas mostraban la hora en que abriste la lista. Ahora muestra cuándo jugó alguien por última vez (`last`: el resultado más nuevo de la tabla, o tu última partida en ella) y se ordenan por eso.
 ## Versión 0.22 — octubre 2026: 🌙 de noche

@@ -1,5 +1,5 @@
 // Copia sin conexión. Comparte sitio con otros juegos: solo toca sus propias cachés.
-const CACHE='dina-beat-v27';
+const CACHE='dina-beat-v28';
 const FILES=['./','index.html','manifest.json','favicon-32.png','icon-192.png','icon-512.png',
   'assets/sofi.webp','assets/sofi_hoodie.webp','assets/deisy.webp','assets/leandro.webp','assets/nora.webp','assets/cinthia.webp','assets/dina.webp','assets/dina_corre.webp','assets/frutilla.webp','assets/pancito.webp','assets/torta.webp','assets/nubes.webp',
   'assets/sofi_alicia.webp','assets/calabaza.webp','assets/dina_calabaza.webp','assets/dina_bruja.webp','assets/dina_brujito.webp','assets/dina_vampiro.webp',

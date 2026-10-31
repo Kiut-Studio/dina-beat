@@ -1,6 +1,6 @@
 # Dina Beat — contexto del proyecto
 
-Última actualización: 29/10/2026 · versión 0.22.1
+Última actualización: 30/10/2026 · versión 0.23
 
 ## Qué es
 **Nombre:** Dina Beat (antes *Sofi Silbato*). Leandro decidió centrar los juegos en Dina, porque Sofi es solo uno de los personajes: la serie es **Dina Run** (el runner, antes Sofi Runner) y **Dina Beat**. Repo: `Kiut-Studio/dina-beat`, publicado en `kiut-studio.github.io/dina-beat/` (antes `leandroacasco.github.io/dina-beat/`). La clave de guardado sigue siendo `sofiSilbato.v1` para no perder progreso.
@@ -14,7 +14,7 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 - Ventanas: perfecto ±75 ms, bien ±145 ms. Tocar sin nada cerca solo corta el combo.
 - Torta: `CAKE_MAX` 8, se recupera 1 cada `HEAL` 8 aciertos.
 - `#prueba` activa `window.SS` para pruebas automáticas.
-- `sw.js` usa la caché `dina-beat-vN` (hoy v27; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
+- `sw.js` usa la caché `dina-beat-vN` (hoy v28; antes `sofi-silbato-…`) y solo borra las suyas (comparte sitio con los otros juegos). Subir el número con cada versión.
 
 ## Versión 0.2
 - **Herramienta** (`save.tool`: `spray` por defecto o `silbato`), en ⚙️ Ajustes. El rociador suena a rocío (`sSpray`) y, si espantaste a Dina, un miau (`sMeow`, como mucho uno cada 0,32 s). Leandro pidió que sean intercambiables.
@@ -289,6 +289,16 @@ Mini juego de ritmo, hermano de Dina Run, con los dibujos de Sofía. Idea tomada
 ## Versión 0.22.1 — hora de las salas
 - Leandro vio que en ⚔️ Duelos todas las salas decían "hoy 14:11": se mostraba `upd`, que `salaSet` pone en cada revisión (`checkResults` al abrir el historial). Ahora cada sala guarda `last` = el `at` más nuevo de sus resultados (o cuando jugaste vos, en `cloudResult`) y la lista muestra y ordena por `last` (si falta, `at`). `upd` queda solo para juntar con la nube. Prueba en `nube.py`.
 
+## Versión 0.23 — 🫧 tema Frutiger Aero
+- Pedido de Leandro (30/10): un tema Frutiger Aero (la estética "vidrio, agua, cielo y pasto" de las computadoras de los 2000) con su música. Se pasa primero como prueba (`/prueba/` y rama `prueba`).
+- `THEMES` suma `{id:'aero'}` sin `desde`/`hasta`: no se pone solo, se elige en 🎨 Temas. `AERO()` como `HW()`. No cambia la torta, Dina, las notas ni los textos (solo `cakeKey`/`noteKey` siguen como en clásico).
+- Colores: `THEME_LOOK.aero` (cielos celestes por etapa, pisos verdes) y CSS `body[data-theme=aero]`: botones de vidrio (degradé con la mitad de arriba más clara, `inset` blanco), `.st` con brillo encima de su color, `.s6` celeste → verde, tinta azul oscura. Confeti celeste/verde/blanco. `theme-color` #bfeaff.
+- Fondo: `aeroTile()` (1024 que se repite: burbujas, gotitas, hojitas, destellos; al 42 %) + `aeroSwoosh()` (cintas de luz pintadas una vez en `bgLayer`, con período de 256 px para que deslicen sin cortes). `drawAero()` cada cuadro: sol con destellos de lente (se apaga de noche), reflejo en el pasto y 14 burbujas que suben (`bubbleCv`, pre-dibujada) y laten con el pulso. De noche, `drawNight` usa azul petróleo.
+- Foto del tema en 🎨 Temas: `aeroIcon()` (la torta de Sofía dentro de una burbuja, armada en el momento; no es un dibujo nuevo).
+- Música: 4 canciones originales en `SPECIAL` con `season:'aero'` (el botón 🫧 Música de Frutiger Aero aparece con el tema puesto): *Burbujas de cristal* (100), *Acuario digital* (92, usa `mel2` = segunda mitad), *Aurora verde* (112 → 120 → 128) y *Lluvia en la ventana* (80). Nuevos campos: `inst:'bell'` (melodía con `bell()`: seno + parcial ×3 que se apaga rápido) y `chords` (un acorde por compás con `pad()`: triángulos desafinados ±5 cents con filtro y entrada lenta). Los sonidos de la canción pasan por `playEv(v,t,out)` (juego y 🎙️ Estudio).
+- En pantallas de ≤ 600 px de alto, 🎨 Temas se achica (4 temas sin deslizar en 320×568).
+- Pruebas: `juego.py` juega *Burbujas de cristal* con el robot (récord, desafío), revisa campanitas/acordes y cuenta notas de las otras; `tamanos.py` revisa temas con aero, menú y `#esp` (deja `s_menu_aero.png`, `s_esp_aero.png`).
+
 ## Spotify (pregunta de Leandro, 28/10)
 No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego no puede escucharlo para buscar los golpes), Spotify sacó para apps nuevas los datos de análisis (tempo, golpes) y el acceso amplio pide cientos de miles de usuarios. Alternativas posibles: seguir con archivos propios (mp3/MIDI), o un modo "con el micrófono" que escuche lo que suena en otro aparato y marque el pulso en vivo (idea, no hecho).
 
@@ -301,4 +311,4 @@ No se puede jugar con canciones de Spotify: el sonido viene protegido (el juego 
 5. ~~Guardar los archivos de música en el dispositivo~~ (hecho en 0.13).
 6. Probar la detección de golpes con canciones reales de distintos estilos (hecho con una de city pop en mp3 y MIDI; faltan sin batería, con cambios de tempo, muy rápidas o muy lentas, y sincopadas).
 7. ~~Más ganas de repetir: avisos de combo, fondo con la racha y calificación final~~ (hecho en 0.13).
-8. Más temas en 🎨 Temas (Navidad, verano, Pascua), idealmente con dibujos de Sofía. Que Sofía dibuje sus calabacitas y murciélagos del fondo (hoy hechos con código).
+8. Más temas en 🎨 Temas (Navidad, verano, Pascua; Frutiger Aero ya está desde la 0.23), idealmente con dibujos de Sofía. Que Sofía dibuje sus calabacitas y murciélagos del fondo (hoy hechos con código).
